@@ -1,7 +1,8 @@
 {
-  "name": "trasporte-gt",
+  "name": "transporte-gt",
   "private": true,
   "version": "0.0.0",
+  "description": "Plataforma de transporte que conecta pasajeros, equipos y decisiones. Frontend en React + TypeScript.",
   "type": "module",
   "scripts": {
     "dev": "vite",
