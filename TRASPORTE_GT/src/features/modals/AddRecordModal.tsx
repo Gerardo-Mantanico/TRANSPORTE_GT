@@ -6,9 +6,7 @@ import {
   EXPENSE_CATEGORIES,
   ROUTES,
   TODAY,
-  USERS,
 } from '../../data/mock'
-import { useAuth } from '../../app/providers/useAuth'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
@@ -19,25 +17,21 @@ import { formatQ } from '../../utils/format'
 const TITLES: Record<string, string> = {
   viajes: 'Programar viaje',
   taller: 'Registrar gasto de taller',
-  usuarios: 'Crear usuario administrador',
   alquileres: 'Registrar solicitud de alquiler',
   categorias: 'Nueva categoría',
   buses: 'Registrar bus',
   choferes: 'Registrar chofer',
   rutas: 'Nueva ruta',
-  sucursales: 'Nueva sucursal',
 }
 
 const EDIT_TITLES: Record<string, string> = {
   viajes: 'Editar viaje',
   taller: 'Editar gasto de taller',
-  usuarios: 'Editar usuario',
   alquileres: 'Editar alquiler',
   categorias: 'Editar categoría',
   buses: 'Editar bus',
   choferes: 'Editar chofer',
   rutas: 'Editar ruta',
-  sucursales: 'Editar sucursal',
 }
 
 function resolveTitle(page: string, edit: boolean) {
@@ -50,8 +44,6 @@ function resolveNote(page: string) {
   if (page === 'taller') return 'La categoría es obligatoria en todas las líneas del gasto.'
   if (page === 'buses' || page === 'choferes')
     return 'La foto se adjuntará al registro y estará disponible en el perfil del recurso.'
-  if (page === 'usuarios')
-    return 'Los usuarios no se eliminan; solo se desactivan. Debe existir al menos un administrador de sistema activo.'
   return 'Los cambios quedarán registrados en el historial de la plataforma.'
 }
 
@@ -195,21 +187,14 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
   const record = initial ?? {}
   const isTrips = page === 'viajes'
   const isWorkshop = page === 'taller'
-  const isUsers = page === 'usuarios'
   const isBuses = page === 'buses'
   const isDrivers = page === 'choferes'
   const isRoutes = page === 'rutas'
-  const isBranches = page === 'sucursales'
   const isCategories = page === 'categorias'
   const isRentals = page === 'alquileres'
-  const { role } = useAuth()
-  const canCreateSystemAdmin = role === 'Administrador del sistema'
   const routeOptions = ROUTES.map((route) => `${route.origin} → ${route.destination}`)
   const busOptions = BUSES.map((bus) => `${bus.plate} · ${bus.capacity} pasajeros`)
   const driverOptions = DRIVERS.map((driver) => `${driver.name} · Licencia ${driver.expiryState}`)
-  const roleOptions = canCreateSystemAdmin
-    ? ['Administrador del sistema', 'Administrador de sucursal']
-    : ['Administrador de sucursal']
 
   return (
     <div className="modal-layer">
@@ -266,36 +251,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
             </div>
           )}
           {isWorkshop && <WorkshopForm />}
-          {isUsers && (
-            <div className="form-grid two">
-              <Field
-                label="Nombre completo"
-                placeholder="Nombre y apellido"
-                defaultValue={typeof record.name === 'string' ? record.name : undefined}
-                required
-              />
-              <Field
-                label="Correo"
-                type="email"
-                placeholder="usuario@correo.com"
-                defaultValue={typeof record.email === 'string' ? record.email : undefined}
-                required
-              />
-              <Field label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" required />
-              <SelectField
-                label="Rol"
-                options={roleOptions}
-                defaultValue={typeof record.role === 'string' ? record.role : undefined}
-                required
-              />
-              <SelectField
-                label="Sucursal enlazada"
-                options={BRANCH_NAMES}
-                defaultValue={typeof record.branch === 'string' && record.branch !== '—' ? record.branch : undefined}
-                required
-              />
-            </div>
-          )}
           {isBuses && (
             <div className="form-grid two">
               <PhotoField label="Foto del bus" />
@@ -438,30 +393,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
               />
             </div>
           )}
-          {isBranches && (
-            <div className="form-grid two">
-              <Field
-                label="Nombre de la sucursal"
-                placeholder="Ej. Guatemala Centro"
-                defaultValue={typeof record.name === 'string' ? record.name : undefined}
-                required
-              />
-              <Field
-                label="Ubicación"
-                placeholder="Departamento / ciudad"
-                defaultValue={typeof record.location === 'string' ? record.location : undefined}
-                required
-              />
-              <SelectField
-                label="Administrador enlazado"
-                options={USERS.filter((user) => user.role === 'Administrador de sucursal').map(
-                  (user) => user.name,
-                )}
-                defaultValue={typeof record.admin === 'string' ? record.admin : undefined}
-                required
-              />
-            </div>
-          )}
           {isCategories && (
             <div className="form-grid">
               <Field
@@ -519,11 +450,9 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
           )}
           {!isTrips &&
             !isWorkshop &&
-            !isUsers &&
             !isBuses &&
             !isDrivers &&
             !isRoutes &&
-            !isBranches &&
             !isCategories &&
             !isRentals && (
               <div className="form-grid">

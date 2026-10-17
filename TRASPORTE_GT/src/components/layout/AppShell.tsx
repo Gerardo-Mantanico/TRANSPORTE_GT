@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { NAV_BY_ROLE } from '../../app/navigation'
 import { useAuth } from '../../app/providers/useAuth'
-import type { IconName, Role } from '../../types'
+import type { IconName } from '../../types'
+import type { Rol } from '../../types/identityTypes'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
@@ -11,7 +12,7 @@ interface PageMeta {
   icon: IconName
 }
 
-function resolvePageMeta(pathname: string, role: Role | null): PageMeta {
+function resolvePageMeta(pathname: string, role: Rol | null): PageMeta {
   if (pathname === '/perfil') return { title: 'Mi perfil', icon: 'user' }
   if (!role) return { title: 'Panel', icon: 'home' }
   const item = NAV_BY_ROLE[role]
@@ -21,13 +22,12 @@ function resolvePageMeta(pathname: string, role: Role | null): PageMeta {
 }
 
 export function AppShell() {
-  const { role } = useAuth()
+  const { usuario } = useAuth()
+  const role = usuario?.rol ?? null
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const meta = useMemo(() => resolvePageMeta(location.pathname, role), [location.pathname, role])
-
-  if (!role) return <Navigate to="/login" replace />
 
   return (
     <div className="app-shell">

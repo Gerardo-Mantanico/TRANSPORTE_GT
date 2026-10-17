@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { TODAY } from '../../data/mock'
 import { Button } from '../../components/ui/Button'
+import { AvisoError } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote, SectionTitle } from '../../components/ui/Misc'
+import { useRepublicarEventos } from '../../hooks/identity'
+import type { RepublicacionResponse } from '../../types/identityTypes'
 
 const PERMANENT_RULES = [
   'Los usuarios no se eliminan; solo se desactivan.',
@@ -15,6 +18,14 @@ const PERMANENT_RULES = [
 export function SettingsPage() {
   const [rate, setRate] = useState('0.75')
   const [saved, setSaved] = useState(false)
+  const republicar = useRepublicarEventos()
+  const [republicados, setRepublicados] = useState<RepublicacionResponse | null>(null)
+
+  const handleRepublicar = async () => {
+    setRepublicados(null)
+    const resultado = await republicar.ejecutar()
+    if (resultado.ok) setRepublicados(resultado.datos)
+  }
 
   return (
     <>
@@ -46,6 +57,28 @@ export function SettingsPage() {
               <span>
                 Configuración guardada. La nueva depreciación es Q {rate || '0.00'} por kilómetro
                 desde {TODAY}.
+              </span>
+            </div>
+          )}
+        </section>
+        <section className="surface form-card">
+          <SectionTitle
+            title="Sincronizar Identidad"
+            subtitle="Republica las sucursales y usuarios actuales hacia los demás servicios"
+          />
+          <InfoNote>
+            Útil al levantar un servicio nuevo o tras cargar datos iniciales. Es idempotente: los consumidores
+            ignoran las versiones que ya aplicaron.
+          </InfoNote>
+          <Button variant="secondary" onClick={handleRepublicar} disabled={republicar.cargando}>
+            {republicar.cargando ? 'Republicando...' : 'Republicar eventos'}
+          </Button>
+          <AvisoError error={republicar.error} />
+          {republicados && (
+            <div className="success-note">
+              <Icon name="check" />
+              <span>
+                Se encolaron {republicados.sucursales} eventos de sucursales y {republicados.usuarios} de usuarios.
               </span>
             </div>
           )}

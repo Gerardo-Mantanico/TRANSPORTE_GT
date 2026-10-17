@@ -7,7 +7,10 @@ import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote } from '../../components/ui/Misc'
-import { formatQ } from '../../utils/format'
+import { useCartera, usePerfilCliente } from '../../hooks/customerWallet'
+import { puedeOperarEnLinea } from '../../utils/perfilCliente'
+import { AvisoPerfilCliente } from '../customerWallet/AvisoPerfilCliente'
+import { formatMonto, formatQ } from '../../utils/format'
 
 function toggleSeat(seats: string[], seat: string) {
   return seats.includes(seat) ? seats.filter((item) => item !== seat) : [...seats, seat]
@@ -181,6 +184,9 @@ function RouteModal({ trip, onClose, onSelect }: { trip: ClientTrip; onClose: ()
 function SeatSelectionModal({ trip, onClose }: { trip: ClientTrip; onClose: () => void }) {
   const [seats, setSeats] = useState<string[]>([])
   const [confirmed, setConfirmed] = useState(false)
+  const cartera = useCartera()
+  const perfil = usePerfilCliente()
+  const puedePagar = puedeOperarEnLinea(perfil.datos)
   const unitPrice = Number(trip.price.replace(/\D/g, ''))
   const total = seats.length * unitPrice
   const freeSeats = Number(trip.seats)
@@ -233,8 +239,11 @@ function SeatSelectionModal({ trip, onClose }: { trip: ClientTrip; onClose: () =
               <span>
                 <Icon name="wallet" size={16} /> Saldo disponible
               </span>
-              <strong>Q 1,250.00</strong>
+              <strong>
+                {cartera.datos ? formatMonto(cartera.datos.saldo) : cartera.cargando ? '...' : 'No disponible'}
+              </strong>
             </div>
+            <AvisoPerfilCliente cliente={perfil.datos} accion="comprar boletos" />
             <div className="summary-label">Asientos seleccionados</div>
             <div className={`selected-chips ${seats.length ? '' : 'empty'}`.trim()}>
               {seats.length ? (
@@ -275,7 +284,7 @@ function SeatSelectionModal({ trip, onClose }: { trip: ClientTrip; onClose: () =
           <Button variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button icon="wallet" disabled={!seats.length} onClick={() => setConfirmed(true)}>
+          <Button icon="wallet" disabled={!seats.length || !puedePagar} onClick={() => setConfirmed(true)}>
             Confirmar y pagar · {formatQ(total)}
           </Button>
         </footer>

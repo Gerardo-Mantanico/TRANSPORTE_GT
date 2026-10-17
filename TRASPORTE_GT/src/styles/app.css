@@ -5408,3 +5408,59 @@ tbody tr:hover {
   display: none;
   margin-bottom: 1rem;
 }
+
+/* Estados de carga y error de las pantallas conectadas al backend */
+.loading-state {
+  color: var(--muted);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 160px;
+  padding: 24px;
+  font-size: 0.75rem;
+  display: flex;
+}
+.loading-state.full {
+  min-height: 100vh;
+}
+.spinner {
+  border: 3px solid var(--green-soft);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  animation: spin 0.8s linear infinite;
+  display: block;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.form-error {
+  color: var(--danger);
+  background: #c748481a;
+  border: 1px solid #c7484840;
+  border-radius: 10px;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 12px;
+  font-size: 0.75rem;
+  display: flex;
+}
+.form-error > div {
+  flex: 1;
+}
+.form-error strong,
+.form-error small {
+  display: block;
+}
+.form-error small {
+  color: var(--muted);
+  margin-top: 3px;
+}
+.list-surface .form-error {
+  margin: 12px 18px;
+}

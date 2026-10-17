@@ -1,11 +1,16 @@
 import { createContext } from 'react'
-import type { Role } from '../../types'
+import type { LoginRequest, Rol, Usuario } from '../../types/identityTypes'
+
+export type EstadoSesion = 'cargando' | 'autenticado' | 'anonimo'
 
 export interface AuthContextValue {
-  role: Role | null
-  login: (role: Role) => void
+  usuario: Usuario | null
+  estado: EstadoSesion
+  /** Guarda el token y carga el usuario con `/auth/yo`. Lanza `ApiError` si falla. */
+  login: (credenciales: LoginRequest) => Promise<Usuario>
   logout: () => void
-  switchRole: (role: Role) => void
+  refrescarUsuario: () => Promise<void>
+  tieneRol: (...roles: Rol[]) => boolean
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

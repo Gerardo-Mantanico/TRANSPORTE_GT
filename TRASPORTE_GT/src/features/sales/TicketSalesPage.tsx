@@ -7,6 +7,7 @@ import { Icon } from '../../components/ui/Icon'
 import { SectionTitle } from '../../components/ui/Misc'
 import { SelectField } from '../../components/ui/SelectField'
 import { formatQ } from '../../utils/format'
+import { BuscarClienteNit } from '../customerWallet/BuscarClienteNit'
 
 const STEPS = ['Viaje', 'Asientos', 'Cliente y pago', 'Confirmación'] as const
 const TICKET_PRICE = 125
@@ -105,7 +106,7 @@ export function TicketSalesPage() {
                 subtitle="Enlace la venta por NIT o utilice el cliente genérico"
               />
               <div className="form-grid two">
-                <Field label="NIT del cliente" placeholder="CF / 1234567-8" />
+                <BuscarClienteNit />
                 <Field label="Fecha de venta" type="date" defaultValue={TODAY} />
                 <SelectField
                   label="Método de pago"

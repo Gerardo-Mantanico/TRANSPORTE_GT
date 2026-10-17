@@ -1,7 +1,19 @@
-import type { NavGroup, Role } from '../types'
+import type { NavGroup } from '../types'
+import type { Rol } from '../types/identityTypes'
 
-export const NAV_BY_ROLE: Record<Role, NavGroup[]> = {
-  Cliente: [
+/** Todo usuario es cliente: cualquier rol puede comprar, alquilar y usar su cartera. */
+const MI_CUENTA: NavGroup = {
+  label: 'Mi cuenta',
+  items: [
+    { id: 'explorar', label: 'Explorar viajes', icon: 'search' },
+    { id: 'solicitar', label: 'Solicitar alquiler', icon: 'route' },
+    { id: 'historial', label: 'Mi historial', icon: 'ticket' },
+    { id: 'cartera', label: 'Cartera digital', icon: 'wallet' },
+  ],
+}
+
+export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
+  CLIENTE: [
     {
       label: 'Mi viaje',
       items: [
@@ -15,7 +27,7 @@ export const NAV_BY_ROLE: Record<Role, NavGroup[]> = {
       items: [{ id: 'cartera', label: 'Cartera digital', icon: 'wallet' }],
     },
   ],
-  'Administrador de sucursal': [
+  ADMIN_SUCURSAL: [
     {
       label: 'Operación',
       items: [
@@ -41,8 +53,13 @@ export const NAV_BY_ROLE: Record<Role, NavGroup[]> = {
         { id: 'reportes', label: 'Reportes', icon: 'chart' },
       ],
     },
+    {
+      label: 'Personal',
+      items: [{ id: 'usuarios', label: 'Usuarios', icon: 'users' }],
+    },
+    MI_CUENTA,
   ],
-  'Administrador del sistema': [
+  ADMIN_SISTEMA: [
     {
       label: 'Administración',
       items: [
@@ -54,13 +71,25 @@ export const NAV_BY_ROLE: Record<Role, NavGroup[]> = {
     },
     {
       label: 'Inteligencia',
-      items: [        { id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
+      items: [{ id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
     },
+    MI_CUENTA,
+  ],
+  CAJERO: [
+    {
+      label: 'Operación',
+      items: [
+        { id: 'venta', label: 'Venta de boletos', icon: 'ticket' },
+        { id: 'viajes', label: 'Viajes', icon: 'route' },
+      ],
+    },
+    MI_CUENTA,
+  ],
+  CHOFER: [
+    {
+      label: 'Operación',
+      items: [{ id: 'viajes', label: 'Viajes', icon: 'route' }],
+    },
+    MI_CUENTA,
   ],
 }
-
-export const ROLE_OPTIONS: Role[] = [
-  'Administrador de sucursal',
-  'Administrador del sistema',
-  'Cliente',
-]

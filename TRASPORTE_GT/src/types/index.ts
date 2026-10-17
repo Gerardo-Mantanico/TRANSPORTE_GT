@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react'
 
-export type Role = 'Cliente' | 'Administrador de sucursal' | 'Administrador del sistema'
-
 export type Theme = 'light' | 'dark'
 
 export type BadgeTone = 'neutral' | 'success' | 'warning' | 'info' | 'danger'

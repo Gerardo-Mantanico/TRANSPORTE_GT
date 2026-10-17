@@ -20,3 +20,34 @@ export function formatDateEs(iso: string): string {
 export function exportToPdf() {
   window.print()
 }
+
+/** Dos iniciales: "Ana María López" → "AL". */
+export function iniciales(nombre: string): string {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean)
+  if (!partes.length) return '?'
+  const primera = partes[0][0]
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : ''
+  return `${primera}${ultima}`.toUpperCase()
+}
+
+/** Fecha ISO (con hora) a "12 de marzo de 2024". */
+export function formatFechaLarga(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const fecha = new Date(iso)
+  if (Number.isNaN(fecha.getTime())) return iso
+  return fecha.toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+/** Monto que llega como texto del backend (`"1250.00"`) a "Q 1,250.00". */
+export function formatMonto(monto: string | null | undefined): string {
+  const valor = Number(monto)
+  return Number.isFinite(valor) ? formatQ(valor) : '—'
+}
+
+/** Fecha de hoy `YYYY-MM-DD` en la zona horaria local (no en UTC). */
+export function hoyIso(): string {
+  const ahora = new Date()
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0')
+  const dia = String(ahora.getDate()).padStart(2, '0')
+  return `${ahora.getFullYear()}-${mes}-${dia}`
+}

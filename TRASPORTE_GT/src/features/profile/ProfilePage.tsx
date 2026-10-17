@@ -1,19 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { ApiError } from '../../api/ApiError'
 import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
+import { AvisoError } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
+import { useCambiarContrasena, useEditarMiPerfil } from '../../hooks/identity'
+import {
+  ETIQUETAS_ROL,
+  MENSAJE_POLITICA_CONTRASENA,
+  POLITICA_CONTRASENA,
+  type Rol,
+} from '../../types/identityTypes'
+import { formatFechaLarga, iniciales } from '../../utils/format'
+import { PerfilComercial } from '../customerWallet/PerfilComercial'
 
-const PROFILE_DATA: [string, string][] = [
-  ['Nombre completo', 'Ana Sofía Martínez López'],
-  ['Correo electrónico', 'ana.martinez@cnb.gt'],
-  ['Teléfono', '+502 5555 0184'],
-  ['DPI', '2456 78120 0101'],
-  ['NIT', '548921-2'],
-]
-
-const ACCOUNT_SIDEBAR_POINTS = ['Identidad verificada', 'Correo confirmado', 'Información completa']
+const PISTAS_ROL: Record<Rol, string> = {
+  ADMIN_SISTEMA: 'Acceso a todas las sucursales',
+  ADMIN_SUCURSAL: 'Gestión de su sucursal y su personal',
+  CAJERO: 'Venta de boletos en su sucursal',
+  CHOFER: 'Consulta de viajes asignados',
+  CLIENTE: 'Compras y alquileres en línea',
+}
 
 function SectionHeading({ icon, title, subtitle }: { icon: 'user' | 'settings'; title: string; subtitle: string }) {
   return (
@@ -33,7 +42,7 @@ function DataGrid({ items }: { items: [string, string][] }) {
   return (
     <div className="profile-data-grid">
       {items.map(([label, value]) => (
-        <div key={label} className={label === 'Dirección' ? 'wide' : ''}>
+        <div key={label}>
           <span>{label}</span>
           <strong>{value}</strong>
         </div>
@@ -42,40 +51,120 @@ function DataGrid({ items }: { items: [string, string][] }) {
   )
 }
 
+function CambiarContrasenaForm({ onListo }: { onListo: () => void }) {
+  const { ejecutar, cargando, error } = useCambiarContrasena()
+  const [actual, setActual] = useState('')
+  const [nueva, setNueva] = useState('')
+  const [confirmacion, setConfirmacion] = useState('')
+  const [errorLocal, setErrorLocal] = useState<ApiError | null>(null)
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+    setErrorLocal(null)
+    if (!POLITICA_CONTRASENA.test(nueva)) {
+      setErrorLocal(new ApiError(400, 'VALIDACION_FALLIDA', MENSAJE_POLITICA_CONTRASENA))
+      return
+    }
+    if (nueva !== confirmacion) {
+      setErrorLocal(new ApiError(400, 'VALIDACION_FALLIDA', 'Las contraseñas no coinciden.'))
+      return
+    }
+    const resultado = await ejecutar({ contrasenaActual: actual, nuevaContrasena: nueva })
+    if (resultado.ok) onListo()
+  }
+
+  return (
+    <form className="profile-edit-form" onSubmit={handleSubmit}>
+      <SectionHeading icon="settings" title="Cambiar contraseña" subtitle={MENSAJE_POLITICA_CONTRASENA} />
+      <div className="form-grid two">
+        <div className="span-two">
+          <Field
+            label="Contraseña actual"
+            type="password"
+            value={actual}
+            onChange={(event) => setActual(event.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        <Field
+          label="Nueva contraseña"
+          type="password"
+          value={nueva}
+          onChange={(event) => setNueva(event.target.value)}
+          autoComplete="new-password"
+          required
+        />
+        <Field
+          label="Confirmar contraseña"
+          type="password"
+          value={confirmacion}
+          onChange={(event) => setConfirmacion(event.target.value)}
+          autoComplete="new-password"
+          required
+        />
+      </div>
+      <AvisoError error={errorLocal ?? error} />
+      <Button type="submit" icon="check" disabled={cargando}>
+        {cargando ? 'Guardando...' : 'Actualizar contraseña'}
+      </Button>
+    </form>
+  )
+}
+
 export function ProfilePage() {
-  const { role } = useAuth()
+  const { usuario, refrescarUsuario } = useAuth()
+  const editarPerfil = useEditarMiPerfil()
   const [editing, setEditing] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const [cambiandoContrasena, setCambiandoContrasena] = useState(false)
+  const [nombre, setNombre] = useState('')
+  const [saved, setSaved] = useState<string | null>(null)
 
   useEffect(() => {
     if (!saved) return
-    const timer = window.setTimeout(() => setSaved(false), 2800)
+    const timer = window.setTimeout(() => setSaved(null), 2800)
     return () => window.clearTimeout(timer)
   }, [saved])
 
-  const branchLabel =
-    role === 'Administrador del sistema' ? 'Acceso global' : role === 'Cliente' ? 'No aplica' : 'Guatemala Centro'
+  if (!usuario) return null
 
-  const roleHint =
-    role === 'Administrador del sistema'
-      ? 'Acceso a todas las sucursales'
-      : role === 'Cliente'
-        ? 'Compras y alquileres en línea'
-        : 'Gestión de Guatemala Centro'
+  const branchLabel =
+    usuario.rol === 'ADMIN_SISTEMA'
+      ? 'Acceso global'
+      : usuario.rol === 'CLIENTE'
+        ? 'No aplica'
+        : (usuario.nombreSucursal ?? '—')
+
+  const empezarEdicion = () => {
+    setNombre(usuario.nombreCompleto)
+    editarPerfil.reiniciar()
+    setEditing(true)
+  }
+
+  const guardarPerfil = async (event: FormEvent) => {
+    event.preventDefault()
+    const resultado = await editarPerfil.ejecutar({ nombreCompleto: nombre.trim() })
+    if (!resultado.ok) return
+    await refrescarUsuario().catch(() => undefined)
+    setEditing(false)
+    setSaved('Los cambios se guardaron correctamente.')
+  }
 
   return (
     <section className="surface profile-page">
       <div className="profile-cover">
         <div className="profile-avatar">
-          AM
+          {iniciales(usuario.nombreCompleto)}
           <span>
             <Icon name="check" size={13} />
           </span>
         </div>
         <div>
-          <h3>Ana Martínez</h3>
-          <p>{role}</p>
-          <Badge tone="success">Cuenta activa</Badge>
+          <h3>{usuario.nombreCompleto}</h3>
+          <p>{ETIQUETAS_ROL[usuario.rol]}</p>
+          <Badge tone={usuario.activo ? 'success' : 'neutral'}>
+            {usuario.activo ? 'Cuenta activa' : 'Cuenta inactiva'}
+          </Badge>
         </div>
       </div>
       <div className="profile-page-layout">
@@ -87,32 +176,35 @@ export function ProfilePage() {
               </span>
               <div>
                 <strong>Perfil actualizado</strong>
-                <p>Los cambios se guardaron correctamente.</p>
+                <p>{saved}</p>
               </div>
             </div>
           )}
           {editing ? (
-            <section className="profile-edit-form">
+            <form id="perfil-form" className="profile-edit-form" onSubmit={guardarPerfil}>
               <SectionHeading
                 icon="user"
                 title="Datos editables"
-                subtitle="Los campos marcados son obligatorios para su perfil."
+                subtitle="Solo puede cambiar su nombre. El correo lo modifica un administrador."
               />
-              <div className="form-grid two">
-                <Field label="Nombre completo" defaultValue="Ana Sofía Martínez López" required />
-                <Field label="Correo electrónico" type="email" defaultValue="ana.martinez@cnb.gt" required />
-                <Field label="Teléfono" type="tel" defaultValue="+502 5555 0184" required />
-                <Field label="DPI" defaultValue="2456 78120 0101" required />
-                <Field label="NIT" defaultValue="548921-2" required />
-                <div className="span-two">
-                  <Field label="Dirección" defaultValue="Zona 10, Ciudad de Guatemala" required />
-                </div>
+              <div className="form-grid">
+                <Field
+                  label="Nombre completo"
+                  value={nombre}
+                  onChange={(event) => setNombre(event.target.value)}
+                  maxLength={150}
+                  required
+                />
               </div>
-              <div className="profile-form-note">
-                <Icon name="check" />
-                <span>Su correo y NIT deben ser únicos dentro del sistema.</span>
-              </div>
-            </section>
+              <AvisoError error={editarPerfil.error} />
+            </form>
+          ) : cambiandoContrasena ? (
+            <CambiarContrasenaForm
+              onListo={() => {
+                setCambiandoContrasena(false)
+                setSaved('Su contraseña se actualizó correctamente.')
+              }}
+            />
           ) : (
             <>
               <section>
@@ -121,8 +213,15 @@ export function ProfilePage() {
                   title="Información personal"
                   subtitle="Datos de identificación y contacto"
                 />
-                <DataGrid items={[...PROFILE_DATA, ['Dirección', 'Zona 10, Ciudad de Guatemala']]} />
+                <DataGrid
+                  items={[
+                    ['Nombre completo', usuario.nombreCompleto],
+                    ['Correo electrónico', usuario.correo],
+                  ]}
+                />
               </section>
+              {/* Todo usuario tiene perfil comercial, sea cual sea su rol. */}
+              <PerfilComercial onGuardado={setSaved} />
               <section>
                 <SectionHeading
                   icon="settings"
@@ -131,10 +230,10 @@ export function ProfilePage() {
                 />
                 <DataGrid
                   items={[
-                    ['Rol asignado', role ?? '—'],
+                    ['Rol asignado', ETIQUETAS_ROL[usuario.rol]],
                     ['Sucursal', branchLabel],
-                    ['Último acceso', 'Hoy, 08:42'],
-                    ['Miembro desde', '12 de marzo de 2024'],
+                    ['Estado', usuario.activo ? 'Activa' : 'Inactiva'],
+                    ['Miembro desde', formatFechaLarga(usuario.creadoEn)],
                   ]}
                 />
                 <div className="account-readonly-note">
@@ -145,18 +244,6 @@ export function ProfilePage() {
                   </p>
                 </div>
               </section>
-              <div className="profile-security">
-                <span>
-                  <Icon name="check" />
-                </span>
-                <div>
-                  <strong>Cuenta protegida</strong>
-                  <p>Su sesión utiliza acceso seguro y registro de actividad.</p>
-                </div>
-                <small>
-                  <Icon name="clock" size={13} /> Hoy, 08:42
-                </small>
-              </div>
             </>
           )}
         </div>
@@ -172,39 +259,44 @@ export function ProfilePage() {
             </p>
           </div>
           <ul>
-            {ACCOUNT_SIDEBAR_POINTS.map((point) => (
-              <li key={point}>
-                <Icon name="check" size={14} /> {point}
-              </li>
-            ))}
+            <li>
+              <Icon name="check" size={14} /> {usuario.activo ? 'Cuenta activa' : 'Cuenta inactiva'}
+            </li>
+            <li>
+              <Icon name="check" size={14} />{' '}
+              {usuario.activacionPendiente ? 'Activación pendiente' : 'Contraseña definida'}
+            </li>
           </ul>
           <div className="profile-side-role">
             <small>Nivel de acceso</small>
-            <strong>{role}</strong>
-            <span>{roleHint}</span>
+            <strong>{ETIQUETAS_ROL[usuario.rol]}</strong>
+            <span>{PISTAS_ROL[usuario.rol]}</span>
           </div>
         </aside>
       </div>
       <div className="profile-page-actions">
         {editing ? (
           <>
-            <Button variant="ghost" onClick={() => setEditing(false)}>
+            <Button variant="ghost" onClick={() => setEditing(false)} disabled={editarPerfil.cargando}>
               Cancelar
             </Button>
-            <Button
-              icon="check"
-              onClick={() => {
-                setEditing(false)
-                setSaved(true)
-              }}
-            >
-              Guardar cambios
+            <Button type="submit" form="perfil-form" icon="check" disabled={editarPerfil.cargando}>
+              {editarPerfil.cargando ? 'Guardando...' : 'Guardar cambios'}
             </Button>
           </>
-        ) : (
-          <Button icon="user" onClick={() => setEditing(true)}>
-            Editar perfil
+        ) : cambiandoContrasena ? (
+          <Button variant="ghost" onClick={() => setCambiandoContrasena(false)}>
+            Cancelar
           </Button>
+        ) : (
+          <>
+            <Button variant="secondary" icon="settings" onClick={() => setCambiandoContrasena(true)}>
+              Cambiar contraseña
+            </Button>
+            <Button icon="user" onClick={empezarEdicion}>
+              Editar perfil
+            </Button>
+          </>
         )}
       </div>
     </section>

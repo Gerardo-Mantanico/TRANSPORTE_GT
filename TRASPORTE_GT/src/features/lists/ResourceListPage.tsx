@@ -8,7 +8,6 @@ import {
   ROUTES,
   TODAY,
   TODAY_TRIPS,
-  USERS,
   WORKSHOP_EXPENSES,
 } from '../../data/mock'
 import type { ResourceConfig, ResourceFilterDef, TableRow } from '../../types'
@@ -382,110 +381,6 @@ function buildResourceConfig(
           </RowActions>,
         ]),
       }
-    case 'sucursales':
-      return {
-        eyebrow: 'Administración',
-        title: 'Sucursales',
-        description: 'Gestione las sedes y sus administradores enlazados.',
-        action: 'Nueva sucursal',
-        filters: [],
-        headers: ['Sucursal', 'Administrador', 'Buses', 'Choferes', 'Estado', 'Acciones'],
-        rows: BRANCHES.map((branch) => [
-          <CellStack title={branch.name} note={branch.location} />,
-          branch.admin,
-          String(branch.buses),
-          String(branch.drivers),
-          <Badge tone="success">Activa</Badge>,
-          <RowActions>
-            <Button
-              variant="ghost"
-              onClick={() =>
-                actions.edit('sucursales', {
-                  name: branch.name,
-                  location: branch.location,
-                  admin: branch.admin,
-                })
-              }
-            >
-              Editar
-            </Button>
-            <Button variant="ghost" onClick={() => actions.flow('AS-02-N')}>
-              Desactivar
-            </Button>
-          </RowActions>,
-        ]),
-      }
-    case 'usuarios': {
-      const roleFilter = pick('role', 'Todos los roles')
-      const statusFilter = pick('status', 'Todos')
-      const users = USERS.filter(
-        (user) =>
-          (roleFilter === 'Todos los roles' || user.role === roleFilter) &&
-          (statusFilter === 'Todos' ||
-            (statusFilter === 'Activos' && user.active) ||
-            (statusFilter === 'Inactivos' && !user.active)),
-      )
-      return {
-        eyebrow: 'Administración',
-        title: 'Usuarios',
-        description: 'Administre accesos, roles y sucursales enlazadas.',
-        action: 'Nuevo usuario',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'role',
-            label: 'Rol',
-            options: ['Todos los roles', 'Administrador del sistema', 'Administrador de sucursal'],
-          },
-          { key: 'status', label: 'Estado', options: ['Todos', 'Activos', 'Inactivos'] },
-        ],
-        headers: ['Usuario', 'Rol', 'Sucursal', 'Último acceso', 'Estado', 'Acciones'],
-        rows: users.map((user) => [
-          <div className="person">
-            <Avatar name={user.name} small />
-            <span>
-              <strong>{user.name}</strong>
-              <small className="cell-note">{user.email}</small>
-            </span>
-          </div>,
-          user.role,
-          user.branch,
-          user.lastAccess,
-          <Badge tone={user.active ? 'success' : 'neutral'}>
-            {user.active ? 'Activo' : 'Inactivo'}
-          </Badge>,
-          USERS[0].email === user.email ? (
-            <span className="guard-label">Admin protegido</span>
-          ) : (
-            <RowActions>
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  actions.edit('usuarios', {
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    branch: user.branch,
-                  })
-                }
-              >
-                Editar
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  actions.flow(
-                    user.role === 'Administrador del sistema' && user.active ? 'AS-05' : 'GEN-DEACT',
-                  )
-                }
-              >
-                Desactivar
-              </Button>
-            </RowActions>
-          ),
-        ]),
-      }
-    }
     default:
       throw new Error(`Recurso desconocido: ${type}`)
   }
@@ -498,7 +393,6 @@ const FILTER_DEFAULTS: Record<string, Record<string, string>> = {
   rutas: { destination: 'Todos los destinos' },
   alquileres: { state: 'Todos los estados' },
   taller: { bus: 'Todos los buses' },
-  usuarios: { role: 'Todos los roles', status: 'Todos' },
 }
 
 interface ResourceListPageProps {

@@ -5,9 +5,10 @@ import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote } from '../../components/ui/Misc'
+import { useCartera, usePerfilCliente } from '../../hooks/customerWallet'
+import { puedeOperarEnLinea } from '../../utils/perfilCliente'
+import { AvisoPerfilCliente } from '../customerWallet/AvisoPerfilCliente'
 import { formatQ } from '../../utils/format'
-
-const WALLET_BALANCE = 6100
 
 export function RentalRequestPage() {
   const [origin, setOrigin] = useState('')
@@ -16,10 +17,13 @@ export function RentalRequestPage() {
   const [tripType, setTripType] = useState('Solo ida')
   const [estimate, setEstimate] = useState<number | null>(null)
   const [paid, setPaid] = useState(false)
+  const cartera = useCartera()
+  const perfil = usePerfilCliente()
+  const saldo = cartera.datos ? Number(cartera.datos.saldo) : null
 
   const passengerCount = Math.max(Number(passengers) || 0, 0)
-  const canPay = estimate !== null && estimate <= WALLET_BALANCE
-  const remaining = estimate !== null ? WALLET_BALANCE - estimate : WALLET_BALANCE
+  const canPay = estimate !== null && saldo !== null && estimate <= saldo && puedeOperarEnLinea(perfil.datos)
+  const remaining = saldo !== null && estimate !== null ? saldo - estimate : (saldo ?? 0)
 
   const calculate = () => {
     const base = 1800
@@ -86,7 +90,7 @@ export function RentalRequestPage() {
               <div className="payment-balance">
                 <div>
                   <span>Saldo actual</span>
-                  <strong>{formatQ(WALLET_BALANCE)}</strong>
+                  <strong>{saldo !== null ? formatQ(saldo) : cartera.cargando ? '...' : '—'}</strong>
                 </div>
                 <Icon name="arrow" />
                 <div>
@@ -95,7 +99,11 @@ export function RentalRequestPage() {
                 </div>
               </div>
               <Field label="Fecha de pago" type="date" defaultValue={TODAY} required />
-              {!canPay && (
+              {saldo === null && !cartera.cargando && (
+                <p className="estimate-warn">No pudimos consultar su saldo. Intente de nuevo más tarde.</p>
+              )}
+              <AvisoPerfilCliente cliente={perfil.datos} accion="alquilar buses" />
+              {saldo !== null && estimate !== null && estimate > saldo && (
                 <p className="estimate-warn">
                   Su saldo no cubre el monto estimado. Recargue su cartera antes de pagar.
                 </p>
