@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { errorMessage } from '../../api/client'
+import { actualizarPerfil, obtenerYo } from '../../api/identity'
+import { actualizarClienteYo, obtenerClienteYo } from '../../api/wallet'
+import type { ClienteResponse, UsuarioResponse } from '../../api/types'
 import { useAuth } from '../../app/providers/useAuth'
+import { initialsOf } from '../../app/providers/roles'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
-
-const PROFILE_DATA: [string, string][] = [
-  ['Nombre completo', 'Ana Sofía Martínez López'],
-  ['Correo electrónico', 'ana.martinez@cnb.gt'],
-  ['Teléfono', '+502 5555 0184'],
-  ['DPI', '2456 78120 0101'],
-  ['NIT', '548921-2'],
-]
+import { useToast } from '../../components/ui/useToast'
+import { formatDateEs } from '../../utils/format'
+import { isValidPhone, maxLen, required } from '../../utils/validators'
 
 const ACCOUNT_SIDEBAR_POINTS = ['Identidad verificada', 'Correo confirmado', 'Información completa']
 
@@ -43,9 +43,61 @@ function DataGrid({ items }: { items: [string, string][] }) {
 }
 
 export function ProfilePage() {
-  const { role } = useAuth()
+  const { role, user, login, token } = useAuth()
   const [editing, setEditing] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [perfil, setPerfil] = useState<UsuarioResponse | null>(null)
+  const [cliente, setCliente] = useState<ClienteResponse | null>(null)
+  const [form, setForm] = useState({
+    nombreCompleto: '',
+    telefono: '',
+    dpi: '',
+    nit: '',
+    direccion: '',
+  })
+  const toast = useToast()
+
+  const fail = (message: string) => {
+    setError(message)
+    toast.error(message)
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const yo = await obtenerYo()
+        if (cancelled) return
+        setPerfil(yo)
+        setForm((prev) => ({
+          ...prev,
+          nombreCompleto: yo.nombreCompleto,
+        }))
+        const clienteData = await obtenerClienteYo()
+        if (!cancelled && clienteData) {
+          setCliente(clienteData)
+          setForm((prev) => ({
+            ...prev,
+            telefono: clienteData.telefono ?? '',
+            dpi: clienteData.dpi ?? '',
+            nit: clienteData.nit ?? '',
+            direccion: clienteData.direccion ?? '',
+          }))
+        }
+      } catch (caught) {
+        if (cancelled) return
+        const message = errorMessage(caught)
+        setError(message)
+        toast.error(message)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [toast])
 
   useEffect(() => {
     if (!saved) return
@@ -54,26 +106,90 @@ export function ProfilePage() {
   }, [saved])
 
   const branchLabel =
-    role === 'Administrador del sistema' ? 'Acceso global' : role === 'Cliente' ? 'No aplica' : 'Guatemala Centro'
+    role === 'Administrador del sistema'
+      ? 'Acceso global'
+      : role === 'Cliente'
+        ? 'No aplica'
+        : perfil?.nombreSucursal ?? '—'
 
   const roleHint =
     role === 'Administrador del sistema'
       ? 'Acceso a todas las sucursales'
       : role === 'Cliente'
         ? 'Compras y alquileres en línea'
-        : 'Gestión de Guatemala Centro'
+        : `Gestión de ${perfil?.nombreSucursal ?? 'su sucursal'}`
+
+  const displayName = perfil?.nombreCompleto ?? user?.nombreCompleto ?? 'Usuario'
+  const initials = initialsOf(displayName)
+
+  const handleSave = async (event: FormEvent) => {
+    event.preventDefault()
+    setError(null)
+
+    const nameError = required(form.nombreCompleto, 'El nombre completo')
+    if (nameError) {
+      fail(nameError)
+      return
+    }
+    const nameLen = maxLen(form.nombreCompleto, 150, 'El nombre completo')
+    if (nameLen) {
+      fail(nameLen)
+      return
+    }
+    if (form.telefono && !isValidPhone(form.telefono)) {
+      fail('El teléfono solo puede contener dígitos, espacios, "+" y "-" (máx. 20 caracteres).')
+      return
+    }
+    if (form.dpi && !/^\d{1,13}$/.test(form.dpi.trim())) {
+      fail('El DPI debe contener solo dígitos (máximo 13).')
+      return
+    }
+    if (form.nit && !/^[0-9kK-]{1,15}$/.test(form.nit.trim())) {
+      fail('El NIT solo puede contener dígitos, "K", "-" (máximo 15 caracteres).')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const updated = await actualizarPerfil(form.nombreCompleto)
+      setPerfil(updated)
+      if (role === 'Cliente' && (form.nit || form.dpi || form.telefono || form.direccion)) {
+        const clienteActualizado = await actualizarClienteYo({
+          nit: form.nit || null,
+          dpi: form.dpi || null,
+          telefono: form.telefono || null,
+          direccion: form.direccion || null,
+        })
+        setCliente(clienteActualizado)
+      }
+      if (token && user) {
+        login({
+          token,
+          expiraEn: new Date().toISOString(),
+          usuario: { ...user, nombreCompleto: updated.nombreCompleto },
+        })
+      }
+      setEditing(false)
+      setSaved(true)
+      toast.success('Perfil actualizado correctamente.')
+    } catch (caught) {
+      fail(errorMessage(caught))
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <section className="surface profile-page">
       <div className="profile-cover">
         <div className="profile-avatar">
-          AM
+          {initials}
           <span>
             <Icon name="check" size={13} />
           </span>
         </div>
         <div>
-          <h3>Ana Martínez</h3>
+          <h3>{displayName}</h3>
           <p>{role}</p>
           <Badge tone="success">Cuenta activa</Badge>
         </div>
@@ -91,28 +207,51 @@ export function ProfilePage() {
               </div>
             </div>
           )}
+          {error && <p className="danger-copy">{error}</p>}
           {editing ? (
-            <section className="profile-edit-form">
+            <form className="profile-edit-form" onSubmit={handleSave}>
               <SectionHeading
                 icon="user"
                 title="Datos editables"
                 subtitle="Los campos marcados son obligatorios para su perfil."
               />
               <div className="form-grid two">
-                <Field label="Nombre completo" defaultValue="Ana Sofía Martínez López" required />
-                <Field label="Correo electrónico" type="email" defaultValue="ana.martinez@cnb.gt" required />
-                <Field label="Teléfono" type="tel" defaultValue="+502 5555 0184" required />
-                <Field label="DPI" defaultValue="2456 78120 0101" required />
-                <Field label="NIT" defaultValue="548921-2" required />
+                <Field
+                  label="Nombre completo"
+                  value={form.nombreCompleto}
+                  onChange={(event) => setForm((prev) => ({ ...prev, nombreCompleto: event.target.value }))}
+                  required
+                />
+                <Field label="Correo electrónico" type="email" defaultValue={perfil?.correo ?? ''} disabled />
+                <Field
+                  label="Teléfono"
+                  type="tel"
+                  value={form.telefono}
+                  onChange={(event) => setForm((prev) => ({ ...prev, telefono: event.target.value }))}
+                />
+                <Field
+                  label="DPI"
+                  value={form.dpi}
+                  onChange={(event) => setForm((prev) => ({ ...prev, dpi: event.target.value }))}
+                />
+                <Field
+                  label="NIT"
+                  value={form.nit}
+                  onChange={(event) => setForm((prev) => ({ ...prev, nit: event.target.value }))}
+                />
                 <div className="span-two">
-                  <Field label="Dirección" defaultValue="Zona 10, Ciudad de Guatemala" required />
+                  <Field
+                    label="Dirección"
+                    value={form.direccion}
+                    onChange={(event) => setForm((prev) => ({ ...prev, direccion: event.target.value }))}
+                  />
                 </div>
               </div>
               <div className="profile-form-note">
                 <Icon name="check" />
                 <span>Su correo y NIT deben ser únicos dentro del sistema.</span>
               </div>
-            </section>
+            </form>
           ) : (
             <>
               <section>
@@ -121,7 +260,16 @@ export function ProfilePage() {
                   title="Información personal"
                   subtitle="Datos de identificación y contacto"
                 />
-                <DataGrid items={[...PROFILE_DATA, ['Dirección', 'Zona 10, Ciudad de Guatemala']]} />
+                <DataGrid
+                  items={[
+                    ['Nombre completo', perfil?.nombreCompleto ?? '—'],
+                    ['Correo electrónico', perfil?.correo ?? '—'],
+                    ['Teléfono', cliente?.telefono ?? '—'],
+                    ['DPI', cliente?.dpi ?? '—'],
+                    ['NIT', cliente?.nit ?? '—'],
+                    ['Dirección', cliente?.direccion ?? '—'],
+                  ]}
+                />
               </section>
               <section>
                 <SectionHeading
@@ -133,8 +281,7 @@ export function ProfilePage() {
                   items={[
                     ['Rol asignado', role ?? '—'],
                     ['Sucursal', branchLabel],
-                    ['Último acceso', 'Hoy, 08:42'],
-                    ['Miembro desde', '12 de marzo de 2024'],
+                    ['Creado', perfil?.creadoEn ? formatDateEs(perfil.creadoEn.slice(0, 10)) : '—'],
                   ]}
                 />
                 <div className="account-readonly-note">
@@ -153,9 +300,6 @@ export function ProfilePage() {
                   <strong>Cuenta protegida</strong>
                   <p>Su sesión utiliza acceso seguro y registro de actividad.</p>
                 </div>
-                <small>
-                  <Icon name="clock" size={13} /> Hoy, 08:42
-                </small>
               </div>
             </>
           )}
@@ -191,14 +335,8 @@ export function ProfilePage() {
             <Button variant="ghost" onClick={() => setEditing(false)}>
               Cancelar
             </Button>
-            <Button
-              icon="check"
-              onClick={() => {
-                setEditing(false)
-                setSaved(true)
-              }}
-            >
-              Guardar cambios
+            <Button icon="check" onClick={handleSave} disabled={saving}>
+              {saving ? 'Guardando…' : 'Guardar cambios'}
             </Button>
           </>
         ) : (

@@ -8,6 +8,11 @@ interface FieldProps {
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
   required?: boolean
+  disabled?: boolean
+  min?: number | string
+  max?: number | string
+  step?: number | string
+  inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'
   action?: ReactNode
   children?: ReactNode
 }
@@ -20,6 +25,11 @@ export function Field({
   value,
   onChange,
   required = false,
+  disabled = false,
+  min,
+  max,
+  step,
+  inputMode,
   action,
   children,
 }: FieldProps) {
@@ -39,6 +49,11 @@ export function Field({
           defaultValue={defaultValue}
           value={value}
           onChange={onChange}
+          disabled={disabled}
+          min={min}
+          max={max}
+          step={step}
+          inputMode={inputMode}
         />
       )}
     </label>
