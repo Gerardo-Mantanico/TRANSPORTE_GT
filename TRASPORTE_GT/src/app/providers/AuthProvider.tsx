@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { esCancelacion } from '../../api/ApiError'
 import { alRecibirNoAutorizado } from '../../api/clienteHttp'
 import { borrarToken, escucharCambiosToken, guardarToken, leerToken, tokenVigente } from '../../api/sesion'
+import { olvidarFotos } from '../../services/fleet'
 import { login as iniciarSesion, obtenerYo } from '../../services/identity'
 import type { Rol, Usuario } from '../../types/identityTypes'
 import { AuthContext, type AuthContextValue, type EstadoSesion } from './auth.context'
@@ -18,6 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const cerrarSesionLocal = useCallback(() => {
     borrarToken()
+    // Las fotos privadas descargadas no deben quedar accesibles tras cerrar sesión
+    olvidarFotos()
     setUsuario(null)
     setEstado('anonimo')
   }, [])

@@ -71,6 +71,13 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
       ],
     },
     {
+      label: 'Flota',
+      items: [
+        { id: 'buses', label: 'Buses', icon: 'bus' },
+        { id: 'choferes', label: 'Choferes', icon: 'users' },
+      ],
+    },
+    {
       label: 'Inteligencia',
       items: [{ id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
     },

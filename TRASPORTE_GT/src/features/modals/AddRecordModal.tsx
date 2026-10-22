@@ -19,8 +19,6 @@ const TITLES: Record<string, string> = {
   taller: 'Registrar gasto de taller',
   alquileres: 'Registrar solicitud de alquiler',
   categorias: 'Nueva categoría',
-  buses: 'Registrar bus',
-  choferes: 'Registrar chofer',
   rutas: 'Nueva ruta',
 }
 
@@ -29,8 +27,6 @@ const EDIT_TITLES: Record<string, string> = {
   taller: 'Editar gasto de taller',
   alquileres: 'Editar alquiler',
   categorias: 'Editar categoría',
-  buses: 'Editar bus',
-  choferes: 'Editar chofer',
   rutas: 'Editar ruta',
 }
 
@@ -42,17 +38,7 @@ function resolveTitle(page: string, edit: boolean) {
 function resolveNote(page: string) {
   if (page === 'viajes') return 'El tipo de viaje no podrá modificarse después de guardar.'
   if (page === 'taller') return 'La categoría es obligatoria en todas las líneas del gasto.'
-  if (page === 'buses' || page === 'choferes')
-    return 'La foto se adjuntará al registro y estará disponible en el perfil del recurso.'
   return 'Los cambios quedarán registrados en el historial de la plataforma.'
-}
-
-function PhotoField({ label }: { label: string }) {
-  return (
-    <Field label={label}>
-      <input className="file-input" type="file" accept="image/*" />
-    </Field>
-  )
 }
 
 interface ExpenseLine {
@@ -187,8 +173,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
   const record = initial ?? {}
   const isTrips = page === 'viajes'
   const isWorkshop = page === 'taller'
-  const isBuses = page === 'buses'
-  const isDrivers = page === 'choferes'
   const isRoutes = page === 'rutas'
   const isCategories = page === 'categorias'
   const isRentals = page === 'alquileres'
@@ -251,114 +235,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
             </div>
           )}
           {isWorkshop && <WorkshopForm />}
-          {isBuses && (
-            <div className="form-grid two">
-              <PhotoField label="Foto del bus" />
-              <Field
-                label="Placa"
-                placeholder="P-000ABC"
-                defaultValue={typeof record.plate === 'string' ? record.plate : undefined}
-                required
-              />
-              <Field
-                label="Marca"
-                placeholder="Mercedes-Benz"
-                defaultValue={typeof record.brand === 'string' ? record.brand : undefined}
-                required
-              />
-              <Field
-                label="Modelo"
-                placeholder="Marcopolo"
-                defaultValue={typeof record.model === 'string' ? record.model : undefined}
-                required
-              />
-              <Field
-                label="Año de fabricación"
-                type="number"
-                placeholder="2022"
-                defaultValue={typeof record.year === 'number' ? record.year : undefined}
-                required
-              />
-              <Field
-                label="Capacidad de pasajeros"
-                type="number"
-                placeholder="45"
-                defaultValue={typeof record.capacity === 'number' ? record.capacity : undefined}
-                required
-              />
-              <SelectField
-                label="Estado operativo"
-                options={['Operativo', 'En taller', 'Inactivo']}
-                defaultValue={typeof record.state === 'string' ? record.state : undefined}
-                required
-              />
-              <Field
-                label="Kilometraje actual (km)"
-                type="number"
-                placeholder="0"
-                defaultValue={
-                  typeof record.mileage === 'string' ? record.mileage.replace(/[^\d]/g, '') : undefined
-                }
-                required
-              />
-              <SelectField
-                label="Sucursal"
-                options={BRANCH_NAMES}
-                defaultValue={typeof record.branch === 'string' ? record.branch : undefined}
-                required
-              />
-            </div>
-          )}
-          {isDrivers && (
-            <div className="form-grid two">
-              <PhotoField label="Foto del chofer" />
-              <Field
-                label="Nombre completo"
-                placeholder="Nombre y apellido"
-                defaultValue={typeof record.name === 'string' ? record.name : undefined}
-                required
-              />
-              <Field
-                label="Número de licencia"
-                placeholder="A-000000"
-                defaultValue={typeof record.license === 'string' ? record.license : undefined}
-                required
-              />
-              <SelectField
-                label="Tipo de licencia"
-                options={['A1', 'A2', 'B1', 'B2']}
-                defaultValue={typeof record.licenseType === 'string' ? record.licenseType : undefined}
-                required
-              />
-              <Field
-                label="Fecha de vencimiento"
-                type="date"
-                defaultValue={typeof record.expiry === 'string' ? record.expiry : TODAY}
-                required
-              />
-              <Field
-                label="Teléfono"
-                placeholder="5555-0000"
-                defaultValue={typeof record.phone === 'string' ? record.phone : undefined}
-                required
-              />
-              <Field
-                label="Salario base por viaje (Q)"
-                type="number"
-                placeholder="520"
-                defaultValue={
-                  typeof record.salary === 'string' ? record.salary.replace(/[^\d.]/g, '') : undefined
-                }
-                required
-              />
-              <SelectField
-                label="Sucursal"
-                options={BRANCH_NAMES}
-                defaultValue={typeof record.branch === 'string' ? record.branch : undefined}
-                required
-              />
-            </div>
-          )}
           {isRoutes && (
             <div className="form-grid two">
               <SelectField
@@ -450,8 +326,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
           )}
           {!isTrips &&
             !isWorkshop &&
-            !isBuses &&
-            !isDrivers &&
             !isRoutes &&
             !isCategories &&
             !isRentals && (

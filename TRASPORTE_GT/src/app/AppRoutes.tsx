@@ -13,6 +13,8 @@ import { SucursalesPage } from '../features/identity/SucursalesPage'
 import { UsuariosPage } from '../features/identity/UsuariosPage'
 import { TicketSalesPage } from '../features/sales/TicketSalesPage'
 import { ComprasSucursalPage } from '../features/tickets/ComprasSucursalPage'
+import { BusesPage } from '../features/fleet/BusesPage'
+import { ChoferesPage } from '../features/fleet/ChoferesPage'
 import { ReportsPage } from '../features/reports/ReportsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
@@ -28,8 +30,6 @@ const ADMINISTRADORES: Rol[] = ['ADMIN_SISTEMA', 'ADMIN_SUCURSAL']
 
 const LIST_PAGES: { page: string; roles: Rol[] }[] = [
   { page: 'viajes', roles: ['ADMIN_SUCURSAL', 'CAJERO', 'CHOFER'] },
-  { page: 'buses', roles: SUCURSAL },
-  { page: 'choferes', roles: SUCURSAL },
   { page: 'rutas', roles: SUCURSAL },
   { page: 'alquileres', roles: SUCURSAL },
   { page: 'taller', roles: SUCURSAL },
@@ -62,6 +62,9 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
           <Route path="resumen" element={<DashboardPage />} />
           <Route path="usuarios" element={<UsuariosPage />} />
+          {/* ADMIN_SUCURSAL gestiona su flota; ADMIN_SISTEMA la consulta (solo lectura) */}
+          <Route path="buses" element={<BusesPage />} />
+          <Route path="choferes" element={<ChoferesPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={['ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="venta" element={<TicketSalesPage />} />

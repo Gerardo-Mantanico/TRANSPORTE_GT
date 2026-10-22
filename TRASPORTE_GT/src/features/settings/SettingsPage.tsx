@@ -5,7 +5,9 @@ import { AvisoError } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote, SectionTitle } from '../../components/ui/Misc'
+import { useRepublicarEventosFlota } from '../../hooks/fleet'
 import { useRepublicarEventos } from '../../hooks/identity'
+import type { RepublicacionFlotaResponse } from '../../types/fleetTypes'
 import type { RepublicacionResponse } from '../../types/identityTypes'
 
 const PERMANENT_RULES = [
@@ -20,6 +22,15 @@ export function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const republicar = useRepublicarEventos()
   const [republicados, setRepublicados] = useState<RepublicacionResponse | null>(null)
+
+  const republicarFlota = useRepublicarEventosFlota()
+  const [republicadosFlota, setRepublicadosFlota] = useState<RepublicacionFlotaResponse | null>(null)
+
+  const handleRepublicarFlota = async () => {
+    setRepublicadosFlota(null)
+    const resultado = await republicarFlota.ejecutar()
+    if (resultado.ok) setRepublicadosFlota(resultado.datos)
+  }
 
   const handleRepublicar = async () => {
     setRepublicados(null)
@@ -79,6 +90,28 @@ export function SettingsPage() {
               <Icon name="check" />
               <span>
                 Se encolaron {republicados.sucursales} eventos de sucursales y {republicados.usuarios} de usuarios.
+              </span>
+            </div>
+          )}
+        </section>
+        <section className="surface form-card">
+          <SectionTitle
+            title="Sincronizar Flota"
+            subtitle="Republica los buses y choferes actuales hacia Viajes, Reportes y Notificaciones"
+          />
+          <InfoNote>
+            Publica BusRegistrado y ChoferRegistrado de todo lo existente. Es idempotente: los consumidores
+            ignoran las versiones que ya aplicaron.
+          </InfoNote>
+          <Button variant="secondary" onClick={handleRepublicarFlota} disabled={republicarFlota.cargando}>
+            {republicarFlota.cargando ? 'Republicando...' : 'Republicar eventos de Flota'}
+          </Button>
+          <AvisoError error={republicarFlota.error} />
+          {republicadosFlota && (
+            <div className="success-note">
+              <Icon name="check" />
+              <span>
+                Se encolaron {republicadosFlota.buses} eventos de buses y {republicadosFlota.choferes} de choferes.
               </span>
             </div>
           )}

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   BUSES,
   BRANCHES,
-  DRIVERS,
   EXPENSE_CATEGORIES,
   RENTALS,
   ROUTES,
@@ -11,14 +10,12 @@ import {
   WORKSHOP_EXPENSES,
 } from '../../data/mock'
 import type { ResourceConfig, ResourceFilterDef, TableRow } from '../../types'
-import { Avatar } from '../../components/ui/Misc'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { DataTable } from '../../components/ui/DataTable'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
 import { Icon } from '../../components/ui/Icon'
 import { cellText } from '../../utils/cellText'
-import { formatDateEs } from '../../utils/format'
 import { AddRecordModal } from '../modals/AddRecordModal'
 import { FlowBar, FlowModal } from '../modals/flows'
 
@@ -101,138 +98,6 @@ function buildResourceConfig(
               onClick={() => actions.flow(trip.state === 'Programado' ? 'VJ-06' : 'VJ-06-G')}
             >
               Eliminar
-            </Button>
-          </RowActions>,
-        ]),
-      }
-    }
-    case 'buses': {
-      const stateFilter = pick('state', 'Todos los estados')
-      const buses = BUSES.filter(
-        (bus) => stateFilter === 'Todos los estados' || bus.state === stateFilter,
-      )
-      return {
-        eyebrow: 'Flota',
-        title: 'Buses',
-        description: 'Gestione el inventario y estado operativo de su flota.',
-        action: 'Registrar bus',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'state',
-            label: 'Estado operativo',
-            options: ['Todos los estados', 'Operativo', 'En taller', 'Inactivo'],
-          },
-        ],
-        headers: [
-          'Bus',
-          'Capacidad',
-          'Kilometraje',
-          'Chofer actual',
-          'Sucursal',
-          'Total viajes',
-          'Estado',
-          'Acciones',
-        ],
-        rows: buses.map((bus) => [
-          <CellStack title={bus.plate} note={`${bus.brand} ${bus.model} · ${bus.year}`} />,
-          `${bus.capacity} pas.`,
-          bus.mileage,
-          bus.driver,
-          bus.branch,
-          String(bus.trips),
-          <Badge tone={bus.state === 'Operativo' ? 'success' : 'warning'}>{bus.state}</Badge>,
-          <RowActions>
-            <Button
-              variant="ghost"
-              onClick={() =>
-                actions.edit('buses', {
-                  plate: bus.plate,
-                  brand: bus.brand,
-                  model: bus.model,
-                  year: bus.year,
-                  capacity: bus.capacity,
-                  state: bus.state,
-                  mileage: bus.mileage,
-                  branch: bus.branch,
-                })
-              }
-            >
-              Editar
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => actions.flow(bus.activeTrips > 0 ? 'G2' : 'GEN-DEACT')}
-            >
-              Desactivar
-            </Button>
-          </RowActions>,
-        ]),
-      }
-    }
-    case 'choferes': {
-      const stateFilter = pick('license', 'Todas las licencias')
-      const drivers = DRIVERS.filter(
-        (driver) => stateFilter === 'Todas las licencias' || driver.expiryState === stateFilter,
-      )
-      return {
-        eyebrow: 'Flota',
-        title: 'Choferes',
-        description: 'Controle licencias, disponibilidad y asignaciones.',
-        action: 'Registrar chofer',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'license',
-            label: 'Estado de licencia',
-            options: ['Todas las licencias', 'Vigente', 'Vence en 15 días', 'Vence en 3 días'],
-          },
-        ],
-        headers: [
-          'Chofer',
-          'Licencia',
-          'Vencimiento',
-          'Teléfono',
-          'Salario base',
-          'Viajes',
-          'Estado',
-          'Acciones',
-        ],
-        rows: drivers.map((driver) => [
-          <div className="person">
-            <Avatar name={driver.name} small />
-            <strong>{driver.name}</strong>
-          </div>,
-          <CellStack title={driver.license} note={`Tipo ${driver.licenseType}`} />,
-          <div className="cell-stack">
-            <strong>{formatDateEs(driver.expiry)}</strong>
-            <small className="cell-note">
-              <Badge tone={driver.tone}>{driver.expiryState}</Badge>
-            </small>
-          </div>,
-          driver.phone,
-          driver.salary,
-          String(driver.trips),
-          <Badge tone="success">Activo</Badge>,
-          <RowActions>
-            <Button
-              variant="ghost"
-              onClick={() =>
-                actions.edit('choferes', {
-                  name: driver.name,
-                  license: driver.license,
-                  licenseType: driver.licenseType,
-                  expiry: driver.expiry,
-                  phone: driver.phone,
-                  salary: driver.salary,
-                  branch: driver.branch,
-                })
-              }
-            >
-              Editar
-            </Button>
-            <Button variant="ghost" onClick={() => actions.flow('FS-05-N')}>
-              Avisos
             </Button>
           </RowActions>,
         ]),
@@ -388,8 +253,6 @@ function buildResourceConfig(
 
 const FILTER_DEFAULTS: Record<string, Record<string, string>> = {
   viajes: { state: 'Todos los estados', type: 'Todos los tipos' },
-  buses: { state: 'Todos los estados' },
-  choferes: { license: 'Todas las licencias' },
   rutas: { destination: 'Todos los destinos' },
   alquileres: { state: 'Todos los estados' },
   taller: { bus: 'Todos los buses' },
