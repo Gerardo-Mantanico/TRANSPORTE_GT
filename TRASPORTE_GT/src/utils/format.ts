@@ -51,3 +51,26 @@ export function hoyIso(): string {
   const dia = String(ahora.getDate()).padStart(2, '0')
   return `${ahora.getFullYear()}-${mes}-${dia}`
 }
+
+const ZONA_GUATEMALA = 'America/Guatemala'
+
+/** Hora de Guatemala de una fecha ISO: "07:30". */
+export function formatHora(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const fecha = new Date(iso)
+  if (Number.isNaN(fecha.getTime())) return iso
+  return fecha.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: ZONA_GUATEMALA })
+}
+
+/** Fecha corta de Guatemala: "25 oct 2026". */
+export function formatFechaCorta(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const fecha = new Date(iso)
+  if (Number.isNaN(fecha.getTime())) return iso
+  return fecha.toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric', timeZone: ZONA_GUATEMALA })
+}
+
+/** "25 oct 2026 · 07:30" en hora de Guatemala. */
+export function formatFechaHora(iso: string | null | undefined): string {
+  return iso ? `${formatFechaCorta(iso)} · ${formatHora(iso)}` : '—'
+}
