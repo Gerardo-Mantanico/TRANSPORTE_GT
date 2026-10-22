@@ -5464,3 +5464,23 @@ tbody tr:hover {
 .list-surface .form-error {
   margin: 12px 18px;
 }
+
+/* Fotos privadas de Flota (se descargan con token y se muestran como object URL) */
+.avatar.foto-privada {
+  object-fit: cover;
+  display: block;
+  padding: 0;
+}
+.avatar.foto-grande {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+}
+.campo-foto {
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+.campo-foto > div {
+  flex: 1;
+}

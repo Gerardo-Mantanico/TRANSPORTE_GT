@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_TICKETS_API_URL: string
   /** URL base del microservicio de Viajes (vía API Gateway). */
   readonly VITE_TRIPS_API_URL: string
+  /** URL base del microservicio de Flota (vía API Gateway). */
+  readonly VITE_FLEET_API_URL: string
 }
 
 interface ImportMeta {
