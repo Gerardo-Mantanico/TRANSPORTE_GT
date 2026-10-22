@@ -12,6 +12,7 @@ import { ResourceListPage } from '../features/lists/ResourceListPage'
 import { SucursalesPage } from '../features/identity/SucursalesPage'
 import { UsuariosPage } from '../features/identity/UsuariosPage'
 import { TicketSalesPage } from '../features/sales/TicketSalesPage'
+import { ComprasSucursalPage } from '../features/tickets/ComprasSucursalPage'
 import { ReportsPage } from '../features/reports/ReportsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
@@ -64,6 +65,7 @@ export function AppRoutes() {
         </Route>
         <Route element={<ProtectedRoute roles={['ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="venta" element={<TicketSalesPage />} />
+          <Route path="boletos-vendidos" element={<ComprasSucursalPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={SUCURSAL} />}>
           <Route path="reportes" element={<ReportsPage />} />

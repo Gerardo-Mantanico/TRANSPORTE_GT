@@ -6,8 +6,15 @@ import { Avatar } from '../../components/ui/Misc'
 import { useBuscarClientePorNit } from '../../hooks/customerWallet'
 import type { ClienteBusqueda } from '../../types/customerWalletTypes'
 
+interface BuscarClienteNitProps {
+  onEncontrado?: (cliente: ClienteBusqueda | null) => void
+  /** El NIT escrito: la venta se enlaza a él aunque el cliente aún no tenga cuenta. */
+  onNitChange?: (nit: string) => void
+  deshabilitado?: boolean
+}
+
 /** Busca el cliente por NIT para enlazar una venta de mostrador (CAJERO y ADMIN_SUCURSAL). */
-export function BuscarClienteNit({ onEncontrado }: { onEncontrado?: (cliente: ClienteBusqueda | null) => void }) {
+export function BuscarClienteNit({ onEncontrado, onNitChange, deshabilitado = false }: BuscarClienteNitProps) {
   const { ejecutar, cargando, error, reiniciar } = useBuscarClientePorNit()
   const [nit, setNit] = useState('')
   const [cliente, setCliente] = useState<ClienteBusqueda | null>(null)
@@ -15,7 +22,7 @@ export function BuscarClienteNit({ onEncontrado }: { onEncontrado?: (cliente: Cl
 
   const buscar = async () => {
     const valor = nit.trim()
-    if (!valor || generico || cargando) return
+    if (!valor || generico || cargando || deshabilitado) return
     const resultado = await ejecutar(valor)
     const encontrado = resultado.ok ? resultado.datos : null
     setCliente(encontrado)
@@ -27,7 +34,7 @@ export function BuscarClienteNit({ onEncontrado }: { onEncontrado?: (cliente: Cl
       <Field
         label="NIT del cliente"
         action={
-          <button type="button" className="text-button" onClick={buscar} disabled={cargando || !nit.trim() || generico}>
+          <button type="button" className="text-button" onClick={buscar} disabled={cargando || !nit.trim() || generico || deshabilitado}>
             {cargando ? 'Buscando...' : 'Buscar'}
           </button>
         }
@@ -35,8 +42,10 @@ export function BuscarClienteNit({ onEncontrado }: { onEncontrado?: (cliente: Cl
         <input
           placeholder="CF / 1234567-8"
           value={nit}
+          disabled={deshabilitado}
           onChange={(event) => {
             setNit(event.target.value)
+            onNitChange?.(event.target.value)
             setCliente(null)
             reiniciar()
             onEncontrado?.(null)
@@ -65,7 +74,7 @@ export function BuscarClienteNit({ onEncontrado }: { onEncontrado?: (cliente: Cl
         <div className="empty-inline">
           <div>
             <strong>No hay cliente con ese NIT</strong>
-            <p>Puede continuar con el cliente genérico del mostrador.</p>
+            <p>La venta quedará enlazada a este NIT y aparecerá en su historial si crea una cuenta.</p>
           </div>
         </div>
       ) : (

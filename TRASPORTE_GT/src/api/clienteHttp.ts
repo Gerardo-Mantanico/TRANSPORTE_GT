@@ -51,6 +51,10 @@ export const clienteIdentidad = crearClienteHttp(import.meta.env.VITE_API_URL)
 
 export const clienteClientes = crearClienteHttp(import.meta.env.VITE_CUSTOMERS_API_URL)
 
+export const clienteBoletos = crearClienteHttp(import.meta.env.VITE_TICKETS_API_URL)
+
+export const clienteViajes = crearClienteHttp(import.meta.env.VITE_TRIPS_API_URL)
+
 /**
  * Ejecuta la petición y devuelve el cuerpo; las respuestas sin cuerpo (202/204) dan `undefined`.
  * Por omisión usa el cliente de Identidad.
