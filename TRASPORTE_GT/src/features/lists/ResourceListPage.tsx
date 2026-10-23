@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   BUSES,
   EXPENSE_CATEGORIES,
-  RENTALS,
   WORKSHOP_EXPENSES,
 } from '../../data/mock'
 import type { ResourceConfig, ResourceFilterDef, TableRow } from '../../types'
@@ -41,35 +40,6 @@ function buildResourceConfig(
   const pick = (key: string, fallback: string) => filters[key] ?? fallback
 
   switch (type) {
-    case 'alquileres': {
-      const stateFilter = pick('state', 'Todos los estados')
-      const rentals = RENTALS.filter(
-        (rental) => stateFilter === 'Todos los estados' || rental.state === stateFilter,
-      )
-      return {
-        eyebrow: 'Operación',
-        title: 'Alquileres privados',
-        description: 'Cotice, asigne y dé seguimiento a solicitudes privadas.',
-        action: 'Nueva solicitud',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'state',
-            label: 'Estado',
-            options: ['Todos los estados', 'Pendiente', 'Confirmado', 'Pagado'],
-          },
-        ],
-        headers: ['Cliente / Trayecto', 'Fecha', 'Pasajeros', 'Precio', 'Asignación', 'Estado'],
-        rows: rentals.map((rental) => [
-          <CellStack title={rental.client} note={rental.route} />,
-          rental.date,
-          String(rental.passengers),
-          <strong>{rental.price}</strong>,
-          rental.assignment,
-          <Badge tone={rental.tone}>{rental.state}</Badge>,
-        ]),
-      }
-    }
     case 'taller': {
       const busFilter = pick('bus', 'Todos los buses')
       const expenses = WORKSHOP_EXPENSES.filter(
@@ -139,7 +109,6 @@ function buildResourceConfig(
 }
 
 const FILTER_DEFAULTS: Record<string, Record<string, string>> = {
-  alquileres: { state: 'Todos los estados' },
   taller: { bus: 'Todos los buses' },
 }
 

@@ -1,129 +1,117 @@
 import { useState } from 'react'
-import { TODAY } from '../../data/mock'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { Field } from '../../components/ui/Field'
+import { AvisoError } from '../../components/ui/Estado'
 import { Icon } from '../../components/ui/Icon'
-import { InfoNote } from '../../components/ui/Misc'
-import { useCartera, usePerfilCliente } from '../../hooks/customerWallet'
+import { InfoNote, SectionTitle } from '../../components/ui/Misc'
+import { usePerfilCliente } from '../../hooks/customerWallet'
+import { useSucursales } from '../../hooks/identity'
+import { useSolicitarAlquiler, useTarifaVigente } from '../../hooks/rentals'
+import type { Alquiler } from '../../types/rentalTypes'
+import { formatFechaHora, formatQ } from '../../utils/format'
 import { puedeOperarEnLinea } from '../../utils/perfilCliente'
+import {
+  aSolicitudRequest,
+  diasAlquiler,
+  distanciaEstimada,
+  formularioInicial,
+  precioPrevio,
+  validarFormulario,
+  type FormularioSolicitud,
+} from '../../utils/solicitudAlquiler'
 import { AvisoPerfilCliente } from '../customerWallet/AvisoPerfilCliente'
-import { formatQ } from '../../utils/format'
+import { CamposSolicitud } from '../rentals/CamposSolicitud'
+import { MisAlquileres } from '../rentals/MisAlquileres'
 
 export function RentalRequestPage() {
-  const [origin, setOrigin] = useState('')
-  const [destination, setDestination] = useState('')
-  const [passengers, setPassengers] = useState('12')
-  const [tripType, setTripType] = useState('Solo ida')
-  const [estimate, setEstimate] = useState<number | null>(null)
-  const [paid, setPaid] = useState(false)
-  const cartera = useCartera()
+  const sucursales = useSucursales({ activa: true, size: 100, sort: 'nombre,asc' })
   const perfil = usePerfilCliente()
-  const saldo = cartera.datos ? Number(cartera.datos.saldo) : null
+  const tarifa = useTarifaVigente()
+  const solicitar = useSolicitarAlquiler()
+  const [formulario, setFormulario] = useState<FormularioSolicitud>(() => formularioInicial())
+  const [aviso, setAviso] = useState<string | null>(null)
+  const [creado, setCreado] = useState<Alquiler | null>(null)
+  // Cambia al registrar una solicitud para que "Mis alquileres" se vuelva a montar con la nueva
+  const [envios, setEnvios] = useState(0)
 
-  const passengerCount = Math.max(Number(passengers) || 0, 0)
-  const canPay = estimate !== null && saldo !== null && estimate <= saldo && puedeOperarEnLinea(perfil.datos)
-  const remaining = saldo !== null && estimate !== null ? saldo - estimate : (saldo ?? 0)
+  const previo = precioPrevio(formulario, tarifa.datos)
+  const distancia = distanciaEstimada(formulario)
+  const habilitado = puedeOperarEnLinea(perfil.datos)
 
-  const calculate = () => {
-    const base = 1800
-    const perPassenger = 95
-    const roundTrip = tripType === 'Ida y vuelta' ? 1.6 : 1
-    setEstimate(Math.round(base * roundTrip + passengerCount * perPassenger))
-    setPaid(false)
+  const cambiar = (cambios: Partial<FormularioSolicitud>) => {
+    setFormulario((actual) => ({ ...actual, ...cambios }))
+    setCreado(null)
+  }
+
+  const enviar = async () => {
+    const problema = validarFormulario(formulario)
+    setAviso(problema)
+    if (problema) return
+    const resultado = await solicitar.ejecutar(aSolicitudRequest(formulario))
+    if (resultado.ok) {
+      setCreado(resultado.datos)
+      setFormulario(formularioInicial(formulario.idSucursalOrigen))
+      setEnvios((valor) => valor + 1)
+    }
   }
 
   return (
     <>
       <div className="form-page">
-        <section className="surface form-card">
+        <form
+          className="surface form-card"
+          onSubmit={(event) => {
+            event.preventDefault()
+            if (!solicitar.cargando) void enviar()
+          }}
+        >
           <h2>Detalles del viaje</h2>
-          <div className="form-grid two">
-            <Field
-              label="Origen"
-              placeholder="Ciudad o dirección"
-              value={origin}
-              onChange={(event) => setOrigin(event.target.value)}
-              required
-            />
-            <Field
-              label="Destino"
-              placeholder="Ciudad o dirección"
-              value={destination}
-              onChange={(event) => setDestination(event.target.value)}
-              required
-            />
-            <Field label="Fecha de salida" type="date" defaultValue={TODAY} required />
-            <Field label="Fecha de retorno" type="date" defaultValue={TODAY} />
-            <Field
-              label="Número de pasajeros"
-              type="number"
-              value={passengers}
-              onChange={(event) => setPassengers(event.target.value)}
-              required
-            />
-            <Field label="Tipo de viaje" required>
-              <select value={tripType} onChange={(event) => setTripType(event.target.value)}>
-                <option>Solo ida</option>
-                <option>Ida y vuelta</option>
-              </select>
-            </Field>
-          </div>
+          <CamposSolicitud
+            formulario={formulario}
+            onCambiar={cambiar}
+            sucursales={sucursales.datos?.contenido ?? []}
+            deshabilitado={solicitar.cargando}
+          />
+          <AvisoPerfilCliente cliente={perfil.datos} accion="alquilar buses" />
           <InfoNote>
-            El administrador confirmará o podrá modificar el precio estimado antes del pago. Una vez
-            confirmado, pague con su cartera digital para que el alquiler quede efectuado.
+            El administrador de la sucursal confirmará o ajustará el precio estimado. Cuando esté cotizado, páguelo con su
+            cartera desde "Mis alquileres" para que quede confirmado.
           </InfoNote>
-          <Button icon="chart" onClick={calculate}>
-            Calcular estimación
+          {aviso && <p className="estimate-warn">{aviso}</p>}
+          <AvisoError error={solicitar.error} />
+          <Button type="submit" icon="route" disabled={solicitar.cargando || !habilitado}>
+            {solicitar.cargando ? 'Enviando...' : 'Solicitar alquiler'}
           </Button>
-        </section>
+        </form>
         <aside className="estimate-card">
           <span className="eyebrow light">Estimación</span>
-          <h3>Precio estimado</h3>
-          <strong>{estimate !== null ? formatQ(estimate) : '—'}</strong>
-          <Badge tone={paid ? 'success' : 'warning'}>
-            {paid ? 'Pagado con cartera' : 'Pendiente de confirmación'}
-          </Badge>
-          <p>Este monto considera la distancia, capacidad y disponibilidad estimada.</p>
-          {estimate !== null && !paid && (
-            <div className="estimate-pay">
-              <div className="payment-balance">
-                <div>
-                  <span>Saldo actual</span>
-                  <strong>{saldo !== null ? formatQ(saldo) : cartera.cargando ? '...' : '—'}</strong>
-                </div>
-                <Icon name="arrow" />
-                <div>
-                  <span>Saldo restante</span>
-                  <strong>{formatQ(Math.max(remaining, 0))}</strong>
-                </div>
-              </div>
-              <Field label="Fecha de pago" type="date" defaultValue={TODAY} required />
-              {saldo === null && !cartera.cargando && (
-                <p className="estimate-warn">No pudimos consultar su saldo. Intente de nuevo más tarde.</p>
-              )}
-              <AvisoPerfilCliente cliente={perfil.datos} accion="alquilar buses" />
-              {saldo !== null && estimate !== null && estimate > saldo && (
-                <p className="estimate-warn">
-                  Su saldo no cubre el monto estimado. Recargue su cartera antes de pagar.
-                </p>
-              )}
-              <Button icon="wallet" disabled={!canPay} onClick={() => setPaid(true)}>
-                Pagar con cartera · {formatQ(estimate)}
-              </Button>
-            </div>
-          )}
-          {paid && (
+          <h3>{creado ? 'Precio estimado' : 'Precio aproximado'}</h3>
+          <strong>{creado ? formatQ(creado.precioEstimado) : previo !== null ? formatQ(previo) : '—'}</strong>
+          <Badge tone={creado ? 'warning' : 'neutral'}>{creado ? 'Pendiente de cotización' : 'Sin enviar'}</Badge>
+          {creado ? (
             <div className="success-note">
               <Icon name="check" />
               <span>
-                Alquiler efectuado. El administrador de la sucursal asignará bus y chofer, y
-                recibirá la confirmación en su correo.
+                Solicitud enviada: {creado.origen} → {creado.destino}, {formatFechaHora(creado.fechaHoraSalida)}. Le
+                avisaremos por correo cuando la sucursal la cotice.
               </span>
             </div>
+          ) : tarifa.datos ? (
+            <p>
+              {distancia !== null ? `${distancia.toLocaleString('es-GT')} km` : 'Distancia por definir'} ×{' '}
+              {formatQ(tarifa.datos.precioPorKm)}/km{formulario.idaYVuelta ? ' × 2 (ida y vuelta)' : ''} +{' '}
+              {diasAlquiler(formulario)} día(s) × {formatQ(tarifa.datos.precioPorDia)}. El precio exacto lo calcula el
+              sistema al enviar.
+            </p>
+          ) : (
+            <p>{tarifa.error ? tarifa.error.message : 'Cargando la tarifa vigente...'}</p>
           )}
         </aside>
       </div>
+      <section className="surface list-surface">
+        <SectionTitle title="Mis alquileres" subtitle="Pague aquí los alquileres ya cotizados" />
+        <MisAlquileres key={envios} />
+      </section>
     </>
   )
 }

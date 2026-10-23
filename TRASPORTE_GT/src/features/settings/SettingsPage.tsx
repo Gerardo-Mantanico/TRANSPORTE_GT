@@ -11,6 +11,7 @@ import { useRepublicarEventosViajes } from '../../hooks/trips'
 import type { RepublicacionFlotaResponse } from '../../types/fleetTypes'
 import type { RepublicacionResponse } from '../../types/identityTypes'
 import type { RepublicacionViajesResponse } from '../../types/tripTypes'
+import { TarifasCard } from '../rentals/TarifasCard'
 
 const PERMANENT_RULES = [
   'Los usuarios no se eliminan; solo se desactivan.',
@@ -148,6 +149,7 @@ export function SettingsPage() {
             </div>
           )}
         </section>
+        <TarifasCard />
         <section className="surface rules-card">
           <h2>Reglas permanentes</h2>
           {PERMANENT_RULES.map((rule) => (

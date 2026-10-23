@@ -17,6 +17,7 @@ import { BusesPage } from '../features/fleet/BusesPage'
 import { ChoferesPage } from '../features/fleet/ChoferesPage'
 import { RutasPage } from '../features/trips/RutasPage'
 import { ViajesPage } from '../features/trips/ViajesPage'
+import { AlquileresPage } from '../features/rentals/AlquileresPage'
 import { ReportsPage } from '../features/reports/ReportsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
@@ -31,7 +32,6 @@ const SUCURSAL: Rol[] = ['ADMIN_SUCURSAL']
 const ADMINISTRADORES: Rol[] = ['ADMIN_SISTEMA', 'ADMIN_SUCURSAL']
 
 const LIST_PAGES: { page: string; roles: Rol[] }[] = [
-  { page: 'alquileres', roles: SUCURSAL },
   { page: 'taller', roles: SUCURSAL },
   { page: 'categorias', roles: SUCURSAL },
 ]
@@ -72,6 +72,10 @@ export function AppRoutes() {
         </Route>
         <Route element={<ProtectedRoute roles={SUCURSAL} />}>
           <Route path="rutas" element={<RutasPage />} />
+        </Route>
+        {/* SUC cotiza y asigna; SUC y CAJ registran y cobran en mostrador; SIS consulta todas las sucursales */}
+        <Route element={<ProtectedRoute roles={['ADMIN_SISTEMA', 'ADMIN_SUCURSAL', 'CAJERO']} />}>
+          <Route path="alquileres" element={<AlquileresPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={['ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="venta" element={<TicketSalesPage />} />

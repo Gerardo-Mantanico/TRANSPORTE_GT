@@ -13,13 +13,11 @@ import { formatQ } from '../../utils/format'
 
 const TITLES: Record<string, string> = {
   taller: 'Registrar gasto de taller',
-  alquileres: 'Registrar solicitud de alquiler',
   categorias: 'Nueva categoría',
 }
 
 const EDIT_TITLES: Record<string, string> = {
   taller: 'Editar gasto de taller',
-  alquileres: 'Editar alquiler',
   categorias: 'Editar categoría',
 }
 
@@ -165,7 +163,6 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
   const record = initial ?? {}
   const isWorkshop = page === 'taller'
   const isCategories = page === 'categorias'
-  const isRentals = page === 'alquileres'
 
   return (
     <div className="modal-layer">
@@ -198,48 +195,8 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
               />
             </div>
           )}
-          {isRentals && (
-            <div className="form-grid two">
-              <Field
-                label="Cliente"
-                placeholder="Nombre o empresa"
-                defaultValue={typeof record.client === 'string' ? record.client : undefined}
-                required
-              />
-              <Field
-                label="Sucursal de origen"
-                placeholder="Ej. Guatemala Centro"
-                defaultValue={typeof record.origin === 'string' ? record.origin : undefined}
-                required
-              />
-              <Field
-                label="Destino"
-                placeholder="Ej. Monterrico"
-                defaultValue={typeof record.destination === 'string' ? record.destination : undefined}
-                required
-              />
-              <Field label="Fecha de salida" type="date" defaultValue={TODAY} required />
-              <Field
-                label="Número de pasajeros"
-                type="number"
-                placeholder="32"
-                defaultValue={typeof record.passengers === 'number' ? record.passengers : undefined}
-                required
-              />
-              <Field
-                label="Precio estimado (Q)"
-                type="number"
-                placeholder="3850.00"
-                defaultValue={
-                  typeof record.price === 'string' ? record.price.replace(/[^\d.]/g, '') : undefined
-                }
-                required
-              />
-            </div>
-          )}
           {!isWorkshop &&
-            !isCategories &&
-            !isRentals && (
+            !isCategories && (
               <div className="form-grid">
                 <Field label="Nombre o referencia" placeholder="Ingrese la información" required />
                 <Field label="Fecha de registro" type="date" defaultValue={TODAY} required />

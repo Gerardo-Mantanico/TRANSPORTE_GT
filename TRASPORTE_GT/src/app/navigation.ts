@@ -76,6 +76,7 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
         { id: 'buses', label: 'Buses', icon: 'bus' },
         { id: 'choferes', label: 'Choferes', icon: 'users' },
         { id: 'viajes', label: 'Viajes', icon: 'route' },
+        { id: 'alquileres', label: 'Alquileres', icon: 'calendar' },
       ],
     },
     {
@@ -91,6 +92,7 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
         { id: 'venta', label: 'Venta de boletos', icon: 'ticket' },
         { id: 'boletos-vendidos', label: 'Boletos vendidos', icon: 'ticket' },
         { id: 'viajes', label: 'Viajes', icon: 'route' },
+        { id: 'alquileres', label: 'Alquileres', icon: 'calendar' },
       ],
     },
     MI_CUENTA,
