@@ -1,12 +1,8 @@
 import { useMemo, useState } from 'react'
 import {
   BUSES,
-  BRANCHES,
   EXPENSE_CATEGORIES,
   RENTALS,
-  ROUTES,
-  TODAY,
-  TODAY_TRIPS,
   WORKSHOP_EXPENSES,
 } from '../../data/mock'
 import type { ResourceConfig, ResourceFilterDef, TableRow } from '../../types'
@@ -45,115 +41,6 @@ function buildResourceConfig(
   const pick = (key: string, fallback: string) => filters[key] ?? fallback
 
   switch (type) {
-    case 'viajes': {
-      const stateFilter = pick('state', 'Todos los estados')
-      const typeFilter = pick('type', 'Todos los tipos')
-      const trips = TODAY_TRIPS.filter(
-        (trip) =>
-          (stateFilter === 'Todos los estados' || trip.state === stateFilter) &&
-          (typeFilter === 'Todos los tipos' || trip.type === typeFilter),
-      )
-      return {
-        eyebrow: 'Operación',
-        title: 'Viajes',
-        description: 'Programe y dé seguimiento a cada salida de la sucursal.',
-        action: 'Programar viaje',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'state',
-            label: 'Estado',
-            options: ['Todos los estados', 'Programado', 'En tránsito', 'Completado'],
-          },
-          { key: 'type', label: 'Tipo', options: ['Todos los tipos', 'Regular', 'Alquiler privado'] },
-        ],
-        headers: ['Ruta', 'Tipo', 'Salida', 'Bus / Chofer', 'Estado', 'Acciones'],
-        rows: trips.map((trip) => [
-          <strong>{trip.route}</strong>,
-          trip.type,
-          `${TODAY} · ${trip.time}`,
-          <CellStack title={trip.bus} note={trip.driver} />,
-          <Badge tone={trip.tone}>{trip.state}</Badge>,
-          <RowActions>
-            <Button
-              variant="ghost"
-              onClick={() =>
-                actions.flow(
-                  trip.state === 'En tránsito'
-                    ? 'VJ-05'
-                    : trip.state === 'Programado'
-                      ? 'VJ-04'
-                      : 'VJ-03',
-                )
-              }
-            >
-              {trip.state === 'En tránsito'
-                ? 'Registrar llegada'
-                : trip.state === 'Programado'
-                  ? 'Registrar salida'
-                  : 'Ver detalle'}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => actions.flow(trip.state === 'Programado' ? 'VJ-06' : 'VJ-06-G')}
-            >
-              Eliminar
-            </Button>
-          </RowActions>,
-        ]),
-      }
-    }
-    case 'rutas': {
-      const destinationFilter = pick('destination', 'Todos los destinos')
-      const routes = ROUTES.filter(
-        (route) => destinationFilter === 'Todos los destinos' || route.destination === destinationFilter,
-      )
-      return {
-        eyebrow: 'Flota',
-        title: 'Rutas',
-        description: 'Defina rutas, distancias y precios desde su sucursal.',
-        action: 'Nueva ruta',
-        filters: [],
-        filterDefs: [
-          {
-            key: 'destination',
-            label: 'Destino',
-            options: ['Todos los destinos', ...BRANCHES.map((branch) => branch.name)],
-          },
-        ],
-        headers: ['Ruta', 'Distancia', 'Precio', 'Viajes asociados', 'Estado', 'Acciones'],
-        rows: routes.map((route) => [
-          <strong>
-            {route.origin} <span className="route-arrow">→</span> {route.destination}
-          </strong>,
-          route.distance,
-          route.price,
-          String(route.trips),
-          <Badge tone="success">Activa</Badge>,
-          <RowActions>
-            <Button
-              variant="ghost"
-              onClick={() =>
-                actions.edit('rutas', {
-                  origin: route.origin,
-                  destination: route.destination,
-                  distance: route.distance,
-                  price: route.price,
-                })
-              }
-            >
-              Editar
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => actions.flow(route.trips > 0 ? 'G3' : 'GEN-DEACT')}
-            >
-              Eliminar
-            </Button>
-          </RowActions>,
-        ]),
-      }
-    }
     case 'alquileres': {
       const stateFilter = pick('state', 'Todos los estados')
       const rentals = RENTALS.filter(
@@ -252,8 +139,6 @@ function buildResourceConfig(
 }
 
 const FILTER_DEFAULTS: Record<string, Record<string, string>> = {
-  viajes: { state: 'Todos los estados', type: 'Todos los tipos' },
-  rutas: { destination: 'Todos los destinos' },
   alquileres: { state: 'Todos los estados' },
   taller: { bus: 'Todos los buses' },
 }
