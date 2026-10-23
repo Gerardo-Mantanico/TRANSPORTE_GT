@@ -1,51 +1,101 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RECENT_ACTIVITY, REVENUE_CHART, TODAY_TRIPS } from '../../data/mock'
+import { errorMessage } from '../../api/client'
+import { listarBuses } from '../../api/fleet'
+import { listarViajes } from '../../api/trips'
+import type { BusResponse, ViajeResponse } from '../../api/types'
+import { RECENT_ACTIVITY, REVENUE_CHART } from '../../data/mock'
 import type { IconName } from '../../types'
 import { Badge } from '../../components/ui/Badge'
 import { DataTable } from '../../components/ui/DataTable'
 import { Icon } from '../../components/ui/Icon'
 import { KpiCard } from '../../components/ui/KpiCard'
+import { useToast } from '../../components/ui/useToast'
+import { estadoViajeLabel, estadoViajeTone, fechaHoraCorta, horaDe } from '../lists/mappers'
 
 export function DashboardPage() {
   const navigate = useNavigate()
+  const [buses, setBuses] = useState<BusResponse[]>([])
+  const [viajes, setViajes] = useState<ViajeResponse[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const toast = useToast()
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const [busesPagina, viajesData] = await Promise.all([
+          listarBuses({ size: 100 }),
+          listarViajes().catch(() => [] as ViajeResponse[]),
+        ])
+        if (cancelled) return
+        setBuses(busesPagina.contenido)
+        setViajes(viajesData)
+      } catch (caught) {
+        if (cancelled) return
+        const message = errorMessage(caught)
+        setError(message)
+        toast.error(message)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [toast])
+
+  const hoy = new Date().toISOString().slice(0, 10)
+  const viajesHoy = viajes.filter((viaje) => viaje.fechaHoraSalida.slice(0, 10) === hoy)
+  const programados = viajesHoy.filter(
+    (viaje) => viaje.estado === 'PROGRAMADO' || viaje.estado === 'PENDIENTE_ASIGNACION',
+  ).length
+  const completados = viajesHoy.filter((viaje) => viaje.estado === 'FINALIZADO').length
+  const operativos = buses.filter((bus) => bus.activo && bus.estadoOperativo !== 'EN_TALLER').length
+  const enTaller = buses.filter((bus) => bus.estadoOperativo === 'EN_TALLER').length
+  const totalBuses = buses.length
+  const porcentaje = totalBuses > 0 ? Math.round((operativos / totalBuses) * 100) : 0
 
   return (
     <>
+      {error && (
+        <div className="info-note danger-copy" style={{ marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
       <section className="kpi-grid">
         <KpiCard
           label="Ingresos este mes"
-          value="Q 128,450"
-          delta="+12.4%"
+          value="—"
+          delta="Reportes pendientes"
           icon="chart"
           tone="mint"
-          hint="vs. Q 114,270 en mayo"
+          hint="ReportingService sin API"
         />
         <KpiCard
           label="Viajes de hoy"
-          value="24"
-          delta="8 pendientes"
+          value={String(viajesHoy.length)}
+          delta={`${programados} pendientes`}
           icon="route"
           tone="blue"
           deltaTone="warning"
-          hint="16 completados · 8 por salir"
+          hint={`${completados} completados`}
         />
         <KpiCard
           label="Flota operativa"
-          value="18 / 21"
-          delta="86%"
+          value={`${operativos} / ${totalBuses}`}
+          delta={`${porcentaje}%`}
           icon="bus"
           tone="amber"
-          progress={86}
-          hint="3 buses en taller"
+          progress={porcentaje}
+          hint={`${enTaller} buses en taller`}
         />
         <KpiCard
           label="Gastos este mes"
-          value="Q 36,280"
-          delta="-3.8%"
+          value="—"
+          delta="Reportes pendientes"
           icon="wallet"
           tone="violet"
-          deltaTone="success"
-          hint="vs. Q 37,712 en mayo"
+          hint="ReportingService sin API"
         />
       </section>
       <section className="dashboard-grid">
@@ -53,7 +103,7 @@ export function DashboardPage() {
           <div className="section-title">
             <div>
               <h2>Ingresos y gastos</h2>
-              <p>Comportamiento de los últimos 6 meses</p>
+              <p>Comportamiento de los últimos 6 meses (demostración)</p>
             </div>
             <select defaultValue="Últimos 6 meses">
               <option>Últimos 6 meses</option>
@@ -105,7 +155,7 @@ export function DashboardPage() {
         <div className="section-title">
           <div>
             <h2>Próximos viajes</h2>
-            <p>Salidas programadas para hoy</p>
+            <p>Salidas registradas en TripService</p>
           </div>
           <button className="text-button" onClick={() => navigate('/viajes')}>
             Ver todos <Icon name="arrow" size={15} />
@@ -113,13 +163,15 @@ export function DashboardPage() {
         </div>
         <DataTable
           headers={['Ruta', 'Salida', 'Bus', 'Chofer', 'Estado', '']}
-          rows={TODAY_TRIPS.map((trip) => [
-            <strong>{trip.route}</strong>,
-            trip.time,
-            trip.bus,
-            trip.driver,
-            <Badge tone={trip.tone}>{trip.state}</Badge>,
-            <button className="icon-button" aria-label="Más acciones">
+          rows={viajes.slice(0, 8).map((trip) => [
+            <strong>
+              {trip.nombreOrigen} <span className="route-arrow">→</span> {trip.nombreDestino}
+            </strong>,
+            fechaHoraCorta(trip.fechaHoraSalida),
+            trip.bus?.placa ?? '—',
+            trip.chofer?.nombreCompleto ?? '—',
+            <Badge tone={estadoViajeTone(trip.estado)}>{estadoViajeLabel(trip.estado)}</Badge>,
+            <button className="icon-button" aria-label="Más acciones" title={horaDe(trip.fechaHoraSalida)}>
               <Icon name="more" />
             </button>,
           ])}

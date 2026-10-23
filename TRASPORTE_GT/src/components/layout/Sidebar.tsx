@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { NAV_BY_ROLE } from '../../app/navigation'
+import { initialsOf } from '../../app/providers/roles'
 import { useAuth } from '../../app/providers/useAuth'
-import { ETIQUETAS_ROL } from '../../types/identityTypes'
-import { iniciales } from '../../utils/format'
 import { Icon } from '../ui/Icon'
 import { Logo } from '../ui/Logo'
 
@@ -13,15 +12,17 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const { usuario, logout } = useAuth()
+  const { role, user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [accountOpen, setAccountOpen] = useState(false)
 
-  if (!usuario) return null
+  if (!role) return null
 
-  const groups = NAV_BY_ROLE[usuario.rol]
+  const groups = NAV_BY_ROLE[role] ?? []
   const currentPath = location.pathname
+  const userName = user?.nombreCompleto ?? 'Usuario'
+  const userInitials = initialsOf(userName)
 
   const handleLogout = () => {
     logout()
@@ -86,13 +87,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className={`user-card ${accountOpen ? 'active' : ''}`.trim()}
             onClick={() => setAccountOpen((value) => !value)}
           >
-            <span className="avatar">{iniciales(usuario.nombreCompleto)}</span>
+            <span className="avatar">{userInitials}</span>
             <span>
-              <strong>{usuario.nombreCompleto}</strong>
-              <small>
-                {ETIQUETAS_ROL[usuario.rol]}
-                {usuario.nombreSucursal ? ` · ${usuario.nombreSucursal}` : ''}
-              </small>
+              <strong>{userName}</strong>
+              <small>{role}</small>
             </span>
             <Icon name="more" />
           </button>

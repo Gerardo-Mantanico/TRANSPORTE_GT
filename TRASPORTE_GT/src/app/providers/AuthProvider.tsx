@@ -1,98 +1,50 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { esCancelacion } from '../../api/ApiError'
-import { alRecibirNoAutorizado } from '../../api/clienteHttp'
-import { borrarToken, escucharCambiosToken, guardarToken, leerToken, tokenVigente } from '../../api/sesion'
-import { olvidarFotos } from '../../services/fleet'
-import { login as iniciarSesion, obtenerYo } from '../../services/identity'
-import type { Rol, Usuario } from '../../types/identityTypes'
-import { AuthContext, type AuthContextValue, type EstadoSesion } from './auth.context'
+import { useMemo, useState, type ReactNode } from 'react'
+import { clearSession, getSession, saveSession } from '../../api/client'
+import type { AuthContextValue, AuthUser } from './auth.context'
+import { AuthContext } from './auth.context'
+import { roleFromRolBackend } from './roles'
 
-function estadoInicial(): EstadoSesion {
-  if (tokenVigente(leerToken())) return 'cargando'
-  borrarToken()
-  return 'anonimo'
+function initialSession() {
+  const session = getSession()
+  if (!session) return { role: null, user: null, token: null }
+  return {
+    role: roleFromRolBackend(session.usuario.rol),
+    user: session.usuario,
+    token: session.token,
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [usuario, setUsuario] = useState<Usuario | null>(null)
-  const [estado, setEstado] = useState<EstadoSesion>(estadoInicial)
-
-  const cerrarSesionLocal = useCallback(() => {
-    borrarToken()
-    // Las fotos privadas descargadas no deben quedar accesibles tras cerrar sesión
-    olvidarFotos()
-    setUsuario(null)
-    setEstado('anonimo')
-  }, [])
-
-  const cargarUsuario = useCallback(
-    (signal?: AbortSignal) =>
-      obtenerYo(signal).then(
-        (yo) => {
-          setUsuario(yo)
-          setEstado('autenticado')
-        },
-        (error: unknown) => {
-          if (!esCancelacion(error)) cerrarSesionLocal()
-        },
-      ),
-    [cerrarSesionLocal],
-  )
-
-  // Restaura la sesión al recargar si el token guardado no ha expirado.
-  useEffect(() => {
-    if (!tokenVigente(leerToken())) return
-    const controlador = new AbortController()
-    void cargarUsuario(controlador.signal)
-    return () => controlador.abort()
-  }, [cargarUsuario])
-
-  // Un 401 en una petición con token cierra la sesión.
-  useEffect(() => alRecibirNoAutorizado(cerrarSesionLocal), [cerrarSesionLocal])
-
-  // Sincroniza el inicio y el cierre de sesión entre pestañas.
-  useEffect(
-    () =>
-      escucharCambiosToken((token) => {
-        if (tokenVigente(token)) void cargarUsuario()
-        else {
-          setUsuario(null)
-          setEstado('anonimo')
-        }
-      }),
-    [cargarUsuario],
-  )
-
-  const login = useCallback<AuthContextValue['login']>(
-    async (credenciales) => {
-      const respuesta = await iniciarSesion(credenciales)
-      guardarToken(respuesta.token)
-      try {
-        const yo = await obtenerYo()
-        setUsuario(yo)
-        setEstado('autenticado')
-        return yo
-      } catch (error) {
-        cerrarSesionLocal()
-        throw error
-      }
-    },
-    [cerrarSesionLocal],
-  )
-
-  const refrescarUsuario = useCallback(async () => {
-    const yo = await obtenerYo()
-    setUsuario(yo)
-  }, [])
-
-  const tieneRol = useCallback(
-    (...roles: Rol[]) => usuario !== null && roles.includes(usuario.rol),
-    [usuario],
-  )
+  const initial = initialSession()
+  const [role, setRole] = useState(initial.role)
+  const [user, setUser] = useState<AuthUser | null>(initial.user)
+  const [token, setToken] = useState<string | null>(initial.token)
 
   const value = useMemo<AuthContextValue>(
-    () => ({ usuario, estado, login, logout: cerrarSesionLocal, refrescarUsuario, tieneRol }),
-    [usuario, estado, login, cerrarSesionLocal, refrescarUsuario, tieneRol],
+    () => ({
+      role,
+      user,
+      token,
+      // Compatibilidad con el contrato antiguo
+      usuario: null,
+      estado: role ? 'autenticado' : 'anonimo',
+      refrescarUsuario: async () => undefined,
+      tieneRol: () => false,
+      login: (session) => {
+        saveSession(session)
+        setRole(roleFromRolBackend(session.usuario.rol))
+        setUser(session.usuario)
+        setToken(session.token)
+        return Promise.resolve(null as never)
+      },
+      logout: () => {
+        clearSession()
+        setRole(null)
+        setUser(null)
+        setToken(null)
+      },
+    }),
+    [role, user, token],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

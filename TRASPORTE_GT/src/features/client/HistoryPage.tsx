@@ -1,101 +1,45 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { errorMessage } from '../../api/client'
+import { listarMisAlquileres } from '../../api/rentals'
+import type { AlquilerResponse } from '../../api/types'
+import { TICKET_HISTORY } from '../../data/mock'
+import { estadoAlquilerLabel, estadoAlquilerTone, fechaCorta, fechaHoraCorta } from '../lists/mappers'
+import { Badge } from '../../components/ui/Badge'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
 import { Icon } from '../../components/ui/Icon'
-import { Paginacion } from '../../components/ui/Paginacion'
-import { useMisCompras } from '../../hooks/tickets'
-import { useResumenViajes } from '../../hooks/trips'
-import {
-  ESTADOS_COMPRA,
-  ETIQUETAS_CANAL,
-  ETIQUETAS_ESTADO_COMPRA,
-  type EstadoCompra,
-  type FiltroMisCompras,
-} from '../../types/ticketTypes'
-import { cellText } from '../../utils/cellText'
-import { formatFechaCorta, formatMonto } from '../../utils/format'
-import { MisAlquileres } from '../rentals/MisAlquileres'
-import { CeldaAsientos, CeldaViaje, EstadoCompraBadge } from '../tickets/CompraCeldas'
-
-const TAMANO_PAGINA = 10
-
-function BoletosComprados() {
-  const [filtro, setFiltro] = useState<FiltroMisCompras>({ pagina: 0, tamano: TAMANO_PAGINA })
-  const [texto, setTexto] = useState('')
-  const compras = useMisCompras(filtro)
-  const pagina = compras.datos
-  const ids = useMemo(() => (pagina?.contenido ?? []).map((compra) => compra.idViaje), [pagina])
-  const viajes = useResumenViajes(ids)
-
-  const todas = (pagina?.contenido ?? []).map((compra) => [
-    formatFechaCorta(compra.creadoEn),
-    <CeldaViaje compra={compra} viaje={viajes.porId.get(compra.idViaje)} cargando={viajes.cargando} />,
-    <CeldaAsientos compra={compra} />,
-    ETIQUETAS_CANAL[compra.canal],
-    formatMonto(compra.montoTotal),
-    <EstadoCompraBadge compra={compra} />,
-  ])
-  const busqueda = texto.trim().toLocaleLowerCase('es')
-  const rows = busqueda
-    ? todas.filter((row) => cellText(row).toLocaleLowerCase('es').includes(busqueda))
-    : todas
-
-  return (
-    <>
-      <FilterToolbar searchPlaceholder="Buscar en esta página del historial..." onSearch={setTexto}>
-        <label className="field">
-          <span className="field-label">
-            <span>Estado</span>
-          </span>
-          <select
-            value={filtro.estado ?? ''}
-            onChange={(event) =>
-              setFiltro((actual) => ({
-                ...actual,
-                pagina: 0,
-                estado: (event.target.value || undefined) as EstadoCompra | undefined,
-              }))
-            }
-          >
-            <option value="">Todas</option>
-            {ESTADOS_COMPRA.map((estado) => (
-              <option key={estado} value={estado}>
-                {ETIQUETAS_ESTADO_COMPRA[estado]}s
-              </option>
-            ))}
-          </select>
-        </label>
-      </FilterToolbar>
-      {compras.error ? (
-        <AvisoError error={compras.error} onReintentar={compras.recargar} />
-      ) : !pagina && compras.cargando ? (
-        <Cargando texto="Cargando sus boletos..." />
-      ) : rows.length ? (
-        <DataTable headers={['Fecha', 'Viaje', 'Asientos', 'Origen', 'Monto', 'Estado']} rows={rows} />
-      ) : (
-        <div className="filter-empty">
-          <span>
-            <Icon name="ticket" />
-          </span>
-          <strong>Sin boletos</strong>
-          <p>Sus compras en línea y en mostrador (con su NIT) aparecerán aquí.</p>
-        </div>
-      )}
-      <AvisoError error={viajes.error}>
-        <small>No pudimos cargar los datos de los viajes; se muestran las compras igualmente.</small>
-      </AvisoError>
-      <Paginacion
-        pagina={pagina}
-        deshabilitada={compras.cargando}
-        onCambiar={(numero) => setFiltro((actual) => ({ ...actual, pagina: numero }))}
-      />
-    </>
-  )
-}
+import { useToast } from '../../components/ui/useToast'
+import { formatQ } from '../../utils/format'
 
 export function HistoryPage() {
   const [tab, setTab] = useState(0)
+  const [alquileres, setAlquileres] = useState<AlquilerResponse[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const toast = useToast()
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      setLoading(true)
+      try {
+        const pagina = await listarMisAlquileres({ tamano: 50 })
+        if (!cancelled) setAlquileres(pagina.contenido)
+      } catch (caught) {
+        if (cancelled) return
+        const message = errorMessage(caught)
+        setError(message)
+        toast.error(message)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [toast])
 
   return (
     <>
@@ -108,10 +52,51 @@ export function HistoryPage() {
         </button>
       </div>
       <section className="surface list-surface">
+        <FilterToolbar />
+        {error && <p className="danger-copy">{error}</p>}
         {tab === 0 ? (
-          <BoletosComprados />
+          <>
+            <div className="info-note" style={{ margin: '0 0 1rem' }}>
+              La venta de boletos aún no tiene API en el backend (TicketService pendiente); se
+              muestra el historial de demostración.
+            </div>
+            <DataTable
+              headers={['Fecha', 'Viaje', 'Asientos', 'Origen', 'Monto', 'Estado']}
+              rows={TICKET_HISTORY.map((ticket) => [
+                ticket.date,
+                <>
+                  <strong>{ticket.trip}</strong>
+                  <small className="cell-note">{ticket.tripNote}</small>
+                </>,
+                <span className="chip">{ticket.seats}</span>,
+                ticket.channel,
+                ticket.amount,
+                <Badge tone="success">{ticket.state}</Badge>,
+              ])}
+            />
+          </>
+        ) : loading ? (
+          <div className="filter-empty">
+            <strong>Cargando historial…</strong>
+          </div>
         ) : (
-          <MisAlquileres />
+          <DataTable
+            headers={['Solicitud', 'Trayecto', 'Fechas', 'Pasajeros', 'Monto', 'Estado']}
+            rows={alquileres.map((rental) => [
+              fechaCorta(rental.creadoEn),
+              <strong>
+                {rental.origen} <span className="route-arrow">→</span> {rental.destino}
+              </strong>,
+              rental.idaYVuelta
+                ? `${fechaCorta(rental.fechaHoraSalida)} – ${fechaCorta(rental.fechaHoraRetorno)}`
+                : fechaHoraCorta(rental.fechaHoraSalida),
+              String(rental.numeroPasajeros),
+              formatQ(rental.precioFinal ?? rental.precioEstimado),
+              <Badge tone={estadoAlquilerTone(rental.estado)}>
+                {estadoAlquilerLabel(rental.estado)}
+              </Badge>,
+            ])}
+          />
         )}
         <div className="persistent-note">
           <Icon name="check" />
