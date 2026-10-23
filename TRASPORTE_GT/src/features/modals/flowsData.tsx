@@ -5,7 +5,6 @@ import { DataTable } from '../../components/ui/DataTable'
 import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { ImmutableCheck, InfoNote } from '../../components/ui/Misc'
-import { SelectField } from '../../components/ui/SelectField'
 
 export interface FlowDefinition {
   eyebrow: string
@@ -296,123 +295,6 @@ export const FLOW_DEFINITIONS: Record<string, FlowDefinition> = {
     ),
     action: 'Entendido',
   },
-  'AL-03': {
-    eyebrow: 'AL-03 · Cotización',
-    title: 'Confirmar o modificar precio',
-    body: (
-      <>
-        <div className="request-summary">
-          <span>Inversiones Maya</span>
-          <strong>Guatemala → Monterrico</strong>
-          <small>20–22 de junio · 32 pasajeros</small>
-        </div>
-        <Field label="Precio confirmado" defaultValue="Q 4,850.00" required />
-        <Field label="Nota de ajuste" placeholder="Motivo de la modificación (opcional)" />
-      </>
-    ),
-    action: 'Confirmar precio',
-    secondary: 'Rechazar solicitud',
-  },
-  'AL-04': {
-    eyebrow: 'AL-04 · Asignación',
-    title: 'Asignar bus y chofer',
-    body: (
-      <>
-        <div className="form-grid two">
-          <SelectField
-            label="Bus"
-            options={['P-541QTR · 46 pasajeros', 'P-728DBN · 50 pasajeros']}
-            required
-          />
-          <SelectField
-            label="Chofer"
-            options={['Andrea Reyes · Licencia vigente', 'Luis Ramírez · Licencia vigente']}
-            required
-          />
-        </div>
-        <InfoNote>
-          El chofer recibirá un <strong>15% adicional</strong> sobre su salario base por este viaje
-          privado.
-        </InfoNote>
-      </>
-    ),
-    action: 'Asignar',
-    secondary: 'Cancelar',
-  },
-  'AL-05': {
-    eyebrow: 'AL-05 · Cierre inmutable',
-    title: 'Finalizar alquiler',
-    body: (
-      <>
-        <div className="form-grid two">
-          <Field label="Kilometraje final" type="number" defaultValue={129120} required />
-          <Field label="Gasto en combustible" defaultValue="Q 1,240.00" required />
-          <Field label="Fecha de finalización" type="date" defaultValue={TODAY} required />
-          <Field label="Depreciación generada" defaultValue="Q 318.75" />
-        </div>
-        <ImmutableCheck label={IMMUTABLE_LABEL} />
-      </>
-    ),
-    action: 'Finalizar alquiler',
-    secondary: 'Cancelar',
-  },
-  'AL-06': {
-    eyebrow: 'AL-06 · Pago',
-    title: 'Pagar alquiler con cartera',
-    body: (
-      <>
-        <div className="payment-balance">
-          <div>
-            <span>Saldo actual</span>
-            <strong>Q 6,100.00</strong>
-          </div>
-          <Icon name="arrow" />
-          <div>
-            <span>Saldo restante</span>
-            <strong>Q 1,250.00</strong>
-          </div>
-        </div>
-        <Field label="Fecha de pago" type="date" defaultValue={TODAY} required />
-        <div className="calculation">
-          <span>Pago del alquiler</span>
-          <strong>Q 4,850.00</strong>
-        </div>
-      </>
-    ),
-    action: 'Pagar con cartera',
-    secondary: 'Cancelar',
-  },
-  'AL-07': {
-    eyebrow: 'AL-07 · Detalle',
-    title: 'Alquiler privado #1048',
-    body: renderDetailStack(
-      <>
-        <div className="detail-hero">
-          <div>
-            <Badge tone="success">Finalizado</Badge>
-            <h3>Guatemala → Monterrico</h3>
-            <p>Inversiones Maya · NIT 548921-2</p>
-          </div>
-          <strong>Q 4,850.00</strong>
-        </div>
-        {renderDetailGrid([
-          ['Pasajeros', '32'],
-          ['Bus', 'P-541QTR'],
-          ['Chofer', 'Andrea Reyes'],
-          ['Fechas', '20–22 jun'],
-        ])}
-        <div className="calculation">
-          <span>Salario del chofer</span>
-          <strong>Q 515.00 + 15% = Q 592.25</strong>
-        </div>
-        {renderImmutableRecord(
-          'Cierre inmutable',
-          '425 km · Combustible Q 1,240 · Depreciación Q 318.75',
-        )}
-      </>,
-    ),
-    action: 'Cerrar',
-  },
   'TR-02-D': {
     eyebrow: 'TR-02 · Detalle de gasto',
     title: 'Servicio preventivo · P-482KLM',
@@ -495,13 +377,6 @@ export const FLOW_LINKS_BY_PAGE: Record<string, { id: string; label: string; ton
   ],
   choferes: [{ id: 'FS-05-N', label: 'Avisos de licencia' }],
   rutas: [{ id: 'G3', label: 'Probar guard de eliminación', tone: 'danger' }],
-  alquileres: [
-    { id: 'AL-03', label: 'Confirmar precio' },
-    { id: 'AL-04', label: 'Asignar bus y chofer' },
-    { id: 'AL-05', label: 'Finalizar alquiler' },
-    { id: 'AL-06', label: 'Pagar con cartera' },
-    { id: 'AL-07', label: 'Ver detalle' },
-  ],
   taller: [{ id: 'TR-02-D', label: 'Ver detalle del gasto' }],
   categorias: [{ id: 'TR-04', label: 'Probar categoría con gastos', tone: 'danger' }],
   sucursales: [{ id: 'AS-02-N', label: 'Reglas al desactivar' }],

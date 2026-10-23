@@ -1,6 +1,4 @@
 import { useMemo, useState } from 'react'
-import { PRIVATE_HISTORY } from '../../data/mock'
-import { Badge } from '../../components/ui/Badge'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -17,6 +15,7 @@ import {
 } from '../../types/ticketTypes'
 import { cellText } from '../../utils/cellText'
 import { formatFechaCorta, formatMonto } from '../../utils/format'
+import { MisAlquileres } from '../rentals/MisAlquileres'
 import { CeldaAsientos, CeldaViaje, EstadoCompraBadge } from '../tickets/CompraCeldas'
 
 const TAMANO_PAGINA = 10
@@ -112,29 +111,12 @@ export function HistoryPage() {
         {tab === 0 ? (
           <BoletosComprados />
         ) : (
-          <>
-            <FilterToolbar searchPlaceholder="Buscar en mi historial...">
-              <select defaultValue="Todo el historial">
-                <option>Todo el historial</option>
-              </select>
-            </FilterToolbar>
-            <DataTable
-              headers={['Solicitud', 'Trayecto', 'Fechas', 'Pasajeros', 'Monto', 'Estado']}
-              rows={PRIVATE_HISTORY.map((rental) => [
-                rental.request,
-                <strong>{rental.route}</strong>,
-                rental.dates,
-                rental.passengers,
-                rental.amount,
-                <Badge tone="warning">{rental.state}</Badge>,
-              ])}
-            />
-          </>
+          <MisAlquileres />
         )}
         <div className="persistent-note">
           <Icon name="check" />
           <span>
-            Las ventas presenciales realizadas con su NIT aparecen aquí, incluso si se hicieron
+            Las compras y alquileres presenciales hechos con su NIT aparecen aquí, incluso si se hicieron
             antes de crear su cuenta.
           </span>
         </div>

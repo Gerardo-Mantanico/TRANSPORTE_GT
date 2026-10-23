@@ -163,23 +163,6 @@ export const GEO_POINTS: Record<string, GeoPoint> = {
   Atitlán: { lat: 14.7861, lng: -91.2019 },
 }
 
-export interface RentalRecord {
-  client: string
-  route: string
-  date: string
-  passengers: number
-  price: string
-  assignment: string
-  state: string
-  tone: 'warning' | 'success' | 'info'
-}
-
-export const RENTALS: RentalRecord[] = [
-  { client: 'Inversiones Maya', route: 'Guatemala → Monterrico', date: '20 jun · 06:00', passengers: 32, price: 'Q 4,850', assignment: 'Sin asignar', state: 'Pendiente', tone: 'warning' },
-  { client: 'Colegio El Roble', route: 'Guatemala → Panajachel', date: '22 jun · 05:30', passengers: 44, price: 'Q 6,200', assignment: 'P-541QTR', state: 'Pagado', tone: 'success' },
-  { client: 'Eventos Aurora', route: 'Antigua → Atitlán', date: '27 jun · 08:00', passengers: 25, price: 'Q 3,900', assignment: 'P-482KLM', state: 'Confirmado', tone: 'info' },
-]
-
 export interface WorkshopRecord {
   bus: string
   service: string
@@ -305,17 +288,6 @@ export const TICKET_HISTORY = [
     channel: 'Presencial',
     amount: 'Q 370.00',
     state: 'Completado',
-  },
-]
-
-export const PRIVATE_HISTORY = [
-  {
-    request: '02 jun 2025',
-    route: 'Guatemala → Monterrico',
-    dates: '20–22 jun',
-    passengers: '12',
-    amount: 'Q 3,850.00',
-    state: 'Pendiente',
   },
 ]
 
