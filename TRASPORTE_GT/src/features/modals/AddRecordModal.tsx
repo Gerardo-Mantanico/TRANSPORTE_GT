@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import {
   BUSES,
-  BRANCH_NAMES,
-  DRIVERS,
   EXPENSE_CATEGORIES,
-  ROUTES,
   TODAY,
 } from '../../data/mock'
 import { Button } from '../../components/ui/Button'
@@ -15,19 +12,15 @@ import { SelectField } from '../../components/ui/SelectField'
 import { formatQ } from '../../utils/format'
 
 const TITLES: Record<string, string> = {
-  viajes: 'Programar viaje',
   taller: 'Registrar gasto de taller',
   alquileres: 'Registrar solicitud de alquiler',
   categorias: 'Nueva categoría',
-  rutas: 'Nueva ruta',
 }
 
 const EDIT_TITLES: Record<string, string> = {
-  viajes: 'Editar viaje',
   taller: 'Editar gasto de taller',
   alquileres: 'Editar alquiler',
   categorias: 'Editar categoría',
-  rutas: 'Editar ruta',
 }
 
 function resolveTitle(page: string, edit: boolean) {
@@ -36,7 +29,6 @@ function resolveTitle(page: string, edit: boolean) {
 }
 
 function resolveNote(page: string) {
-  if (page === 'viajes') return 'El tipo de viaje no podrá modificarse después de guardar.'
   if (page === 'taller') return 'La categoría es obligatoria en todas las líneas del gasto.'
   return 'Los cambios quedarán registrados en el historial de la plataforma.'
 }
@@ -171,14 +163,9 @@ export interface AddRecordModalProps {
 export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) {
   const isEdit = Boolean(initial)
   const record = initial ?? {}
-  const isTrips = page === 'viajes'
   const isWorkshop = page === 'taller'
-  const isRoutes = page === 'rutas'
   const isCategories = page === 'categorias'
   const isRentals = page === 'alquileres'
-  const routeOptions = ROUTES.map((route) => `${route.origin} → ${route.destination}`)
-  const busOptions = BUSES.map((bus) => `${bus.plate} · ${bus.capacity} pasajeros`)
-  const driverOptions = DRIVERS.map((driver) => `${driver.name} · Licencia ${driver.expiryState}`)
 
   return (
     <div className="modal-layer">
@@ -194,81 +181,7 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
           </button>
         </header>
         <div className="modal-body">
-          {isTrips && (
-            <div className="form-grid two">
-              <SelectField
-                label="Ruta"
-                options={routeOptions}
-                defaultValue={typeof record.route === 'string' ? record.route : undefined}
-                required
-              />
-              <SelectField
-                label="Tipo de viaje"
-                options={['Regular', 'Alquiler privado']}
-                defaultValue={typeof record.type === 'string' ? record.type : undefined}
-                required
-              />
-              <SelectField
-                label="Bus asignado"
-                options={busOptions}
-                defaultValue={typeof record.bus === 'string' ? record.bus : undefined}
-                required
-              />
-              <SelectField
-                label="Chofer asignado"
-                options={driverOptions}
-                defaultValue={typeof record.driver === 'string' ? record.driver : undefined}
-                required
-              />
-              <Field
-                label="Fecha y hora de salida"
-                type="datetime-local"
-                defaultValue={typeof record.depart === 'string' ? record.depart : `${TODAY}T08:00`}
-                required
-              />
-              <Field
-                label="Llegada estimada"
-                type="datetime-local"
-                defaultValue={typeof record.arrive === 'string' ? record.arrive : `${TODAY}T10:30`}
-                required
-              />
-            </div>
-          )}
           {isWorkshop && <WorkshopForm />}
-          {isRoutes && (
-            <div className="form-grid two">
-              <SelectField
-                label="Sucursal de origen"
-                options={BRANCH_NAMES}
-                defaultValue={typeof record.origin === 'string' ? record.origin : undefined}
-                required
-              />
-              <SelectField
-                label="Sucursal de destino"
-                options={BRANCH_NAMES.filter((name) => name !== record.origin)}
-                defaultValue={typeof record.destination === 'string' ? record.destination : undefined}
-                required
-              />
-              <Field
-                label="Distancia aproximada (km)"
-                type="number"
-                placeholder="42"
-                defaultValue={
-                  typeof record.distance === 'string' ? record.distance.replace(/[^\d]/g, '') : undefined
-                }
-                required
-              />
-              <Field
-                label="Precio del boleto (Q)"
-                type="number"
-                placeholder="125.00"
-                defaultValue={
-                  typeof record.price === 'string' ? record.price.replace(/[^\d.]/g, '') : undefined
-                }
-                required
-              />
-            </div>
-          )}
           {isCategories && (
             <div className="form-grid">
               <Field
@@ -324,9 +237,7 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
               />
             </div>
           )}
-          {!isTrips &&
-            !isWorkshop &&
-            !isRoutes &&
+          {!isWorkshop &&
             !isCategories &&
             !isRentals && (
               <div className="form-grid">
@@ -342,7 +253,7 @@ export function AddRecordModal({ page, onClose, initial }: AddRecordModalProps) 
             Cancelar
           </Button>
           <Button onClick={onClose}>
-            {isEdit ? 'Guardar cambios' : isTrips ? 'Programar viaje' : 'Guardar registro'}
+            {isEdit ? 'Guardar cambios' : 'Guardar registro'}
           </Button>
         </footer>
       </section>

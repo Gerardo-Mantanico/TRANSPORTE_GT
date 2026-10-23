@@ -7,8 +7,10 @@ import { Icon } from '../../components/ui/Icon'
 import { InfoNote, SectionTitle } from '../../components/ui/Misc'
 import { useRepublicarEventosFlota } from '../../hooks/fleet'
 import { useRepublicarEventos } from '../../hooks/identity'
+import { useRepublicarEventosViajes } from '../../hooks/trips'
 import type { RepublicacionFlotaResponse } from '../../types/fleetTypes'
 import type { RepublicacionResponse } from '../../types/identityTypes'
+import type { RepublicacionViajesResponse } from '../../types/tripTypes'
 
 const PERMANENT_RULES = [
   'Los usuarios no se eliminan; solo se desactivan.',
@@ -25,6 +27,15 @@ export function SettingsPage() {
 
   const republicarFlota = useRepublicarEventosFlota()
   const [republicadosFlota, setRepublicadosFlota] = useState<RepublicacionFlotaResponse | null>(null)
+
+  const republicarViajes = useRepublicarEventosViajes()
+  const [republicadosViajes, setRepublicadosViajes] = useState<RepublicacionViajesResponse | null>(null)
+
+  const handleRepublicarViajes = async () => {
+    setRepublicadosViajes(null)
+    const resultado = await republicarViajes.ejecutar()
+    if (resultado.ok) setRepublicadosViajes(resultado.datos)
+  }
 
   const handleRepublicarFlota = async () => {
     setRepublicadosFlota(null)
@@ -112,6 +123,27 @@ export function SettingsPage() {
               <Icon name="check" />
               <span>
                 Se encolaron {republicadosFlota.buses} eventos de buses y {republicadosFlota.choferes} de choferes.
+              </span>
+            </div>
+          )}
+        </section>
+        <section className="surface form-card">
+          <SectionTitle
+            title="Sincronizar Viajes"
+            subtitle="Republica las rutas y viajes actuales hacia Boletos, Alquileres y Reportes"
+          />
+          <InfoNote>
+            Publica RutaCreada y ViajeProgramado de todo lo existente (no reenvía salidas ni llegadas). Es idempotente.
+          </InfoNote>
+          <Button variant="secondary" onClick={handleRepublicarViajes} disabled={republicarViajes.cargando}>
+            {republicarViajes.cargando ? 'Republicando...' : 'Republicar eventos de Viajes'}
+          </Button>
+          <AvisoError error={republicarViajes.error} />
+          {republicadosViajes && (
+            <div className="success-note">
+              <Icon name="check" />
+              <span>
+                Se encolaron {republicadosViajes.rutas} eventos de rutas y {republicadosViajes.viajes} de viajes.
               </span>
             </div>
           )}
