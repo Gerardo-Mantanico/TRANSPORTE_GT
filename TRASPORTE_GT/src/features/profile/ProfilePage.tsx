@@ -277,7 +277,7 @@ export function ProfilePage() {
       <div className="profile-page-actions">
         {editing ? (
           <>
-            <Button variant="ghost" onClick={() => setEditing(false)} disabled={editarPerfil.cargando}>
+            <Button variant="ghost" icon="close" onClick={() => setEditing(false)} disabled={editarPerfil.cargando}>
               Cancelar
             </Button>
             <Button type="submit" form="perfil-form" icon="check" disabled={editarPerfil.cargando}>
@@ -285,7 +285,7 @@ export function ProfilePage() {
             </Button>
           </>
         ) : cambiandoContrasena ? (
-          <Button variant="ghost" onClick={() => setCambiandoContrasena(false)}>
+          <Button variant="ghost" icon="close" onClick={() => setCambiandoContrasena(false)}>
             Cancelar
           </Button>
         ) : (

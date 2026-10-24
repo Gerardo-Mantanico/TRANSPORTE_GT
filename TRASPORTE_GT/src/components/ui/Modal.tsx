@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
+import type { IconName } from '../../types'
 import { Button } from './Button'
+import { iconoDeAccion } from '../../utils/iconoDeAccion'
 import { Icon } from './Icon'
 
 interface ModalProps {
@@ -8,6 +10,8 @@ interface ModalProps {
   body: ReactNode
   actionLabel?: string
   secondaryLabel?: string
+  actionIcon?: IconName
+  secondaryIcon?: IconName
   danger?: boolean
   dangerAction?: boolean
   onClose: () => void
@@ -19,6 +23,8 @@ export function Modal({
   body,
   actionLabel = 'Guardar',
   secondaryLabel,
+  actionIcon,
+  secondaryIcon,
   danger = false,
   dangerAction = false,
   onClose,
@@ -43,11 +49,15 @@ export function Modal({
         <div className="modal-body">{body}</div>
         <footer>
           {secondaryLabel && (
-            <Button variant="ghost" onClick={onClose}>
+            <Button variant="ghost" icon={secondaryIcon ?? 'close'} onClick={onClose}>
               {secondaryLabel}
             </Button>
           )}
-          <Button variant={dangerAction ? 'danger' : 'primary'} onClick={onClose}>
+          <Button
+            variant={dangerAction ? 'danger' : 'primary'}
+            icon={actionIcon ?? iconoDeAccion(actionLabel)}
+            onClick={onClose}
+          >
             {actionLabel}
           </Button>
         </footer>

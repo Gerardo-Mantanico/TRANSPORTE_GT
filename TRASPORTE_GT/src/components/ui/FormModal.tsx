@@ -1,5 +1,7 @@
 import type { FormEvent, ReactNode } from 'react'
+import type { IconName } from '../../types'
 import { Button } from './Button'
+import { iconoDeAccion } from '../../utils/iconoDeAccion'
 import { Icon } from './Icon'
 
 interface FormModalProps {
@@ -11,6 +13,7 @@ interface FormModalProps {
   onClose: () => void
   enviando?: boolean
   danger?: boolean
+  actionIcon?: IconName
   footer?: ReactNode
 }
 
@@ -24,6 +27,7 @@ export function FormModal({
   onClose,
   enviando = false,
   danger = false,
+  actionIcon,
   footer,
 }: FormModalProps) {
   const handleSubmit = (event: FormEvent) => {
@@ -53,10 +57,16 @@ export function FormModal({
         <footer>
           {footer ?? (
             <>
-              <Button variant="ghost" onClick={onClose} disabled={enviando}>
+              <Button variant="ghost" icon="close" onClick={onClose} disabled={enviando}>
                 Cancelar
               </Button>
-              <Button type="submit" variant={danger ? 'danger' : 'primary'} disabled={enviando}>
+              <Button
+                type="submit"
+                variant={danger ? 'danger' : 'primary'}
+                icon={enviando ? 'sync' : (actionIcon ?? iconoDeAccion(actionLabel))}
+                className={enviando ? 'is-busy' : ''}
+                disabled={enviando}
+              >
                 {enviando ? 'Procesando...' : actionLabel}
               </Button>
             </>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -93,18 +93,19 @@ export function ChoferesPage() {
     ...(puedeGestionar
       ? [
           <div className="row-actions">
-            <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', id: chofer.id })}>
-              Editar
-            </Button>
-            <Button
-              variant="ghost"
+            <AccionFila
+              icono="edit"
+              titulo="Editar"
+              onClick={() => setModal({ tipo: 'editar', id: chofer.id })}
+            />
+            <AccionFila
+              icono="power"
+              titulo={chofer.activo ? 'Desactivar' : 'Activar'}
               onClick={() => {
                 cambiarActivo.reiniciar()
                 setModal({ tipo: 'activo', chofer })
               }}
-            >
-              {chofer.activo ? 'Desactivar' : 'Activar'}
-            </Button>
+            />
           </div>,
         ]
       : []),

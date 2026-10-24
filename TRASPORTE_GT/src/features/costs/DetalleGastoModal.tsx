@@ -39,7 +39,7 @@ export function DetalleGastoModal({ gasto, placa, onClose }: { gasto: GastoTalle
           <InfoNote>Los gastos de taller son inmutables.</InfoNote>
         </div>
         <footer>
-          <Button onClick={onClose}>Cerrar</Button>
+          <Button icon="close" onClick={onClose}>Cerrar</Button>
         </footer>
       </section>
     </div>

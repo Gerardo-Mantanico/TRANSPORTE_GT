@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
@@ -9,6 +9,7 @@ import { Icon } from '../../components/ui/Icon'
 import { Paginacion } from '../../components/ui/Paginacion'
 import { useSucursales } from '../../hooks/identity'
 import { useAlquileres } from '../../hooks/rentals'
+import type { IconName } from '../../types'
 import {
   ESTADOS_ALQUILER,
   ETIQUETAS_CANAL_ALQUILER,
@@ -84,23 +85,22 @@ export function AlquileresPage() {
   }
 
   const acciones = (alquiler: Alquiler) => {
-    const botones: { etiqueta: string; abrir: () => void }[] = []
+    const botones: { etiqueta: string; icono: IconName; abrir: () => void }[] = []
     if (esAdminSucursal && (alquiler.estado === 'SOLICITADO' || alquiler.estado === 'COTIZADO'))
       botones.push({
         etiqueta: alquiler.estado === 'SOLICITADO' ? 'Cotizar' : 'Reajustar',
+        icono: alquiler.estado === 'SOLICITADO' ? 'chart' : 'sync',
         abrir: () => setModal({ tipo: 'cotizar', alquiler }),
       })
     if (esMostrador && alquiler.canal === 'MOSTRADOR' && alquiler.estado === 'COTIZADO')
-      botones.push({ etiqueta: 'Cobrar', abrir: () => setModal({ tipo: 'cobrar', alquiler }) })
+      botones.push({ etiqueta: 'Cobrar', icono: 'wallet', abrir: () => setModal({ tipo: 'cobrar', alquiler }) })
     if (esAdminSucursal && alquiler.estado === 'CONFIRMADO' && !alquiler.idBus)
-      botones.push({ etiqueta: 'Asignar bus y chofer', abrir: () => setModal({ tipo: 'asignar', alquiler }) })
-    botones.push({ etiqueta: 'Detalle', abrir: () => setModal({ tipo: 'detalle', id: alquiler.id }) })
+      botones.push({ etiqueta: 'Asignar bus y chofer', icono: 'bus', abrir: () => setModal({ tipo: 'asignar', alquiler }) })
+    botones.push({ etiqueta: 'Detalle', icono: 'eye', abrir: () => setModal({ tipo: 'detalle', id: alquiler.id }) })
     return (
       <div className="row-actions">
         {botones.map((boton) => (
-          <Button key={boton.etiqueta} variant="ghost" onClick={boton.abrir}>
-            {boton.etiqueta}
-          </Button>
+          <AccionFila key={boton.etiqueta} icono={boton.icono} titulo={boton.etiqueta} onClick={boton.abrir} />
         ))}
       </div>
     )

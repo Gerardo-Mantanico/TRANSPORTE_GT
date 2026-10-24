@@ -93,7 +93,7 @@ function PurchaseConfirmationModal({
           </InfoNote>
         </div>
         <footer>
-          <Button onClick={onClose}>Entendido</Button>
+          <Button icon="check" onClick={onClose}>Entendido</Button>
         </footer>
       </section>
     </div>
@@ -164,7 +164,7 @@ function CompraPendienteModal({
           <AvisoError error={error} />
         </div>
         <footer>
-          <Button variant="ghost" onClick={consultarEstado} disabled={ocupado}>
+          <Button variant="ghost" icon="search" onClick={consultarEstado} disabled={ocupado}>
             {consultar.cargando ? 'Consultando...' : 'Consultar estado'}
           </Button>
           <Button icon="wallet" onClick={reintentarPago} disabled={ocupado}>
@@ -252,7 +252,7 @@ function RouteModal({
           </div>
         </div>
         <footer>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" icon="close" onClick={onClose}>
             Cerrar
           </Button>
           <Button icon="ticket" onClick={onSelect}>
@@ -436,7 +436,7 @@ function SeatSelectionModal({
           </aside>
         </div>
         <footer>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" icon="close" onClick={onClose}>
             Cancelar
           </Button>
           <Button

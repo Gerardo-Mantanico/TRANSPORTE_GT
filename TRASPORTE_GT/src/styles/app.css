@@ -487,6 +487,66 @@ h3 {
   color: var(--danger);
   background: #fceaea;
 }
+.button.secondary:hover {
+  color: var(--green-dark);
+  background: #d8ecf4;
+}
+.button.ghost:hover {
+  border-color: #a9c9d5;
+  color: var(--green-dark);
+  background: var(--green-soft);
+}
+.button.danger:hover {
+  border-color: #eec4c4;
+  color: #a53434;
+  background: #f8dede;
+}
+.button:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+.button:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
+.button:disabled::before {
+  display: none;
+}
+.button.is-busy svg {
+  animation: spin 0.9s linear infinite;
+}
+.accion-fila {
+  border-radius: 9px;
+  gap: 0;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+}
+.accion-fila svg {
+  width: 16px;
+  height: 16px;
+}
+.accion-fila:hover {
+  box-shadow: 0 4px 10px #123b521a;
+}
+[data-theme="dark"] .accion-fila:hover {
+  box-shadow: 0 4px 12px #00000066;
+}
+[data-theme="dark"] .button.secondary:hover {
+  color: #a8dcf0;
+  background: #24485c;
+}
+[data-theme="dark"] .button.ghost:hover {
+  border-color: #2d5670;
+  color: #7ec8e3;
+  background: #17313f;
+}
+[data-theme="dark"] .button.danger:hover {
+  border-color: #6b3030;
+  color: #ff9d94;
+  background: #4a2525;
+}
 .icon-button {
   border: 1px solid var(--line);
   width: 38px;
@@ -1761,47 +1821,14 @@ tbody tr:hover {
   padding: 15px 18px 11px;
   display: flex;
 }
-.search {
-  border: 1px solid var(--line);
-  color: #9aa29c;
-  background: #fff;
-  border-radius: 10px;
-  align-items: center;
-  gap: 8px;
-  width: min(330px, 100%);
-  min-height: 41px;
-  padding: 0 7px 0 11px;
-  transition: all 0.15s;
-  display: flex;
-}
-.search:focus-within {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px #176b8717;
-}
-.search input {
-  background: 0 0;
-  border: 0;
-  outline: none;
-  width: 100%;
-  font-size: 0.76rem;
-}
-.search > button {
-  width: 25px;
-  height: 25px;
-  color: var(--muted);
-  background: #f0f3f0;
-  border: 0;
-  border-radius: 7px;
-  flex: none;
-  place-items: center;
-  display: grid;
+.toolbar-action {
+  margin-left: auto;
 }
 .period-filter {
   border: 1px solid var(--line);
   background: #fff;
   border-radius: 10px;
   align-items: center;
-  margin-left: auto;
   padding: 3px;
   display: flex;
 }
@@ -2773,7 +2800,6 @@ tbody tr:hover {
 [data-theme="dark"] .field input,
 [data-theme="dark"] .field select,
 [data-theme="dark"] select,
-[data-theme="dark"] .search,
 [data-theme="dark"] .period-filter,
 [data-theme="dark"] .filter-toggle,
 [data-theme="dark"] .column-filter,
@@ -4754,9 +4780,6 @@ tbody tr:hover {
     flex-direction: column;
     align-items: stretch;
   }
-  .search {
-    width: 100%;
-  }
   .period-filter {
     width: 100%;
     margin-left: 0;
@@ -5281,6 +5304,9 @@ tbody tr:hover {
   gap: 0.35rem;
   flex-wrap: wrap;
   align-items: center;
+}
+.row-actions .accion-fila {
+  flex: none;
 }
 
 .cell-stack {

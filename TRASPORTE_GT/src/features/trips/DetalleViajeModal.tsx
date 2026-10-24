@@ -109,7 +109,7 @@ export function DetalleViajeModal({ id, onClose }: { id: string; onClose: () => 
           )}
         </div>
         <footer>
-          <Button onClick={onClose}>Cerrar</Button>
+          <Button icon="close" onClick={onClose}>Cerrar</Button>
         </footer>
       </section>
     </div>

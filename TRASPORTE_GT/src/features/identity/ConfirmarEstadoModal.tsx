@@ -29,6 +29,7 @@ export function ConfirmarEstadoModal({
       eyebrow={activar ? 'Acción · Activar' : 'Acción · Desactivar'}
       title={`${activar ? 'Activar' : 'Desactivar'} ${recurso}`}
       actionLabel={activar ? 'Activar' : 'Desactivar'}
+      actionIcon="power"
       danger={!activar}
       enviando={cargando}
       onSubmit={onConfirmar}

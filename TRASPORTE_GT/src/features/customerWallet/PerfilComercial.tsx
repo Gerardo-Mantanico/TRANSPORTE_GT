@@ -76,7 +76,7 @@ function FormularioPerfil({
       </div>
       <AvisoError error={errorLocal ?? error} />
       <div className="row-actions">
-        <Button variant="ghost" onClick={onCancelar} disabled={cargando}>
+        <Button variant="ghost" icon="close" onClick={onCancelar} disabled={cargando}>
           Cancelar
         </Button>
         <Button type="submit" icon="check" disabled={cargando}>

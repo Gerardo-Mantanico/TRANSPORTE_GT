@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
 import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -100,10 +101,12 @@ function DetalleCompraModal({
           )}
         </div>
         <footer>
-          <Button variant="ghost" onClick={recargar} disabled={cargando}>
+          <Button variant="ghost" icon="sync" onClick={recargar} disabled={cargando}>
             Actualizar
           </Button>
-          <Button onClick={onClose}>Cerrar</Button>
+          <Button icon="close" onClick={onClose}>
+            Cerrar
+          </Button>
         </footer>
       </section>
     </div>
@@ -136,9 +139,7 @@ export function ComprasSucursalPage() {
     <CeldaAsientos compra={compra} />,
     formatMonto(compra.montoTotal),
     <EstadoCompraBadge compra={compra} />,
-    <Button variant="ghost" onClick={() => setDetalle(compra.idCompra)}>
-      Ver detalle
-    </Button>,
+    <AccionFila icono="eye" titulo="Ver detalle" onClick={() => setDetalle(compra.idCompra)} />,
   ])
 
   const detalleViaje = detalle

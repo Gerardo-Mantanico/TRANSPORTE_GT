@@ -20,7 +20,7 @@ export function AvisoCartera({ error, onReintentar }: { error: ApiError | null; 
           segundos.
         </p>
       </div>
-      <Button variant="ghost" onClick={onReintentar}>
+      <Button variant="ghost" icon="sync" onClick={onReintentar}>
         Reintentar
       </Button>
     </div>

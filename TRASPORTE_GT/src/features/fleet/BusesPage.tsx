@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -100,26 +100,25 @@ export function BusesPage() {
     ...(puedeGestionar
       ? [
           <div className="row-actions">
-            <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', id: bus.id })}>
-              Editar
-            </Button>
-            <Button
-              variant="ghost"
+            <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', id: bus.id })} />
+            <AccionFila
+              icono="settings"
+              titulo={
+                bus.estadoOperativo === 'EN_TRANSITO'
+                  ? 'Estado · cambia al registrar la llegada del viaje'
+                  : 'Estado operativo'
+              }
               disabled={bus.estadoOperativo === 'EN_TRANSITO' || !bus.activo}
-              title={bus.estadoOperativo === 'EN_TRANSITO' ? 'Cambia al registrar la llegada del viaje' : undefined}
               onClick={() => setModal({ tipo: 'estado', bus })}
-            >
-              Estado
-            </Button>
-            <Button
-              variant="ghost"
+            />
+            <AccionFila
+              icono="power"
+              titulo={bus.activo ? 'Desactivar' : 'Activar'}
               onClick={() => {
                 cambiarActivo.reiniciar()
                 setModal({ tipo: 'activo', bus })
               }}
-            >
-              {bus.activo ? 'Desactivar' : 'Activar'}
-            </Button>
+            />
           </div>,
         ]
       : []),
