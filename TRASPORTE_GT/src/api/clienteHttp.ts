@@ -59,6 +59,8 @@ export const clienteFlota = crearClienteHttp(import.meta.env.VITE_FLEET_API_URL)
 
 export const clienteAlquileres = crearClienteHttp(import.meta.env.VITE_RENTALS_API_URL)
 
+export const clienteCostos = crearClienteHttp(import.meta.env.VITE_COSTS_API_URL)
+
 /**
  * Ejecuta la petición y devuelve el cuerpo; las respuestas sin cuerpo (202/204) dan `undefined`.
  * Por omisión usa el cliente de Identidad.

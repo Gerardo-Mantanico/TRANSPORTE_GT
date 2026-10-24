@@ -48,23 +48,6 @@ export type TableCell = ReactNode
 
 export type TableRow = TableCell[]
 
-export interface ResourceFilterDef {
-  key: string
-  label: string
-  options: string[]
-}
-
-export interface ResourceConfig {
-  eyebrow: string
-  title: string
-  description: string
-  action: string
-  filters: string[]
-  headers: string[]
-  rows: TableRow[]
-  filterDefs?: ResourceFilterDef[]
-}
-
 export interface FlowLink {
   id: string
   label: string

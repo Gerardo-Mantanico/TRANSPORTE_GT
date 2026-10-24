@@ -16,13 +16,17 @@ import { RutaFormModal } from './RutaFormModal'
 
 type ModalRutas = { tipo: 'crear' } | { tipo: 'editar'; ruta: Ruta } | { tipo: 'eliminar'; ruta: Ruta }
 
-/** Rutas de sucursal a sucursal: las gestiona solo el administrador de la sucursal de origen. */
+/**
+ * Rutas que administra el ADMIN_SUCURSAL: siempre las de origen en su sucursal (las únicas que puede gestionar).
+ * GET /rutas devuelve todas a cualquier autenticado; el filtro por origen lo pone esta pantalla.
+ */
 export function RutasPage() {
   const { usuario } = useAuth()
   const miSucursal = usuario?.idSucursal ?? ''
-  const [filtro, setFiltro] = useState<FiltroRutas>({ idSucursalOrigen: miSucursal || undefined })
+  const [idSucursalDestino, setIdSucursalDestino] = useState<string | undefined>(undefined)
   const [texto, setTexto] = useState('')
-  const rutas = useRutas(filtro)
+  const filtro: FiltroRutas = { idSucursalOrigen: miSucursal || undefined, idSucursalDestino }
+  const rutas = useRutas(filtro, Boolean(miSucursal))
   const sucursales = useSucursales({ size: 100, sort: 'nombre,asc' })
   const eliminar = useEliminarRuta()
   const [modal, setModal] = useState<ModalRutas | null>(null)
@@ -87,28 +91,15 @@ export function RutasPage() {
             <span className="field-label">
               <span>Origen</span>
             </span>
-            <select
-              value={filtro.idSucursalOrigen ?? ''}
-              onChange={(event) => setFiltro((actual) => ({ ...actual, idSucursalOrigen: event.target.value || undefined }))}
-            >
-              <option value="">Todas las sucursales</option>
-              {listaSucursales.map((sucursal) => (
-                <option key={sucursal.id} value={sucursal.id}>
-                  {sucursal.id === miSucursal ? `${sucursal.nombre} (mi sucursal)` : sucursal.nombre}
-                </option>
-              ))}
-            </select>
+            <input value={miSucursal ? `${nombre(miSucursal)} (mi sucursal)` : 'Sin sucursal asignada'} disabled />
           </label>
           <label className="field">
             <span className="field-label">
               <span>Destino</span>
             </span>
-            <select
-              value={filtro.idSucursalDestino ?? ''}
-              onChange={(event) => setFiltro((actual) => ({ ...actual, idSucursalDestino: event.target.value || undefined }))}
-            >
+            <select value={idSucursalDestino ?? ''} onChange={(event) => setIdSucursalDestino(event.target.value || undefined)}>
               <option value="">Todos los destinos</option>
-              {listaSucursales.map((sucursal) => (
+              {listaSucursales.filter((sucursal) => sucursal.id !== miSucursal).map((sucursal) => (
                 <option key={sucursal.id} value={sucursal.id}>
                   {sucursal.nombre}
                 </option>
@@ -134,7 +125,7 @@ export function RutasPage() {
               <Icon name="route" />
             </span>
             <strong>No hay rutas</strong>
-            <p>Cree una ruta desde su sucursal o cambie los filtros.</p>
+            <p>{miSucursal ? 'Cree una ruta desde su sucursal o cambie el destino.' : 'Su usuario no tiene sucursal asignada.'}</p>
           </div>
         )}
       </section>

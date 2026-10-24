@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { TODAY } from '../../data/mock'
 import { Button } from '../../components/ui/Button'
 import { AvisoError } from '../../components/ui/Estado'
-import { Field } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote, SectionTitle } from '../../components/ui/Misc'
 import { useRepublicarEventosFlota } from '../../hooks/fleet'
@@ -11,6 +9,7 @@ import { useRepublicarEventosViajes } from '../../hooks/trips'
 import type { RepublicacionFlotaResponse } from '../../types/fleetTypes'
 import type { RepublicacionResponse } from '../../types/identityTypes'
 import type { RepublicacionViajesResponse } from '../../types/tripTypes'
+import { TarifaDepreciacionCard } from '../costs/TarifaDepreciacionCard'
 import { TarifasCard } from '../rentals/TarifasCard'
 
 const PERMANENT_RULES = [
@@ -21,8 +20,6 @@ const PERMANENT_RULES = [
 ]
 
 export function SettingsPage() {
-  const [rate, setRate] = useState('0.75')
-  const [saved, setSaved] = useState(false)
   const republicar = useRepublicarEventos()
   const [republicados, setRepublicados] = useState<RepublicacionResponse | null>(null)
 
@@ -53,37 +50,7 @@ export function SettingsPage() {
   return (
     <>
       <div className="settings-grid">
-        <section className="surface form-card">
-          <SectionTitle
-            title="Depreciación por kilometraje"
-            subtitle="Monto aplicado a nuevos cierres de viaje"
-          />
-          <Field
-            label="Costo de depreciación por kilómetro"
-            type="number"
-            value={rate}
-            onChange={(event) => {
-              setRate(event.target.value)
-              setSaved(false)
-            }}
-            required
-          />
-          <Field label="Fecha de vigencia" type="date" defaultValue={TODAY} required />
-          <InfoNote>
-            El cambio no altera registros ya hechos. Cada viaje conserva el monto vigente al momento
-            de registrarse.
-          </InfoNote>
-          <Button onClick={() => setSaved(true)}>Guardar configuración</Button>
-          {saved && (
-            <div className="success-note">
-              <Icon name="check" />
-              <span>
-                Configuración guardada. La nueva depreciación es Q {rate || '0.00'} por kilómetro
-                desde {TODAY}.
-              </span>
-            </div>
-          )}
-        </section>
+        <TarifaDepreciacionCard />
         <section className="surface form-card">
           <SectionTitle
             title="Sincronizar Identidad"

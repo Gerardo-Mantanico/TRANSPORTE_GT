@@ -163,39 +163,6 @@ export const GEO_POINTS: Record<string, GeoPoint> = {
   Atitlán: { lat: 14.7861, lng: -91.2019 },
 }
 
-export interface WorkshopRecord {
-  bus: string
-  service: string
-  date: string
-  categories: string
-  lines: string
-  type: string
-  total: string
-}
-
-export const WORKSHOP_EXPENSES: WorkshopRecord[] = [
-  { bus: 'P-482KLM', service: 'Servicio preventivo', date: '14 jun 2025', categories: 'Motor · Aceite', lines: '3', type: 'Mixto', total: 'Q 2,480' },
-  { bus: 'P-728DBN', service: 'Cambio de frenos', date: '12 jun 2025', categories: 'Frenos', lines: '4', type: 'Repuesto', total: 'Q 4,120' },
-  { bus: 'P-193JHF', service: 'Alineación general', date: '08 jun 2025', categories: 'Suspensión', lines: '2', type: 'Mano de obra', total: 'Q 1,250' },
-]
-
-export interface CategoryRecord {
-  name: string
-  expenses: number
-  lastMove: string
-}
-
-export const EXPENSE_CATEGORIES: CategoryRecord[] = [
-  { name: 'Motor', expenses: 42, lastMove: '14 jun 2025' },
-  { name: 'Llantas', expenses: 28, lastMove: '05 jun 2025' },
-  { name: 'Frenos', expenses: 36, lastMove: '12 jun 2025' },
-  { name: 'Suspensión', expenses: 19, lastMove: '08 jun 2025' },
-  { name: 'Cambio de aceite', expenses: 51, lastMove: '14 jun 2025' },
-  { name: 'Eléctrico', expenses: 14, lastMove: '02 jun 2025' },
-  { name: 'Carrocería', expenses: 9, lastMove: '28 may 2025' },
-  { name: 'Otros', expenses: 6, lastMove: '21 may 2025' },
-]
-
 export interface BranchRecord {
   name: string
   location: string
@@ -289,12 +256,6 @@ export const TICKET_HISTORY = [
     amount: 'Q 370.00',
     state: 'Completado',
   },
-]
-
-export const EXPENSE_LINES = [
-  ['Motor', 'Afinación general', 'Mano de obra', 'Q 850.00'],
-  ['Cambio de aceite', 'Aceite y filtros', 'Repuesto', 'Q 1,130.00'],
-  ['Motor', 'Diagnóstico', 'Mano de obra', 'Q 500.00'],
 ]
 
 export interface LedgerEntry {

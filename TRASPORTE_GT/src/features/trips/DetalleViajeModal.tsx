@@ -1,3 +1,4 @@
+import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
@@ -7,10 +8,14 @@ import { InfoNote } from '../../components/ui/Misc'
 import { useEliminarViaje, useViaje } from '../../hooks/trips'
 import { ETIQUETAS_TIPO_VIAJE, type Viaje } from '../../types/tripTypes'
 import { formatFechaHora, formatQ } from '../../utils/format'
+import { ResumenCostosViaje } from '../costs/ResumenCostosViaje'
 import { EstadoViajeBadge } from './EstadoViajeBadge'
 
 export function DetalleViajeModal({ id, onClose }: { id: string; onClose: () => void }) {
   const { datos: viaje, cargando, error, recargar } = useViaje(id)
+  const { usuario } = useAuth()
+  // GET /costos/viajes/{id}: solo administradores
+  const puedeVerCostos = usuario?.rol === 'ADMIN_SISTEMA' || usuario?.rol === 'ADMIN_SUCURSAL'
 
   return (
     <div className="modal-layer">
@@ -95,6 +100,7 @@ export function DetalleViajeModal({ id, onClose }: { id: string; onClose: () => 
               {(viaje.registroSalida || viaje.registroLlegada) && (
                 <InfoNote>Los registros de salida y llegada son inmutables.</InfoNote>
               )}
+              {viaje.registroLlegada && puedeVerCostos && <ResumenCostosViaje idViaje={viaje.id} />}
             </>
           ) : cargando ? (
             <Cargando />

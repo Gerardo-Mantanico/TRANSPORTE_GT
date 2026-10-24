@@ -80,6 +80,13 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
       ],
     },
     {
+      label: 'Costos',
+      items: [
+        { id: 'taller', label: 'Taller y repuestos', icon: 'wrench' },
+        { id: 'categorias', label: 'Categorías', icon: 'grid' },
+      ],
+    },
+    {
       label: 'Inteligencia',
       items: [{ id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
     },
