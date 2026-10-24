@@ -164,6 +164,12 @@ const ICONS: Record<IconName, React.ReactNode> = {
     <path d="M14.7 6.3a4 4 0 0 0-5-5L12 3.6 8.6 7 6.3 4.7a4 4 0 0 0 5 5L4 17l3 3 7.7-7.7a4 4 0 0 0 5-5L17.4 9 15 6.6l1.7-2.3Z" />
   ),
   arrow: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  upload: (
+    <>
+      <path d="M12 16V4m-5 5 5-5 5 5" />
+      <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+    </>
+  ),
   sync: (
     <>
       <path d="M20 11a8 8 0 0 0-14.3-4.9L4 8" />

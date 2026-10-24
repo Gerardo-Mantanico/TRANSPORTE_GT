@@ -104,14 +104,6 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
       onClose={onClose}
     >
       <div className="form-grid two">
-        <div className="span-two">
-          <CampoFoto
-            label="Foto del chofer"
-            nombre={campos.nombreCompleto}
-            fotoActual={chofer?.fotoUrl}
-            onChange={setArchivo}
-          />
-        </div>
         <Field
           label="Nombre completo"
           placeholder="Nombre y apellido"
@@ -185,6 +177,14 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
             ))}
           </select>
         </Field>
+        <div className="span-two">
+          <CampoFoto
+            label="Foto del chofer"
+            nombre={campos.nombreCompleto}
+            fotoActual={chofer?.fotoUrl}
+            onChange={setArchivo}
+          />
+        </div>
       </div>
       {campos.fechaVencimientoLicencia && campos.fechaVencimientoLicencia < hoyIso() && (
         <div className="persistent-note">

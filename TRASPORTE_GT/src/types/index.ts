@@ -42,6 +42,7 @@ export type IconName =
   | 'wallet'
   | 'wrench'
   | 'arrow'
+  | 'upload'
 
 export interface NavItem {
   id: string
