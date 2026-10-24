@@ -881,6 +881,19 @@ select:focus {
   gap: 10px;
   display: flex;
 }
+.field-name {
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  display: inline-flex;
+}
+.field-name svg {
+  color: var(--green);
+  flex: none;
+}
+[data-theme="dark"] .field-name svg {
+  color: #7ec8e3;
+}
 .field-action {
   color: var(--green);
   background: 0 0;
@@ -2095,8 +2108,9 @@ tbody tr:hover {
   background: #08161085;
 }
 .modal-scrim {
-  -webkit-backdrop-filter: blur(4px);
-  background: 0 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  background: #08161073;
 }
 .modal-layer {
   z-index: 50;
@@ -2136,6 +2150,28 @@ tbody tr:hover {
 }
 .modal header {
   border-bottom: 1px solid var(--line);
+}
+.modal-heading {
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  display: flex;
+}
+.modal-icon {
+  color: var(--green);
+  background: var(--green-soft);
+  border: 1px solid #cfe4ec;
+  border-radius: 13px;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+}
+[data-theme="dark"] .modal-icon {
+  color: #7ec8e3;
+  background: #1d3a4b;
+  border-color: #2d5670;
 }
 .modal footer {
   border-top: 1px solid var(--line);
@@ -2951,7 +2987,9 @@ tbody tr:hover {
   border-color: #285641;
 }
 [data-theme="dark"] .modal-scrim {
-  background: 0 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  background: #01060ab8;
 }
 [data-theme="dark"] .scrim {
   background: #020a0fb3;

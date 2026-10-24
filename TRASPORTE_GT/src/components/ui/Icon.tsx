@@ -8,6 +8,14 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <path d="M9 20v-6h6v6" />
     </>
   ),
+  building: (
+    <>
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16" />
+      <path d="M15 10h4a1 1 0 0 1 1 1v10" />
+      <path d="M2 21h20" />
+      <path d="M8 8h3M8 12h3M8 16h3" />
+    </>
+  ),
   bus: (
     <>
       <rect x="4" y="3" width="16" height="16" rx="3" />
@@ -30,6 +38,13 @@ const ICONS: Record<IconName, React.ReactNode> = {
     </>
   ),
   close: <path d="m6 6 12 12M18 6 6 18" />,
+  doc: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+      <path d="M14 3v5h5" />
+      <path d="M9 13h6M9 17h4" />
+    </>
+  ),
   download: <path d="M12 3v12m-5-5 5 5 5-5M5 21h14" />,
   edit: (
     <>
@@ -57,6 +72,12 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <rect x="14" y="14" width="7" height="7" rx="1" />
     </>
   ),
+  lock: (
+    <>
+      <rect x="4" y="10" width="16" height="11" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </>
+  ),
   mail: (
     <>
       <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -71,6 +92,9 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <circle cx="12" cy="12" r="1" />
       <circle cx="19" cy="12" r="1" />
     </>
+  ),
+  phone: (
+    <path d="M7 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L16 12l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 5 5a2 2 0 0 1 2-2Z" />
   ),
   plus: <path d="M12 5v14M5 12h14" />,
   power: (

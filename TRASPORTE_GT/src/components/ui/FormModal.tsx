@@ -1,7 +1,7 @@
 import type { FormEvent, ReactNode } from 'react'
 import type { IconName } from '../../types'
 import { Button } from './Button'
-import { iconoDeAccion } from '../../utils/iconoDeAccion'
+import { iconoDeAccion, iconoDeEncabezado } from '../../utils/iconoDeAccion'
 import { Icon } from './Icon'
 
 interface FormModalProps {
@@ -14,6 +14,7 @@ interface FormModalProps {
   enviando?: boolean
   danger?: boolean
   actionIcon?: IconName
+  icona?: IconName
   footer?: ReactNode
 }
 
@@ -28,8 +29,11 @@ export function FormModal({
   enviando = false,
   danger = false,
   actionIcon,
+  icona,
   footer,
 }: FormModalProps) {
+  const icono = icona ?? iconoDeEncabezado(title)
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     if (!enviando) onSubmit()
@@ -45,9 +49,16 @@ export function FormModal({
         onSubmit={handleSubmit}
       >
         <header>
-          <div>
-            <span className="eyebrow">{eyebrow}</span>
-            <h2>{title}</h2>
+          <div className="modal-heading">
+            {icono && (
+              <span className="modal-icon">
+                <Icon name={icono} size={20} />
+              </span>
+            )}
+            <div>
+              <span className="eyebrow">{eyebrow}</span>
+              <h2>{title}</h2>
+            </div>
           </div>
           <button type="button" className="icon-button" onClick={onClose} aria-label="Cerrar">
             <Icon name="close" />
@@ -56,20 +67,15 @@ export function FormModal({
         <div className="modal-body">{children}</div>
         <footer>
           {footer ?? (
-            <>
-              <Button variant="ghost" icon="close" onClick={onClose} disabled={enviando}>
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                variant={danger ? 'danger' : 'primary'}
-                icon={enviando ? 'sync' : (actionIcon ?? iconoDeAccion(actionLabel))}
-                className={enviando ? 'is-busy' : ''}
-                disabled={enviando}
-              >
-                {enviando ? 'Procesando...' : actionLabel}
-              </Button>
-            </>
+            <Button
+              type="submit"
+              variant={danger ? 'danger' : 'primary'}
+              icon={enviando ? 'sync' : (actionIcon ?? iconoDeAccion(actionLabel))}
+              className={enviando ? 'is-busy' : ''}
+              disabled={enviando}
+            >
+              {enviando ? 'Procesando...' : actionLabel}
+            </Button>
           )}
         </footer>
       </form>

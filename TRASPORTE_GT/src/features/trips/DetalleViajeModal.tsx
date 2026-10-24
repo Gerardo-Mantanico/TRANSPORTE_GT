@@ -1,6 +1,5 @@
 import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FormModal } from '../../components/ui/FormModal'
 import { Icon } from '../../components/ui/Icon'
@@ -108,9 +107,6 @@ export function DetalleViajeModal({ id, onClose }: { id: string; onClose: () => 
             <AvisoError error={error} onReintentar={recargar} />
           )}
         </div>
-        <footer>
-          <Button icon="close" onClick={onClose}>Cerrar</Button>
-        </footer>
       </section>
     </div>
   )

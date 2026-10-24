@@ -104,9 +104,6 @@ function DetalleCompraModal({
           <Button variant="ghost" icon="sync" onClick={recargar} disabled={cargando}>
             Actualizar
           </Button>
-          <Button icon="close" onClick={onClose}>
-            Cerrar
-          </Button>
         </footer>
       </section>
     </div>

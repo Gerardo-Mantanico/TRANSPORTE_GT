@@ -1,4 +1,3 @@
-import { Button } from '../../components/ui/Button'
 import { DataTable } from '../../components/ui/DataTable'
 import { Icon } from '../../components/ui/Icon'
 import { InfoNote } from '../../components/ui/Misc'
@@ -38,9 +37,6 @@ export function DetalleGastoModal({ gasto, placa, onClose }: { gasto: GastoTalle
           {gasto.observaciones && <p className="modal-paragraph">{gasto.observaciones}</p>}
           <InfoNote>Los gastos de taller son inmutables.</InfoNote>
         </div>
-        <footer>
-          <Button icon="close" onClick={onClose}>Cerrar</Button>
-        </footer>
       </section>
     </div>
   )
