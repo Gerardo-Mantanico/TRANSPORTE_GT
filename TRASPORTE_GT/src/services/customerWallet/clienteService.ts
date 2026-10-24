@@ -1,5 +1,10 @@
 import { clienteClientes, solicitar } from '../../api/clienteHttp'
-import type { ActualizarPerfilClienteRequest, Cliente, ClienteBusqueda } from '../../types/customerWalletTypes'
+import type {
+  ActualizarPerfilClienteRequest,
+  Cliente,
+  ClienteBusqueda,
+  RepublicacionClientesResponse,
+} from '../../types/customerWalletTypes'
 
 /** GET /clientes/yo → 200 | 404 si el perfil aún no llega con UsuarioCreado */
 export function obtenerMiPerfilCliente(signal?: AbortSignal) {
@@ -14,4 +19,12 @@ export function actualizarMiPerfilCliente(datos: ActualizarPerfilClienteRequest,
 /** GET /clientes/buscar?nit= → 200 | 404. Solo CAJERO y ADMIN_SUCURSAL. */
 export function buscarClientePorNit(nit: string, signal?: AbortSignal) {
   return solicitar<ClienteBusqueda>({ method: 'GET', url: '/clientes/buscar', params: { nit }, signal }, clienteClientes)
+}
+
+/** POST /admin/republicar-eventos → 200. Solo ADMIN_SISTEMA. */
+export function republicarEventosClientes(signal?: AbortSignal) {
+  return solicitar<RepublicacionClientesResponse>(
+    { method: 'POST', url: '/admin/republicar-eventos', signal },
+    clienteClientes,
+  )
 }

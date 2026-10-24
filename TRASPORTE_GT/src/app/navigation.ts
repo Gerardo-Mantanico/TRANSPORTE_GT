@@ -68,6 +68,7 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
         { id: 'sucursales', label: 'Sucursales', icon: 'grid' },
         { id: 'usuarios', label: 'Usuarios', icon: 'users' },
         { id: 'configuracion', label: 'Configuración', icon: 'settings' },
+        { id: 'sincronizacion', label: 'Sincronización', icon: 'sync' },
       ],
     },
     {

@@ -26,6 +26,7 @@ export type IconName =
   | 'search'
   | 'settings'
   | 'sun'
+  | 'sync'
   | 'ticket'
   | 'user'
   | 'users'

@@ -108,6 +108,13 @@ const ICONS: Record<IconName, React.ReactNode> = {
     <path d="M14.7 6.3a4 4 0 0 0-5-5L12 3.6 8.6 7 6.3 4.7a4 4 0 0 0 5 5L4 17l3 3 7.7-7.7a4 4 0 0 0 5-5L17.4 9 15 6.6l1.7-2.3Z" />
   ),
   arrow: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  sync: (
+    <>
+      <path d="M20 11a8 8 0 0 0-14.3-4.9L4 8" />
+      <path d="M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16" />
+      <path d="M20 21v-5h-5" />
+    </>
+  ),
 }
 
 interface IconProps {
