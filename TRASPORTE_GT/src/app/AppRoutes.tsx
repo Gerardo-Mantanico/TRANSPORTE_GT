@@ -8,7 +8,8 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { OlvideContrasenaPage } from '../features/auth/OlvideContrasenaPage'
 import { RestablecerContrasenaPage } from '../features/auth/RestablecerContrasenaPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
-import { ResourceListPage } from '../features/lists/ResourceListPage'
+import { CategoriasPage } from '../features/costs/CategoriasPage'
+import { TallerPage } from '../features/costs/TallerPage'
 import { SucursalesPage } from '../features/identity/SucursalesPage'
 import { UsuariosPage } from '../features/identity/UsuariosPage'
 import { TicketSalesPage } from '../features/sales/TicketSalesPage'
@@ -31,10 +32,6 @@ const SISTEMA: Rol[] = ['ADMIN_SISTEMA']
 const SUCURSAL: Rol[] = ['ADMIN_SUCURSAL']
 const ADMINISTRADORES: Rol[] = ['ADMIN_SISTEMA', 'ADMIN_SUCURSAL']
 
-const LIST_PAGES: { page: string; roles: Rol[] }[] = [
-  { page: 'taller', roles: SUCURSAL },
-  { page: 'categorias', roles: SUCURSAL },
-]
 
 function HomeRedirect() {
   const { estado, usuario } = useAuth()
@@ -73,6 +70,11 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute roles={SUCURSAL} />}>
           <Route path="rutas" element={<RutasPage />} />
         </Route>
+        {/* Costos: SUC registra el taller; SIS y SUC gestionan las categorías y consultan los gastos */}
+        <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
+          <Route path="taller" element={<TallerPage />} />
+          <Route path="categorias" element={<CategoriasPage />} />
+        </Route>
         {/* SUC cotiza y asigna; SUC y CAJ registran y cobran en mostrador; SIS consulta todas las sucursales */}
         <Route element={<ProtectedRoute roles={['ADMIN_SISTEMA', 'ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="alquileres" element={<AlquileresPage />} />
@@ -95,11 +97,6 @@ export function AppRoutes() {
         <Route path="solicitar" element={<RentalRequestPage />} />
         <Route path="historial" element={<HistoryPage />} />
         <Route path="cartera" element={<WalletPage />} />
-        {LIST_PAGES.map(({ page, roles }) => (
-          <Route key={page} element={<ProtectedRoute roles={roles} />}>
-            <Route path={page} element={<ResourceListPage type={page} />} />
-          </Route>
-        ))}
         <Route path="*" element={<HomeRedirect />} />
       </Route>
     </Routes>

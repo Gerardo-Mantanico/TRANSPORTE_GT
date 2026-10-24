@@ -32,12 +32,6 @@ export type IconName =
   | 'wallet'
   | 'wrench'
   | 'arrow'
-  | 'upload'
-  | 'alert'
-  | 'pencil'
-  | 'eye'
-  | 'phone'
-  | 'card'
 
 export interface NavItem {
   id: string
@@ -53,23 +47,6 @@ export interface NavGroup {
 export type TableCell = ReactNode
 
 export type TableRow = TableCell[]
-
-export interface ResourceFilterDef {
-  key: string
-  label: string
-  options: string[]
-}
-
-export interface ResourceConfig {
-  eyebrow: string
-  title: string
-  description: string
-  action: string
-  filters: string[]
-  headers: string[]
-  rows: TableRow[]
-  filterDefs?: ResourceFilterDef[]
-}
 
 export interface FlowLink {
   id: string

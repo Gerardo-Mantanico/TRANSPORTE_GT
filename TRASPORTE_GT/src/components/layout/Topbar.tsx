@@ -10,10 +10,10 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMenuOpen, pageTitle, pageIcon }: TopbarProps) {
-  const { role } = useAuth()
+  const { usuario } = useAuth()
   const { theme, toggleTheme } = useTheme()
 
-  if (!role) return null
+  if (!usuario) return null
 
   return (
     <div className="topbar">
@@ -29,12 +29,7 @@ export function Topbar({ onMenuOpen, pageTitle, pageIcon }: TopbarProps) {
         <strong>{pageTitle}</strong>
       </div>
       <div className="topbar-actions">
-        <label className="role-switch">
-          <span>Vista</span>
-          <select value={role} disabled>
-            <option>{role}</option>
-          </select>
-        </label>
+        {usuario.nombreSucursal && <span className="chip">{usuario.nombreSucursal}</span>}
         <button
           className="icon-button theme-toggle"
           onClick={toggleTheme}
