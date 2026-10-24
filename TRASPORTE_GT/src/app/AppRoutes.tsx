@@ -21,6 +21,7 @@ import { ViajesPage } from '../features/trips/ViajesPage'
 import { AlquileresPage } from '../features/rentals/AlquileresPage'
 import { ReportsPage } from '../features/reports/ReportsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { SincronizacionPage } from '../features/sync/SincronizacionPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { ExploreTripsPage } from '../features/client/ExploreTripsPage'
 import { RentalRequestPage } from '../features/client/RentalRequestPage'
@@ -90,6 +91,7 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute roles={SISTEMA} />}>
           <Route path="reportes-sistema" element={<ReportsPage system />} />
           <Route path="configuracion" element={<SettingsPage />} />
+          <Route path="sincronizacion" element={<SincronizacionPage />} />
           <Route path="sucursales" element={<SucursalesPage />} />
         </Route>
         {/* Todo usuario es cliente: cualquier rol compra, alquila y usa su cartera. */}
