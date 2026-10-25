@@ -19,8 +19,16 @@ export function CamposSolicitud({ formulario, onCambiar, sucursales, sucursalFij
   const distancia = distanciaEstimada(formulario)
 
   return (
-    <>
-      <div className="form-grid two">
+    <div className="rental-trip-content">
+      <section className="request-section">
+        <div className="request-section-heading">
+          <span className="request-section-number">02</span>
+          <div>
+            <h3>Detalles del viaje</h3>
+            <p>Indica cuándo viaja el grupo y desde qué sucursal saldrá.</p>
+          </div>
+        </div>
+        <div className="form-grid two">
         <Field label="Sucursal de origen" required>
           <select
             value={formulario.idSucursalOrigen}
@@ -41,24 +49,6 @@ export function CamposSolicitud({ formulario, onCambiar, sucursales, sucursalFij
           type="number"
           value={formulario.pasajeros}
           onChange={(event) => onCambiar({ pasajeros: event.target.value })}
-          disabled={deshabilitado}
-          required
-        />
-        <Field
-          label="Origen"
-          placeholder="Ciudad o dirección de salida"
-          value={formulario.origen}
-          onChange={(event) => onCambiar({ origen: event.target.value })}
-          maxLength={150}
-          disabled={deshabilitado}
-          required
-        />
-        <Field
-          label="Destino"
-          placeholder="Ciudad o dirección de llegada"
-          value={formulario.destino}
-          onChange={(event) => onCambiar({ destino: event.target.value })}
-          maxLength={150}
           disabled={deshabilitado}
           required
         />
@@ -94,27 +84,33 @@ export function CamposSolicitud({ formulario, onCambiar, sucursales, sucursalFij
             required
           />
         )}
-        <Field
-          label="Distancia estimada (km)"
-          type="number"
-          step="0.01"
-          placeholder={conMapa ? 'Calculada con el mapa' : 'Ej. 205.50'}
-          value={conMapa ? String(distancia ?? '') : formulario.distanciaKm}
-          onChange={(event) => onCambiar({ distanciaKm: event.target.value })}
-          disabled={conMapa || deshabilitado}
-          required={!conMapa}
+        </div>
+      </section>
+      <section className="request-section request-map-section">
+        <div className="request-section-heading">
+          <span className="request-section-number">03</span>
+          <div>
+            <h3>Define la ruta</h3>
+            <p>Busca una dirección o toca el mapa para marcar origen y destino.</p>
+          </div>
+          <span className="route-status">{conMapa ? 'Ruta lista' : 'Falta ubicar la ruta'}</span>
+        </div>
+        <SelectorPuntosMapa
+          origen={formulario.puntoOrigen}
+          destino={formulario.puntoDestino}
+          distancia={distancia}
+          onCambiar={(puntoOrigen, puntoDestino) => onCambiar({ puntoOrigen, puntoDestino })}
+          onLugarEncontrado={(tipo, direccion) => onCambiar({ [tipo]: direccion })}
+          onSeleccionarLugar={(tipo, punto, direccion) =>
+            onCambiar(tipo === 'origen' ? { puntoOrigen: punto, origen: direccion } : { puntoDestino: punto, destino: direccion })
+          }
         />
-      </div>
-      <SelectorPuntosMapa
-        origen={formulario.puntoOrigen}
-        destino={formulario.puntoDestino}
-        onCambiar={(puntoOrigen, puntoDestino) => onCambiar({ puntoOrigen, puntoDestino })}
-      />
-      <small className="cell-note">
-        {conMapa
-          ? 'Con los dos puntos el sistema calcula la distancia por carretera (aprox.).'
-          : 'Marque el origen y el destino en el mapa, o escriba la distancia en km.'}
-      </small>
-    </>
+        <small className="cell-note">
+          {conMapa
+            ? 'La distancia se calcula automáticamente con los puntos seleccionados.'
+            : 'Selecciona ambos puntos para calcular la distancia y completar la solicitud.'}
+        </small>
+      </section>
+    </div>
   )
 }

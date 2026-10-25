@@ -14,12 +14,13 @@ import type { Chofer, FiltroChoferes } from '../../types/fleetTypes'
 import { formatDateEs, formatQ } from '../../utils/format'
 import { ConfirmarEstadoModal } from '../identity/ConfirmarEstadoModal'
 import { CrearChoferModal, EditarChoferModal } from './ChoferFormModal'
+import { ChoferDetalleModal } from './ChoferDetalleModal'
 import { EstadoLicencia } from './EstadoLicencia'
 import { FotoPrivada } from './FotoPrivada'
 
 const TAMANO_PAGINA = 10
 
-type ModalChoferes = { tipo: 'crear' } | { tipo: 'editar'; id: string } | { tipo: 'activo'; chofer: Chofer }
+type ModalChoferes = { tipo: 'crear' } | { tipo: 'editar'; id: string } | { tipo: 'detalle'; chofer: Chofer } | { tipo: 'activo'; chofer: Chofer }
 
 /** ADMIN_SUCURSAL gestiona los choferes de su sucursal; ADMIN_SISTEMA los consulta todos (solo lectura). */
 export function ChoferesPage() {
@@ -64,7 +65,7 @@ export function ChoferesPage() {
     ...(esSistema ? ['Sucursal'] : []),
     'Acceso',
     'Estado',
-    ...(puedeGestionar ? ['Acciones'] : []),
+    ...(puedeGestionar || esSistema ? ['Acciones'] : []),
   ]
 
   const rows = (pagina?.contenido ?? []).map((chofer) => [
@@ -90,9 +91,15 @@ export function ChoferesPage() {
     ...(esSistema ? [nombresSucursal.get(chofer.idSucursal) ?? '—'] : []),
     chofer.idUsuario ? 'Con usuario' : 'Sin usuario',
     <Badge tone={chofer.activo ? 'success' : 'neutral'}>{chofer.activo ? 'Activo' : 'Inactivo'}</Badge>,
-    ...(puedeGestionar
+    ...(puedeGestionar || esSistema
       ? [
           <div className="row-actions">
+            <AccionFila
+              icono="eye"
+              titulo="Ver detalles"
+              onClick={() => setModal({ tipo: 'detalle', chofer })}
+            />
+            {puedeGestionar && <>
             <AccionFila
               icono="edit"
               titulo="Editar"
@@ -106,6 +113,7 @@ export function ChoferesPage() {
                 setModal({ tipo: 'activo', chofer })
               }}
             />
+            </>}
           </div>,
         ]
       : []),
@@ -187,6 +195,9 @@ export function ChoferesPage() {
       {modal?.tipo === 'crear' && <CrearChoferModal onClose={() => setModal(null)} onGuardado={terminar} />}
       {modal?.tipo === 'editar' && (
         <EditarChoferModal id={modal.id} onClose={() => setModal(null)} onGuardado={terminar} />
+      )}
+      {modal?.tipo === 'detalle' && (
+        <ChoferDetalleModal chofer={modal.chofer} sucursal={nombresSucursal.get(modal.chofer.idSucursal) ?? '—'} onClose={() => setModal(null)} />
       )}
       {modal?.tipo === 'activo' && (
         <ConfirmarEstadoModal

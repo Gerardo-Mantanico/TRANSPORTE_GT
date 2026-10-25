@@ -13,8 +13,9 @@ import type { FiltroRutas, Ruta } from '../../types/tripTypes'
 import { cellText } from '../../utils/cellText'
 import { formatQ } from '../../utils/format'
 import { RutaFormModal } from './RutaFormModal'
+import { RutaDetalleModal } from './RutaDetalleModal'
 
-type ModalRutas = { tipo: 'crear' } | { tipo: 'editar'; ruta: Ruta } | { tipo: 'eliminar'; ruta: Ruta }
+type ModalRutas = { tipo: 'crear' } | { tipo: 'editar'; ruta: Ruta } | { tipo: 'detalle'; ruta: Ruta } | { tipo: 'eliminar'; ruta: Ruta }
 
 /**
  * Rutas que administra el ADMIN_SUCURSAL: siempre las de origen en su sucursal (las únicas que puede gestionar).
@@ -55,22 +56,25 @@ export function RutasPage() {
       </strong>,
       `${ruta.distanciaKm.toLocaleString('es-GT')} km`,
       formatQ(ruta.precioBoleto),
-      propia ? (
-        <div className="row-actions">
-          <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', ruta })} />
-          <AccionFila
-            icono="trash"
-            titulo="Eliminar"
-            variante="danger"
-            onClick={() => {
-              eliminar.reiniciar()
-              setModal({ tipo: 'eliminar', ruta })
-            }}
-          />
-        </div>
-      ) : (
-        <span className="guard-label">Gestionada por la sucursal de origen</span>
-      ),
+      <div className="row-actions">
+        <AccionFila icono="eye" titulo="Ver detalles" onClick={() => setModal({ tipo: 'detalle', ruta })} />
+        {propia ? (
+          <>
+            <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', ruta })} />
+            <AccionFila
+              icono="trash"
+              titulo="Eliminar"
+              variante="danger"
+              onClick={() => {
+                eliminar.reiniciar()
+                setModal({ tipo: 'eliminar', ruta })
+              }}
+            />
+          </>
+        ) : (
+          <span className="guard-label">Solo lectura</span>
+        )}
+      </div>,
     ]
   })
   const busqueda = texto.trim().toLocaleLowerCase('es')
@@ -138,6 +142,14 @@ export function RutasPage() {
               `Ruta ${nombre(ruta.idSucursalOrigen)} → ${nombre(ruta.idSucursalDestino)} ${modal.tipo === 'editar' ? 'actualizada' : 'creada'}.`,
             )
           }
+        />
+      )}
+      {modal?.tipo === 'detalle' && (
+        <RutaDetalleModal
+          ruta={modal.ruta}
+          origen={nombre(modal.ruta.idSucursalOrigen)}
+          destino={nombre(modal.ruta.idSucursalDestino)}
+          onClose={() => setModal(null)}
         />
       )}
       {modal?.tipo === 'eliminar' && (

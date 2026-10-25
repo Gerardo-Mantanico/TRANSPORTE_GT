@@ -84,8 +84,7 @@ export function validarFormulario(formulario: FormularioSolicitud): string | nul
     return 'El retorno debe ser posterior a la salida.'
   const pasajeros = Number(formulario.pasajeros)
   if (!Number.isInteger(pasajeros) || pasajeros < 1 || pasajeros > 300) return 'Los pasajeros deben ser entre 1 y 300.'
-  if (distanciaEstimada(formulario) === null)
-    return 'Marque el origen y el destino en el mapa o indique la distancia en km.'
+  if (distanciaEstimada(formulario) === null) return 'Marque el origen y el destino en el mapa.'
   return null
 }
 
@@ -97,6 +96,7 @@ export function aSolicitudRequest(formulario: FormularioSolicitud): SolicitudAlq
           longitudOrigen: redondear(formulario.puntoOrigen[1]),
           latitudDestino: redondear(formulario.puntoDestino[0]),
           longitudDestino: redondear(formulario.puntoDestino[1]),
+          distanciaEstimadaKm: distanciaEstimada(formulario),
         }
       : { distanciaEstimadaKm: Number(formulario.distanciaKm) }
   return {

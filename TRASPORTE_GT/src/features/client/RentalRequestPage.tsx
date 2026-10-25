@@ -3,7 +3,7 @@ import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { AvisoError } from '../../components/ui/Estado'
 import { Icon } from '../../components/ui/Icon'
-import { InfoNote, SectionTitle } from '../../components/ui/Misc'
+import { InfoNote } from '../../components/ui/Misc'
 import { usePerfilCliente } from '../../hooks/customerWallet'
 import { useSucursales } from '../../hooks/identity'
 import { useSolicitarAlquiler, useTarifaVigente } from '../../hooks/rentals'
@@ -108,8 +108,18 @@ export function RentalRequestPage() {
           )}
         </aside>
       </div>
-      <section className="surface list-surface">
-        <SectionTitle title="Mis alquileres" subtitle="Pague aquí los alquileres ya cotizados" />
+      <br />
+      <section className="surface list-surface rental-history-surface">
+        <header className="rental-history-header">
+          <div className="rental-history-heading">
+            <span className="rental-history-icon"><Icon name="route" size={19} /></span>
+            <div>
+              <h2>Mis solicitudes de alquiler</h2>
+              <p>Consulta el estado de cada solicitud y paga cuando esté cotizada.</p>
+            </div>
+          </div>
+          <span className="rental-history-hint"><Icon name="eye" size={14} /> Ver detalles</span>
+        </header>
         <MisAlquileres key={envios} />
       </section>
     </>

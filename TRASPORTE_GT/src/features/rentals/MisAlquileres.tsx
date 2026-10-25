@@ -28,22 +28,27 @@ export function MisAlquileres() {
   const rows = (datos?.contenido ?? []).map((alquiler) => {
     const puedePagar = alquiler.estado === 'COTIZADO' && alquiler.canal === 'EN_LINEA' && alquiler.idUsuarioCliente === usuario?.id
     return [
-      formatFechaCorta(alquiler.creadoEn),
-      <>
+      <div className="rental-table-date">
+        <Icon name="calendar" size={14} />
+        <strong>{formatFechaCorta(alquiler.creadoEn)}</strong>
+        <small>Solicitud</small>
+      </div>,
+      <div className="rental-route-cell">
         <strong>
           {alquiler.origen} <span className="route-arrow">→</span> {alquiler.destino}
         </strong>
         <small className="cell-note">{ETIQUETAS_CANAL_ALQUILER[alquiler.canal]}</small>
-      </>,
-      <>
-        {formatFechaHora(alquiler.fechaHoraSalida)}
-        {alquiler.idaYVuelta && <small className="cell-note">Retorno {formatFechaHora(alquiler.fechaHoraRetorno)}</small>}
-      </>,
-      String(alquiler.numeroPasajeros),
-      <>
+      </div>,
+      <div className="rental-table-date">
+        <Icon name="clock" size={14} />
+        <strong>{formatFechaHora(alquiler.fechaHoraSalida)}</strong>
+        <small>{alquiler.idaYVuelta ? `Retorno ${formatFechaHora(alquiler.fechaHoraRetorno)}` : 'Solo ida'}</small>
+      </div>,
+      <span className="rental-passenger-chip"><Icon name="users" size={14} /> {alquiler.numeroPasajeros} pasajeros</span>,
+      <div className="rental-table-amount">
         <strong>{formatQ(alquiler.precioFinal ?? alquiler.precioEstimado)}</strong>
         <small className="cell-note">{alquiler.precioFinal !== null ? 'Precio final' : 'Estimado'}</small>
-      </>,
+      </div>,
       <EstadoAlquilerBadge estado={alquiler.estado} />,
       <div className="row-actions">
         {puedePagar && (

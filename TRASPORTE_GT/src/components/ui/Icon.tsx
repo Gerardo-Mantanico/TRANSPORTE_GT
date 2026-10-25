@@ -70,6 +70,13 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <circle cx="12" cy="12" r="3" />
     </>
   ),
+  'eye-off': (
+    <>
+      <path d="M3 3l18 18" />
+      <path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6.5 0 10 6 10 6a18 18 0 0 1-3 3.7" />
+      <path d="M6.2 6.3C3.5 8.1 2 12 2 12s3.5 6 10 6c1 0 1.9-.1 2.7-.4" />
+    </>
+  ),
   fuel: (
     <>
       <path d="M5 21V4h10v17M3 21h14M7 8h6v4H7z" />

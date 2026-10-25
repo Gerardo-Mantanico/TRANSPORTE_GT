@@ -39,28 +39,41 @@ export function MostradorModal({ onClose, onRegistrado }: { onClose: () => void;
     <FormModal
       eyebrow="Mostrador"
       title="Nueva solicitud de alquiler"
+      subtitle="Completa la información para registrar la solicitud"
       actionLabel={previo !== null ? `Registrar · ${formatQ(previo)} aprox.` : 'Registrar solicitud'}
+      fullScreen
       enviando={registrar.cargando}
       onSubmit={guardar}
       onClose={onClose}
     >
-      <div className="form-grid two">
-        <BuscarClienteNit
-          onNitChange={setNit}
-          onEncontrado={(cliente) => {
-            if (cliente) setNombre(cliente.nombreCompleto)
-          }}
+      <div className="rental-request-content">
+        <section className="request-section request-client-section">
+          <div className="request-section-heading">
+            <span className="request-section-number">01</span>
+            <div>
+              <h3>Datos del cliente</h3>
+              <p>Busca al cliente por NIT o registra su nombre.</p>
+            </div>
+          </div>
+          <div className="form-grid two">
+            <BuscarClienteNit
+              onNitChange={setNit}
+              onEncontrado={(cliente) => {
+                if (cliente) setNombre(cliente.nombreCompleto)
+              }}
+              deshabilitado={registrar.cargando}
+            />
+            <Field label="Nombre del cliente" value={nombre} onChange={(event) => setNombre(event.target.value)} maxLength={150} required />
+          </div>
+        </section>
+        <CamposSolicitud
+          formulario={formulario}
+          onCambiar={(cambios) => setFormulario((actual) => ({ ...actual, ...cambios }))}
+          sucursales={sucursales.datos?.contenido ?? []}
+          sucursalFija={Boolean(usuario?.idSucursal)}
           deshabilitado={registrar.cargando}
         />
-        <Field label="Nombre del cliente" value={nombre} onChange={(event) => setNombre(event.target.value)} maxLength={150} required />
       </div>
-      <CamposSolicitud
-        formulario={formulario}
-        onCambiar={(cambios) => setFormulario((actual) => ({ ...actual, ...cambios }))}
-        sucursales={sucursales.datos?.contenido ?? []}
-        sucursalFija={Boolean(usuario?.idSucursal)}
-        deshabilitado={registrar.cargando}
-      />
       {aviso && <p className="estimate-warn">{aviso}</p>}
       <AvisoError error={tarifa.error} />
       <AvisoError error={registrar.error} />

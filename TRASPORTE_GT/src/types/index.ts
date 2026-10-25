@@ -22,6 +22,7 @@ export type IconName =
   | 'download'
   | 'edit'
   | 'eye'
+  | 'eye-off'
   | 'fuel'
   | 'grid'
   | 'lock'

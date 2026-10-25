@@ -16,6 +16,11 @@ interface FormModalProps {
   actionIcon?: IconName
   icona?: IconName
   footer?: ReactNode
+  fullScreen?: boolean
+  subtitle?: string
+  steps?: { label: string; description: string }[]
+  activeStep?: number
+  hideFooter?: boolean
 }
 
 /** Modal con formulario real: el botón principal envía el formulario. */
@@ -31,6 +36,11 @@ export function FormModal({
   actionIcon,
   icona,
   footer,
+  fullScreen = false,
+  subtitle,
+  steps,
+  activeStep = 1,
+  hideFooter = false,
 }: FormModalProps) {
   const icono = icona ?? iconoDeEncabezado(title)
 
@@ -43,7 +53,7 @@ export function FormModal({
     <div className="modal-layer">
       <button className="modal-scrim" onClick={onClose} aria-label="Cerrar" />
       <form
-        className={`modal ${danger ? 'flow-modal danger-modal' : ''}`.trim()}
+        className={`modal ${danger ? 'flow-modal danger-modal' : ''} ${fullScreen ? 'modal-full-screen' : ''}`.trim()}
         role="dialog"
         aria-modal="true"
         onSubmit={handleSubmit}
@@ -58,26 +68,45 @@ export function FormModal({
             <div>
               <span className="eyebrow">{eyebrow}</span>
               <h2>{title}</h2>
+              {subtitle && <p className="modal-subtitle">{subtitle}</p>}
             </div>
           </div>
           <button type="button" className="icon-button" onClick={onClose} aria-label="Cerrar">
             <Icon name="close" />
           </button>
         </header>
+        {steps && steps.length > 0 && (
+          <nav className="modal-stepper" aria-label="Progreso de la solicitud">
+            {steps.map((step, index) => {
+              const numero = index + 1
+              return (
+                <div className={`modal-step ${numero === activeStep ? 'active' : ''} ${numero < activeStep ? 'complete' : ''}`} key={step.label}>
+                  <span>{numero < activeStep ? '✓' : numero}</span>
+                  <div>
+                    <strong>{step.label}</strong>
+                    <small>{step.description}</small>
+                  </div>
+                </div>
+              )
+            })}
+          </nav>
+        )}
         <div className="modal-body">{children}</div>
-        <footer>
-          {footer ?? (
-            <Button
-              type="submit"
-              variant={danger ? 'danger' : 'primary'}
-              icon={enviando ? 'sync' : (actionIcon ?? iconoDeAccion(actionLabel))}
-              className={enviando ? 'is-busy' : ''}
-              disabled={enviando}
-            >
-              {enviando ? 'Procesando...' : actionLabel}
-            </Button>
-          )}
-        </footer>
+        {!hideFooter && (
+          <footer>
+            {footer ?? (
+              <Button
+                type="submit"
+                variant={danger ? 'danger' : 'primary'}
+                icon={enviando ? 'sync' : (actionIcon ?? iconoDeAccion(actionLabel))}
+                className={enviando ? 'is-busy' : ''}
+                disabled={enviando}
+              >
+                {enviando ? 'Procesando...' : actionLabel}
+              </Button>
+            )}
+          </footer>
+        )}
       </form>
     </div>
   )

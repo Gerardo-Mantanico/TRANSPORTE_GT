@@ -20,6 +20,7 @@ import {
 } from '../../types/fleetTypes'
 import { ConfirmarEstadoModal } from '../identity/ConfirmarEstadoModal'
 import { CrearBusModal, EditarBusModal } from './BusFormModal'
+import { BusDetalleModal } from './BusDetalleModal'
 import { EstadoOperativoModal } from './EstadoOperativoModal'
 import { FotoPrivada } from './FotoPrivada'
 
@@ -34,8 +35,9 @@ const TONOS: Record<EstadoOperativo, BadgeTone> = {
 
 type ModalBuses =
   | { tipo: 'crear' }
-  | { tipo: 'editar'; id: string }
-  | { tipo: 'estado'; bus: Bus }
+   | { tipo: 'editar'; id: string }
+   | { tipo: 'detalle'; bus: Bus }
+   | { tipo: 'estado'; bus: Bus }
   | { tipo: 'activo'; bus: Bus }
 
 /** ADMIN_SUCURSAL gestiona los buses de su sucursal; ADMIN_SISTEMA los consulta todos (solo lectura). */
@@ -79,7 +81,7 @@ export function BusesPage() {
     ...(esSistema ? ['Sucursal'] : []),
     'Estado operativo',
     'Estado',
-    ...(puedeGestionar ? ['Acciones'] : []),
+    ...(puedeGestionar || esSistema ? ['Acciones'] : []),
   ]
 
   const rows = (pagina?.contenido ?? []).map((bus) => [
@@ -97,9 +99,11 @@ export function BusesPage() {
     ...(esSistema ? [nombresSucursal.get(bus.idSucursal) ?? '—'] : []),
     <Badge tone={TONOS[bus.estadoOperativo]}>{ETIQUETAS_ESTADO_OPERATIVO[bus.estadoOperativo]}</Badge>,
     <Badge tone={bus.activo ? 'success' : 'neutral'}>{bus.activo ? 'Activo' : 'Inactivo'}</Badge>,
-    ...(puedeGestionar
+    ...(puedeGestionar || esSistema
       ? [
           <div className="row-actions">
+            <AccionFila icono="eye" titulo="Ver detalles" onClick={() => setModal({ tipo: 'detalle', bus })} />
+            {puedeGestionar && <>
             <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', id: bus.id })} />
             <AccionFila
               icono="settings"
@@ -119,6 +123,7 @@ export function BusesPage() {
                 setModal({ tipo: 'activo', bus })
               }}
             />
+            </>}
           </div>,
         ]
       : []),
@@ -217,6 +222,9 @@ export function BusesPage() {
       </section>
       {modal?.tipo === 'crear' && <CrearBusModal onClose={() => setModal(null)} onGuardado={terminar} />}
       {modal?.tipo === 'editar' && <EditarBusModal id={modal.id} onClose={() => setModal(null)} onGuardado={terminar} />}
+      {modal?.tipo === 'detalle' && (
+        <BusDetalleModal bus={modal.bus} sucursal={nombresSucursal.get(modal.bus.idSucursal) ?? '—'} onClose={() => setModal(null)} />
+      )}
       {modal?.tipo === 'estado' && (
         <EstadoOperativoModal
           bus={modal.bus}

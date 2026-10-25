@@ -76,13 +76,19 @@ export function WalletPage() {
   const rows = (pagina?.contenido ?? []).map((movimiento) => {
     const ingreso = movimiento.tipo !== 'PAGO'
     return [
-      formatDateEs(movimiento.fechaMovimiento),
-      descripcion(movimiento),
+      <div className="wallet-movement-date">
+        <Icon name="calendar" size={14} />
+        <strong>{formatDateEs(movimiento.fechaMovimiento)}</strong>
+      </div>,
+      <div className="wallet-movement-description">
+        <strong>{descripcion(movimiento)}</strong>
+        <small>{movimiento.tipoReferencia === 'ALQUILER' ? 'Alquiler' : movimiento.tipoReferencia === 'BOLETOS' ? 'Boletos' : 'Movimiento de cartera'}</small>
+      </div>,
       <Badge tone={TONOS[movimiento.tipo]}>{ETIQUETAS_TIPO_MOVIMIENTO[movimiento.tipo]}</Badge>,
-      <span className={ingreso ? 'money-positive' : 'money-negative'}>
+      <span className={`wallet-movement-amount ${ingreso ? 'money-positive' : 'money-negative'}`}>
         {ingreso ? '+' : '−'} {formatMonto(movimiento.monto)}
       </span>,
-      formatMonto(movimiento.saldoPosterior),
+      <strong className="wallet-movement-balance">{formatMonto(movimiento.saldoPosterior)}</strong>,
     ]
   })
 
@@ -136,9 +142,13 @@ export function WalletPage() {
             </div>
           )}
         </form>
-        <section className="surface list-surface">
-          <SectionTitle title="Movimientos" subtitle="Recargas, pagos y reembolsos, el más reciente primero" />
-          <div className="filters">
+        <section className="surface list-surface wallet-movements-surface">
+          <SectionTitle title="Movimientos" subtitle="Recargas, pagos y reembolsos, del más reciente al más antiguo" />
+          <div className="wallet-filters-heading">
+            <span><Icon name="settings" size={14} /> Filtrar movimientos</span>
+            {(filtro.tipo || filtro.desde || filtro.hasta) && <small>Filtros activos</small>}
+          </div>
+          <div className="filters wallet-movement-filters">
             <label className="field">
               <span className="field-label">
                 <span>Tipo</span>
