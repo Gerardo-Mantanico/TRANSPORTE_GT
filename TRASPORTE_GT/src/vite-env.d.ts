@@ -15,6 +15,8 @@ interface ImportMetaEnv {
   readonly VITE_RENTALS_API_URL: string
   /** URL base del microservicio de Costos operativos (vía API Gateway). */
   readonly VITE_COSTS_API_URL: string
+  /** URL base del microservicio de Reportes (vía API Gateway). */
+  readonly VITE_REPORTS_API_URL: string
 }
 
 interface ImportMeta {
