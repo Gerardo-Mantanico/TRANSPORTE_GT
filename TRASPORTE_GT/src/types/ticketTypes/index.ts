@@ -1,4 +1,5 @@
 export * from './viaje'
 export * from './compra'
 export * from './filtros'
+export * from './abordaje'
 export type { RespuestaError } from '../respuestaError'

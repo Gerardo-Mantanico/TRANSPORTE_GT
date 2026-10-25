@@ -17,6 +17,7 @@ import { cellText } from '../../utils/cellText'
 import { formatFechaCorta, formatMonto } from '../../utils/format'
 import { MisAlquileres } from '../rentals/MisAlquileres'
 import { CeldaAsientos, CeldaViaje, EstadoCompraBadge } from '../tickets/CompraCeldas'
+import { DescargarBoletosButton } from '../tickets/DescargarBoletosButton'
 
 const TAMANO_PAGINA = 10
 
@@ -35,6 +36,7 @@ function BoletosComprados() {
     ETIQUETAS_CANAL[compra.canal],
     formatMonto(compra.montoTotal),
     <EstadoCompraBadge compra={compra} />,
+    <DescargarBoletosButton compra={compra} />,
   ])
   const busqueda = texto.trim().toLocaleLowerCase('es')
   const rows = busqueda
@@ -72,7 +74,7 @@ function BoletosComprados() {
       ) : !pagina && compras.cargando ? (
         <Cargando texto="Cargando sus boletos..." />
       ) : rows.length ? (
-        <DataTable headers={['Fecha', 'Viaje', 'Asientos', 'Origen', 'Monto', 'Estado']} rows={rows} />
+        <DataTable headers={['Fecha', 'Viaje', 'Asientos', 'Origen', 'Monto', 'Estado', 'Boletos']} rows={rows} />
       ) : (
         <div className="filter-empty">
           <span>

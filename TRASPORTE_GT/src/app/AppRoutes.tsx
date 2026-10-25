@@ -14,6 +14,7 @@ import { SucursalesPage } from '../features/identity/SucursalesPage'
 import { UsuariosPage } from '../features/identity/UsuariosPage'
 import { TicketSalesPage } from '../features/sales/TicketSalesPage'
 import { ComprasSucursalPage } from '../features/tickets/ComprasSucursalPage'
+import { AbordajePage } from '../features/tickets/AbordajePage'
 import { BusesPage } from '../features/fleet/BusesPage'
 import { ChoferesPage } from '../features/fleet/ChoferesPage'
 import { RutasPage } from '../features/trips/RutasPage'
@@ -84,6 +85,7 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute roles={['ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="venta" element={<TicketSalesPage />} />
           <Route path="boletos-vendidos" element={<ComprasSucursalPage />} />
+          <Route path="abordaje" element={<AbordajePage />} />
         </Route>
         {/* Reportes de sucursal: SUC ve la suya; SIS elige la sucursal */}
         <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>

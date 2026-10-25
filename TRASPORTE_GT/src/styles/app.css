@@ -4437,6 +4437,85 @@ tbody tr:hover {
 .sync-card .button {
   gap: 8px;
 }
+.boarding-filters {
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 18px;
+  display: grid;
+}
+.boarding-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: 18px;
+  margin-top: 18px;
+  display: grid;
+}
+.boarding-grid .form-card {
+  flex-direction: column;
+  gap: 14px;
+  display: flex;
+}
+.boarding-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  display: grid;
+}
+.boarding-progress > div {
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+  display: flex;
+}
+.boarding-progress strong {
+  font-size: 1.6rem;
+}
+.boarding-progress span {
+  color: var(--muted);
+}
+.boarding-bar {
+  background: var(--line);
+  border-radius: 99px;
+  height: 8px;
+  display: block;
+  overflow: hidden;
+}
+.boarding-bar > span {
+  background: var(--green);
+  height: 100%;
+  transition: width 0.3s;
+  display: block;
+}
+.qr-scanner {
+  border-radius: 12px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+.qr-scanner video {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
+  display: block;
+}
+.qr-scanner-marco {
+  border: 3px solid #ffffffd9;
+  border-radius: 14px;
+  width: 58%;
+  aspect-ratio: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 999px #0000004d;
+}
+.qr-scanner .form-error {
+  margin: 10px;
+}
+.error-text {
+  color: var(--danger);
+}
 .rules-card {
   padding: 23px;
 }
@@ -5108,7 +5187,9 @@ tbody tr:hover {
     display: flex;
   }
   .settings-grid,
-  .sync-grid {
+  .sync-grid,
+  .boarding-grid,
+  .boarding-filters {
     grid-template-columns: 1fr;
   }
   .route-visual {

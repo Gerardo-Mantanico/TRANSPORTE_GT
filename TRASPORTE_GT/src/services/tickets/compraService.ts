@@ -60,3 +60,16 @@ export async function listarComprasSucursal(
 export function venderEnMostrador(datos: VentaMostradorRequest, signal?: AbortSignal) {
   return solicitar<Compra>({ method: 'POST', url: '/boletos/ventas-mostrador', data: datos, signal }, clienteBoletos)
 }
+
+/**
+ * GET /boletos/compras/{id}/pdf → 200 PDF con un QR por boleto | 404 si no le corresponde | 409
+ * COMPRA_NO_CONFIRMADA. Mismos permisos que el detalle (comprador, o SUC y CAJ de la sucursal).
+ */
+export async function descargarBoletosPdf(idCompra: string, signal?: AbortSignal): Promise<Blob> {
+  const respuesta = await clienteBoletos.get<Blob>(`/boletos/compras/${idCompra}/pdf`, {
+    responseType: 'blob',
+    headers: { Accept: 'application/pdf, application/json' },
+    signal,
+  })
+  return respuesta.data
+}

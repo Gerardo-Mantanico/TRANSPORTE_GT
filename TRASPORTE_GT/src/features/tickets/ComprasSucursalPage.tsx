@@ -20,6 +20,7 @@ import type { ViajeResumen } from '../../types/tripTypes'
 import { etiquetaAsiento } from '../../utils/asientos'
 import { formatFechaHora, formatMonto } from '../../utils/format'
 import { CeldaAsientos, CeldaViaje, EstadoCompraBadge } from './CompraCeldas'
+import { DescargarBoletosButton } from './DescargarBoletosButton'
 
 const TAMANO_PAGINA = 10
 
@@ -104,6 +105,7 @@ function DetalleCompraModal({
           <Button variant="ghost" icon="sync" onClick={recargar} disabled={cargando}>
             Actualizar
           </Button>
+          {compra && <DescargarBoletosButton compra={compra} variant="primary" texto="Imprimir boletos (PDF)" />}
         </footer>
       </section>
     </div>

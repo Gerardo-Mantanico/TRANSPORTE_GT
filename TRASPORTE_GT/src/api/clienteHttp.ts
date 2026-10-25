@@ -19,6 +19,20 @@ export function alRecibirNoAutorizado(manejador: () => void): () => void {
   }
 }
 
+/**
+ * Con `responseType: 'blob'` (PDF, fotos) el `RespuestaError` del backend llega como Blob: se convierte a objeto
+ * para que `ApiError` muestre su mensaje y su código.
+ */
+async function leerErrorBinario(error: unknown) {
+  if (!axios.isAxiosError(error) || !(error.response?.data instanceof Blob)) return
+  if (!error.response.data.type.includes('json')) return
+  try {
+    error.response.data = JSON.parse(await error.response.data.text())
+  } catch {
+    // Cuerpo ilegible: ApiError usa el mensaje genérico del status
+  }
+}
+
 /** Crea un cliente para un microservicio con el token, el parseo de `ApiError` y el cierre de sesión por 401. */
 export function crearClienteHttp(baseURL: string): AxiosInstance {
   const cliente = axios.create({
@@ -34,7 +48,8 @@ export function crearClienteHttp(baseURL: string): AxiosInstance {
 
   cliente.interceptors.response.use(
     (respuesta) => respuesta,
-    (error: unknown) => {
+    async (error: unknown) => {
+      await leerErrorBinario(error)
       const apiError = ApiError.desde(error)
       // Un 401 con token significa sesión vencida o revocada. El 401 del login sin token
       // (credenciales malas) es solo un error del formulario.
