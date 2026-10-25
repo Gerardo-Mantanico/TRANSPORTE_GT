@@ -43,6 +43,7 @@ export function GastosReporte({ titulo, subtitulo }: { titulo: string; subtitulo
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       filtros={
         <FiltrosReporte control={control}>
           <SelectorCatalogo

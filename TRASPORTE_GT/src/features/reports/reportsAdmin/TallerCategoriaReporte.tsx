@@ -42,6 +42,7 @@ export function TallerCategoriaReporte({ titulo, subtitulo }: { titulo: string; 
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       filtros={
         <FiltrosReporte control={control}>
           <SelectorCatalogo

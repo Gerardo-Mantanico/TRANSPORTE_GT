@@ -33,6 +33,7 @@ export function GananciasReporte({ titulo, subtitulo }: { titulo: string; subtit
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       filtros={
         <FiltrosReporte control={control}>
           <SelectorCatalogo

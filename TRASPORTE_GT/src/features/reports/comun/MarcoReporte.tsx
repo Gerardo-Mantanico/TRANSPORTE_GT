@@ -3,8 +3,9 @@ import { Button } from '../../../components/ui/Button'
 import { Icon } from '../../../components/ui/Icon'
 import type { ResultadoConsulta } from '../../../hooks/useConsulta'
 import type { ReporteTabla } from '../../../types/reportTypes'
-import { exportToPdf, formatDateEs, formatFechaHora } from '../../../utils/format'
+import { formatDateEs, formatFechaHora } from '../../../utils/format'
 import { ETIQUETA_FILTRO } from './etiquetas'
+import type { ColumnaReporte } from './tablaReporte'
 
 export interface Indicador {
   etiqueta: string
@@ -24,6 +25,7 @@ interface MarcoReporteProps<F> {
   /** Mensaje cuando la consulta está deshabilitada (falta elegir sucursal). */
   pendiente?: string | null
   vacio: (reporte: ReporteTabla<F>) => boolean
+  columnas?: ColumnaReporte<F>[]
 }
 
 function periodo(reporte: ReporteTabla<unknown>): string {
@@ -46,8 +48,19 @@ export function MarcoReporte<F>({
   total,
   pendiente,
   vacio,
+  columnas,
 }: MarcoReporteProps<F>) {
   const reporte = consulta.datos
+  const exportarPdf = async () => {
+    if (!reporte || !columnas) return
+    const { descargarReportePdf } = await import('./ReportePdf')
+    await descargarReportePdf(reporte, columnas)
+  }
+  const exportarExcel = async () => {
+    if (!reporte || !columnas) return
+    const { descargarReporteExcel } = await import('./ReporteExcel')
+    await descargarReporteExcel(reporte, columnas)
+  }
 
   return (
     <section className="surface report-detail">
@@ -68,9 +81,14 @@ export function MarcoReporte<F>({
             </p>
           )}
         </div>
-        <Button icon="download" onClick={exportToPdf} disabled={!reporte}>
-          Exportar PDF
-        </Button>
+         <div className="report-export-actions">
+           <Button variant="secondary" icon="download" onClick={() => void exportarExcel()} disabled={!reporte || !columnas}>
+             Excel
+           </Button>
+           <Button icon="download" onClick={() => void exportarPdf()} disabled={!reporte || !columnas}>
+             PDF
+           </Button>
+         </div>
       </div>
       {filtros}
       {pendiente ? (

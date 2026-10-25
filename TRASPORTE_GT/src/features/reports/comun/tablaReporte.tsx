@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import type { GrupoReporte, ValorTotal } from '../../../types/reportTypes'
 import { formatMonto } from '../../../utils/format'
 
@@ -9,6 +9,27 @@ export interface ColumnaReporte<F> {
   subtotal?: string
   /** El subtotal es dinero (texto con 2 decimales). */
   dinero?: boolean
+}
+
+export interface ExportacionReporte {
+  columnas: string[]
+  filas: string[][]
+}
+
+function textoDeNodo(nodo: ReactNode): string {
+  if (nodo == null || typeof nodo === 'boolean') return ''
+  if (typeof nodo === 'string' || typeof nodo === 'number') return String(nodo)
+  if (Array.isArray(nodo)) return nodo.map(textoDeNodo).filter(Boolean).join(' · ')
+  if (typeof nodo === 'object' && 'props' in nodo) return textoDeNodo((nodo as ReactElement<{ children?: ReactNode }>).props.children)
+  return ''
+}
+
+/** Convierte las mismas filas que ve el usuario en valores planos para PDF/Excel. */
+export function datosParaExportar<F>(grupos: GrupoReporte<F>[], columnas: ColumnaReporte<F>[]): ExportacionReporte {
+  return {
+    columnas: columnas.map((columna) => columna.titulo),
+    filas: filasDeGrupos(grupos, columnas).map((fila) => fila.map(textoDeNodo)),
+  }
 }
 
 function valorSubtotal(valor: ValorTotal | undefined, dinero: boolean): string {

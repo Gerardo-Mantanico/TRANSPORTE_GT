@@ -36,6 +36,7 @@ export function RutasDemandadasReporte({ titulo, subtitulo }: { titulo: string; 
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       filtros={<FiltrosReporte control={control} />}
       indicadores={(r) => [
         { etiqueta: 'Boletos vendidos', valor: String(r.totales.boletosVendidos) },

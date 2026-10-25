@@ -47,6 +47,7 @@ export function BusesReporte({ titulo, subtitulo, idSucursal, habilitado }: Repo
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       pendiente={habilitado ? null : SIN_SUCURSAL}
       filtros={
         <FiltrosReporte control={control}>

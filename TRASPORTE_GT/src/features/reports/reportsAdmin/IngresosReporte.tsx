@@ -48,6 +48,7 @@ export function IngresosReporte({ titulo, subtitulo }: { titulo: string; subtitu
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       filtros={
         <FiltrosReporte control={control}>
           <SelectorCatalogo

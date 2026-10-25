@@ -17,7 +17,7 @@ export function FiltrosReporte<T extends object>({ control, children, sinFechas 
 
   return (
     <div className="filter-shell report-filters">
-      <div className="filter-panel" style={{ display: 'block' }}>
+      <div className="filter-panel">
         <div className="filters">
           {!sinFechas && (
             <>

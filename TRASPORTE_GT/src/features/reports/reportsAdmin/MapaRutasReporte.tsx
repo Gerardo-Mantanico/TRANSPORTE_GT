@@ -64,6 +64,7 @@ export function MapaRutasReporte({ titulo, subtitulo }: { titulo: string; subtit
       titulo={titulo}
       subtitulo={subtitulo}
       consulta={consulta}
+      columnas={COLUMNAS}
       pendiente={idSucursal ? null : 'Seleccione la sucursal de origen'}
       filtros={
         <FiltrosReporte control={control} sinFechas>
