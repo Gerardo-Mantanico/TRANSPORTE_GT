@@ -33,6 +33,21 @@ npm run dev
 El servidor arranca en `http://localhost:5173` (por defecto). Se abre en el
 navegador y ya se puede navegar la aplicación.
 
+### Cámara del celular (abordaje)
+
+El navegador solo permite la cámara en `https://` o en `localhost`. Para escanear los QR de los boletos desde un
+celular en la misma red:
+
+```bash
+npm run dev:movil
+```
+
+- Levanta Vite con HTTPS (certificado propio de `@vitejs/plugin-basic-ssl`) y abierto en la red: abra en el celular
+  la dirección `https://<ip-de-la-pc>:5173` que muestra la consola y acepte la advertencia del certificado.
+- Usa `.env.movil`: las URL de la API son relativas (`/v1/...`) y Vite las reenvía al gateway (`GATEWAY_URL`,
+  por defecto `http://localhost:8080`), así el celular no necesita llegar al gateway ni hay problemas de CORS.
+- En la PC, `npm run dev` sigue funcionando igual: `http://localhost:5173` ya es un contexto seguro.
+
 ### Otros comandos útiles
 
 ```bash

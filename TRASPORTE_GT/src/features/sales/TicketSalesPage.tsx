@@ -12,6 +12,7 @@ import { etiquetaAsiento, indicesOcupados, numeroAsiento, ordenarEtiquetas } fro
 import { formatFechaCorta, formatFechaHora, formatHora, formatMonto, formatQ, hoyIso } from '../../utils/format'
 import { nuevaClaveIdempotencia } from '../../utils/idempotencia'
 import { BuscarClienteNit } from '../customerWallet/BuscarClienteNit'
+import { DescargarBoletosButton } from '../tickets/DescargarBoletosButton'
 
 const STEPS = ['Viaje', 'Asientos', 'Cliente y pago', 'Confirmación'] as const
 
@@ -315,6 +316,7 @@ export function TicketSalesPage() {
                   <strong>{formatMonto(venta.montoTotal)}</strong>
                 </div>
               </div>
+              <DescargarBoletosButton compra={venta} variant="primary" texto="Imprimir boletos (PDF)" />
             </>
           )}
           <div className="sale-actions">

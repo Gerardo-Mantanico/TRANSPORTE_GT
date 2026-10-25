@@ -12,6 +12,7 @@ export type IconName =
   | 'building'
   | 'calendar'
   | 'chart'
+  | 'camera'
   | 'check'
   | 'save'
   | 'chevron'

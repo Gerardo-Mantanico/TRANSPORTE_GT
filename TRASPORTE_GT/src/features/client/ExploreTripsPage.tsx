@@ -22,6 +22,7 @@ import { formatFechaCorta, formatFechaHora, formatHora, formatMonto, formatQ, ho
 import { nuevaClaveIdempotencia } from '../../utils/idempotencia'
 import { puedeOperarEnLinea } from '../../utils/perfilCliente'
 import { AvisoPerfilCliente } from '../customerWallet/AvisoPerfilCliente'
+import { DescargarBoletosButton } from '../tickets/DescargarBoletosButton'
 
 function toggleSeat(seats: string[], seat: string) {
   return seats.includes(seat) ? seats.filter((item) => item !== seat) : [...seats, seat]
@@ -89,8 +90,10 @@ function PurchaseConfirmationModal({
             </div>
           </div>
           <InfoNote>
-            El comprobante quedó guardado en <strong>Mi historial</strong> junto con sus boletos.
+            Descargue sus boletos: cada uno trae el código QR que se escanea al abordar. También quedan en{' '}
+            <strong>Mi historial</strong>.
           </InfoNote>
+          <DescargarBoletosButton compra={compra} variant="primary" texto="Descargar boletos (PDF)" />
         </div>
       </section>
     </div>
