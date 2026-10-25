@@ -12,12 +12,14 @@ import type { FiltroSucursales, Sucursal } from '../../types/identityTypes'
 import { AdministradoresModal } from './AdministradoresModal'
 import { ConfirmarEstadoModal } from './ConfirmarEstadoModal'
 import { CrearSucursalModal, EditarSucursalModal } from './SucursalFormModal'
+import { SucursalDetalleModal } from './SucursalDetalleModal'
 
 const TAMANO_PAGINA = 10
 
 type ModalSucursales =
   | { tipo: 'crear' }
   | { tipo: 'editar'; id: string }
+  | { tipo: 'detalle'; sucursal: Sucursal }
   | { tipo: 'estado'; sucursal: Sucursal }
   | { tipo: 'administradores'; sucursal: Sucursal }
 
@@ -55,6 +57,11 @@ export function SucursalesPage() {
     `${sucursal.latitud}, ${sucursal.longitud}`,
     <Badge tone={sucursal.activa ? 'success' : 'neutral'}>{sucursal.activa ? 'Activa' : 'Inactiva'}</Badge>,
     <div className="row-actions">
+      <AccionFila
+        icono="eye"
+        titulo="Ver detalles"
+        onClick={() => setModal({ tipo: 'detalle', sucursal })}
+      />
       <AccionFila
         icono="edit"
         titulo="Editar"
@@ -151,6 +158,7 @@ export function SucursalesPage() {
           onGuardado={(editada) => terminar(`La sucursal ${editada.nombre} se actualizó.`)}
         />
       )}
+      {modal?.tipo === 'detalle' && <SucursalDetalleModal sucursal={modal.sucursal} onClose={() => setModal(null)} />}
       {modal?.tipo === 'estado' && (
         <ConfirmarEstadoModal
           recurso="sucursal"

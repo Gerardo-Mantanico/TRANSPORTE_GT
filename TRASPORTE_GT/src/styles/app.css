@@ -2625,6 +2625,167 @@ tbody tr:hover {
   font-size: 0.67rem;
   font-weight: 700;
 }
+.branch-location-section {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.branch-location-heading {
+  margin-bottom: 9px;
+}
+.branch-location-heading strong,
+.branch-location-heading small {
+  display: block;
+}
+.branch-location-heading strong {
+  color: var(--ink);
+  font-size: 0.78rem;
+}
+.branch-location-heading b {
+  color: var(--danger);
+}
+.branch-location-heading small {
+  color: var(--muted);
+  margin-top: 3px;
+  font-size: 0.68rem;
+}
+.branch-location-picker {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fbfcfb;
+}
+.branch-location-search {
+  position: relative;
+  margin-bottom: 9px;
+}
+.branch-location-search input {
+  width: 100%;
+  min-height: 41px;
+  border: 1px solid #dce3dc;
+  border-radius: 9px;
+  outline: none;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+}
+.branch-location-search input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px #176b871a;
+}
+.branch-location-search > small {
+  color: var(--muted);
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  letter-spacing: 2px;
+}
+.branch-location-suggestions {
+  z-index: 5;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: 0 10px 24px #17251d24;
+}
+.branch-location-suggestions button {
+  width: 100%;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 0.72rem;
+}
+.branch-location-suggestions button:hover,
+.branch-location-suggestions button:focus-visible {
+  background: #eef8f5;
+}
+.branch-location-map {
+  min-height: 240px;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.branch-location-coordinates {
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  padding: 8px 10px;
+  display: flex;
+  gap: 16px;
+  font-size: 0.65rem;
+}
+.branch-form-steps {
+  background: #f7faf8;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 9px;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 8px;
+}
+.branch-form-step {
+  color: var(--muted);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.branch-form-step span {
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid #cbd8d0;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.branch-form-step.active,
+.branch-form-step.complete {
+  color: var(--green-dark);
+}
+.branch-form-step.active span,
+.branch-form-step.complete span {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+.branch-step-intro {
+  background: var(--green-soft);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+.branch-step-intro strong,
+.branch-step-intro span {
+  display: block;
+}
+.branch-step-intro strong {
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+.branch-step-intro span {
+  color: var(--muted);
+  margin-top: 3px;
+  font-size: 0.7rem;
+}
+.branch-form-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 .wallet-movements-surface > .section-title {
   border-bottom: 1px solid var(--line);
   padding: 20px 22px 15px;
