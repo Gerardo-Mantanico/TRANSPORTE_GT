@@ -93,9 +93,6 @@ function FormularioBus({ bus, onClose, onGuardado }: FormularioBusProps) {
       onClose={onClose}
     >
       <div className="form-grid two">
-        <div className="span-two">
-          <CampoFoto label="Foto del bus" nombre={campos.placa} fotoActual={bus?.fotoUrl} onChange={setArchivo} />
-        </div>
         <Field
           label="Placa"
           placeholder="P123XYZ"
@@ -148,6 +145,9 @@ function FormularioBus({ bus, onClose, onGuardado }: FormularioBusProps) {
             onChange={(event) => cambiar({ kilometraje: event.target.value })}
           />
         )}
+        <div className="span-two">
+          <CampoFoto label="Foto del bus" nombre={campos.placa} fotoActual={bus?.fotoUrl} onChange={setArchivo} />
+        </div>
       </div>
       <InfoNote>
         {bus

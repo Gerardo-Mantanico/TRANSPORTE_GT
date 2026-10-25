@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -49,21 +49,22 @@ export function CategoriasPage() {
     formatFechaCorta(categoria.creadoEn),
     <Badge tone={categoria.activa ? 'success' : 'neutral'}>{categoria.activa ? 'Activa' : 'Inactiva'}</Badge>,
     <div className="row-actions">
-      <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', categoria })}>
-        Editar
-      </Button>
-      <Button variant="ghost" disabled={cambiarActiva.cargando} onClick={() => alternar(categoria)}>
-        {categoria.activa ? 'Desactivar' : 'Activar'}
-      </Button>
-      <Button
-        variant="ghost"
+      <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', categoria })} />
+      <AccionFila
+        icono="power"
+        titulo={categoria.activa ? 'Desactivar' : 'Activar'}
+        disabled={cambiarActiva.cargando}
+        onClick={() => alternar(categoria)}
+      />
+      <AccionFila
+        icono="trash"
+        titulo="Eliminar"
+        variante="danger"
         onClick={() => {
           eliminar.reiniciar()
           setModal({ tipo: 'eliminar', categoria })
         }}
-      >
-        Eliminar
-      </Button>
+      />
     </div>,
   ])
   const busqueda = texto.trim().toLocaleLowerCase('es')

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
@@ -9,6 +9,7 @@ import { Icon } from '../../components/ui/Icon'
 import { Paginacion } from '../../components/ui/Paginacion'
 import { useSucursales } from '../../hooks/identity'
 import { useRutas, useViajes } from '../../hooks/trips'
+import type { IconName } from '../../types'
 import {
   ESTADOS_VIAJE,
   ETIQUETAS_ESTADO_VIAJE,
@@ -90,25 +91,37 @@ export function ViajesPage() {
   }
 
   const acciones = (viaje: Viaje) => {
-    const botones: { etiqueta: string; abrir: () => void }[] = []
+    const botones: { etiqueta: string; icono: IconName; abrir: () => void; peligro?: boolean }[] = []
     if (esAdminSucursal || esChofer) {
-      if (viaje.estado === 'PROGRAMADO') botones.push({ etiqueta: 'Registrar salida', abrir: () => setModal({ tipo: 'salida', viaje }) })
-      if (viaje.estado === 'EN_TRANSITO') botones.push({ etiqueta: 'Registrar llegada', abrir: () => setModal({ tipo: 'llegada', viaje }) })
+      if (viaje.estado === 'PROGRAMADO')
+        botones.push({ etiqueta: 'Registrar salida', icono: 'arrow', abrir: () => setModal({ tipo: 'salida', viaje }) })
+      if (viaje.estado === 'EN_TRANSITO')
+        botones.push({ etiqueta: 'Registrar llegada', icono: 'check', abrir: () => setModal({ tipo: 'llegada', viaje }) })
     }
     if (esAdminSucursal) {
       if (viaje.estado === 'PENDIENTE_ASIGNACION')
-        botones.push({ etiqueta: 'Asignar bus y chofer', abrir: () => setModal({ tipo: 'asignar', viaje }) })
-      if (viaje.estado === 'PROGRAMADO') botones.push({ etiqueta: 'Editar', abrir: () => setModal({ tipo: 'editar', id: viaje.id }) })
+        botones.push({ etiqueta: 'Asignar bus y chofer', icono: 'bus', abrir: () => setModal({ tipo: 'asignar', viaje }) })
+      if (viaje.estado === 'PROGRAMADO')
+        botones.push({ etiqueta: 'Editar', icono: 'edit', abrir: () => setModal({ tipo: 'editar', id: viaje.id }) })
       if (viaje.estado === 'PROGRAMADO' || viaje.estado === 'PENDIENTE_ASIGNACION')
-        botones.push({ etiqueta: 'Eliminar', abrir: () => setModal({ tipo: 'eliminar', viaje }) })
+        botones.push({
+          etiqueta: 'Eliminar',
+          icono: 'trash',
+          peligro: true,
+          abrir: () => setModal({ tipo: 'eliminar', viaje }),
+        })
     }
-    botones.push({ etiqueta: 'Detalle', abrir: () => setModal({ tipo: 'detalle', id: viaje.id }) })
+    botones.push({ etiqueta: 'Detalle', icono: 'eye', abrir: () => setModal({ tipo: 'detalle', id: viaje.id }) })
     return (
       <div className="row-actions">
         {botones.map((boton) => (
-          <Button key={boton.etiqueta} variant="ghost" onClick={boton.abrir}>
-            {boton.etiqueta}
-          </Button>
+          <AccionFila
+            key={boton.etiqueta}
+            icono={boton.icono}
+            titulo={boton.etiqueta}
+            variante={boton.peligro ? 'danger' : 'ghost'}
+            onClick={boton.abrir}
+          />
         ))}
       </div>
     )

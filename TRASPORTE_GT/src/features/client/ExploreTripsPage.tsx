@@ -92,9 +92,6 @@ function PurchaseConfirmationModal({
             El comprobante quedó guardado en <strong>Mi historial</strong> junto con sus boletos.
           </InfoNote>
         </div>
-        <footer>
-          <Button onClick={onClose}>Entendido</Button>
-        </footer>
       </section>
     </div>
   )
@@ -164,7 +161,7 @@ function CompraPendienteModal({
           <AvisoError error={error} />
         </div>
         <footer>
-          <Button variant="ghost" onClick={consultarEstado} disabled={ocupado}>
+          <Button variant="ghost" icon="search" onClick={consultarEstado} disabled={ocupado}>
             {consultar.cargando ? 'Consultando...' : 'Consultar estado'}
           </Button>
           <Button icon="wallet" onClick={reintentarPago} disabled={ocupado}>
@@ -252,9 +249,6 @@ function RouteModal({
           </div>
         </div>
         <footer>
-          <Button variant="ghost" onClick={onClose}>
-            Cerrar
-          </Button>
           <Button icon="ticket" onClick={onSelect}>
             Seleccionar asientos
           </Button>
@@ -436,9 +430,6 @@ function SeatSelectionModal({
           </aside>
         </div>
         <footer>
-          <Button variant="ghost" onClick={onClose}>
-            Cancelar
-          </Button>
           <Button
             icon="wallet"
             disabled={!seleccion.length || !puedePagar || comprar.cargando}

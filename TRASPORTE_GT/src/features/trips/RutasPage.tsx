@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -57,18 +57,16 @@ export function RutasPage() {
       formatQ(ruta.precioBoleto),
       propia ? (
         <div className="row-actions">
-          <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', ruta })}>
-            Editar
-          </Button>
-          <Button
-            variant="ghost"
+          <AccionFila icono="edit" titulo="Editar" onClick={() => setModal({ tipo: 'editar', ruta })} />
+          <AccionFila
+            icono="trash"
+            titulo="Eliminar"
+            variante="danger"
             onClick={() => {
               eliminar.reiniciar()
               setModal({ tipo: 'eliminar', ruta })
             }}
-          >
-            Eliminar
-          </Button>
+          />
         </div>
       ) : (
         <span className="guard-label">Gestionada por la sucursal de origen</span>

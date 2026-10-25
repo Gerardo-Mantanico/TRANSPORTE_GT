@@ -12,22 +12,13 @@ interface FilterToolbarProps {
   children?: ReactNode
 }
 
-export function FilterToolbar({
-  searchPlaceholder = 'Buscar...',
-  onSearch,
-  action,
-  onAction,
-  children,
-}: FilterToolbarProps) {
-  const [query, setQuery] = useState('')
+export function FilterToolbar({ action, onAction, children }: FilterToolbarProps) {
   const [period, setPeriod] = useState<string>('Todo')
-  const [showFilters, setShowFilters] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
   const [resetKey, setResetKey] = useState(0)
-  const hasActiveFilters = query.length > 0 || period !== 'Todo'
+  const hasActiveFilters = period !== 'Todo'
 
   const handleReset = () => {
-    setQuery('')
-    onSearch?.('')
     setPeriod('Todo')
     setResetKey((key) => key + 1)
   }
@@ -35,28 +26,6 @@ export function FilterToolbar({
   return (
     <div className="filter-shell">
       <div className="toolbar">
-        <label className="search">
-          <Icon name="search" />
-          <input
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value)
-              onSearch?.(event.target.value)
-            }}
-            placeholder={searchPlaceholder}
-          />
-          {query && (
-            <button
-              onClick={() => {
-                setQuery('')
-                onSearch?.('')
-              }}
-              aria-label="Limpiar búsqueda"
-            >
-              <Icon name="close" size={14} />
-            </button>
-          )}
-        </label>
         <div className="period-filter" aria-label="Periodo">
           {PERIODS.map((option) => (
             <button
@@ -74,11 +43,11 @@ export function FilterToolbar({
         >
           <Icon name="grid" size={16} />
           <span>Más filtros</span>
-          {hasActiveFilters && <b>{Number(query.length > 0) + Number(period !== 'Todo')}</b>}
+          {hasActiveFilters && <b>1</b>}
           <Icon name="chevron" size={14} />
         </button>
         {action && onAction && (
-          <Button onClick={onAction} icon="plus">
+          <Button onClick={onAction} icon="plus" className="toolbar-action">
             {action}
           </Button>
         )}
@@ -96,19 +65,6 @@ export function FilterToolbar({
       )}
       <div className="filter-status">
         <div>
-          {query && (
-            <span>
-              Coincide con: <strong>“{query}”</strong>
-              <button
-                onClick={() => {
-                  setQuery('')
-                  onSearch?.('')
-                }}
-              >
-                <Icon name="close" size={12} />
-              </button>
-            </span>
-          )}
           {period !== 'Todo' && (
             <span>
               Periodo: <strong>{period}</strong>

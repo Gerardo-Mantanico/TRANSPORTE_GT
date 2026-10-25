@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
@@ -59,9 +59,7 @@ export function TallerPage() {
     <span className="chip">{[...new Set(gasto.lineas.map((linea) => linea.nombreCategoria))].join(', ')}</span>,
     String(gasto.lineas.length),
     <strong>{formatQ(gasto.total)}</strong>,
-    <Button variant="ghost" onClick={() => setModal({ tipo: 'detalle', gasto })}>
-      Ver detalle
-    </Button>,
+    <AccionFila icono="eye" titulo="Ver detalle" onClick={() => setModal({ tipo: 'detalle', gasto })} />,
   ])
   const busqueda = texto.trim().toLocaleLowerCase('es')
   const rows = busqueda ? todas.filter((row) => cellText(row).toLocaleLowerCase('es').includes(busqueda)) : todas

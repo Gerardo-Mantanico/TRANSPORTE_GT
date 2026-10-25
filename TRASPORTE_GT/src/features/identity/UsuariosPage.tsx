@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -85,23 +85,27 @@ export function UsuariosPage() {
       <span className="guard-label">Su cuenta</span>
     ) : (
       <div className="row-actions">
-        <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', id: usuario.id })}>
-          Editar
-        </Button>
+        <AccionFila
+          icono="edit"
+          titulo="Editar"
+          onClick={() => setModal({ tipo: 'editar', id: usuario.id })}
+        />
         {usuario.activacionPendiente && usuario.activo && (
-          <Button variant="ghost" onClick={() => reenviarActivacion(usuario)} disabled={reenviar.cargando}>
-            Reenviar activación
-          </Button>
+          <AccionFila
+            icono="mail"
+            titulo="Reenviar activación"
+            onClick={() => reenviarActivacion(usuario)}
+            disabled={reenviar.cargando}
+          />
         )}
-        <Button
-          variant="ghost"
+        <AccionFila
+          icono="power"
+          titulo={usuario.activo ? 'Desactivar' : 'Activar'}
           onClick={() => {
             cambiarEstado.reiniciar()
             setModal({ tipo: 'estado', usuario })
           }}
-        >
-          {usuario.activo ? 'Desactivar' : 'Activar'}
-        </Button>
+        />
       </div>
     ),
   ])

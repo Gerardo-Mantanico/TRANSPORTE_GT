@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../app/providers/useAuth'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Icon } from '../../components/ui/Icon'
@@ -47,13 +47,9 @@ export function MisAlquileres() {
       <EstadoAlquilerBadge estado={alquiler.estado} />,
       <div className="row-actions">
         {puedePagar && (
-          <Button variant="ghost" onClick={() => setModal({ tipo: 'pagar', alquiler })}>
-            Pagar
-          </Button>
+          <AccionFila icono="wallet" titulo="Pagar" onClick={() => setModal({ tipo: 'pagar', alquiler })} />
         )}
-        <Button variant="ghost" onClick={() => setModal({ tipo: 'detalle', id: alquiler.id })}>
-          Detalle
-        </Button>
+        <AccionFila icono="eye" titulo="Detalle" onClick={() => setModal({ tipo: 'detalle', id: alquiler.id })} />
       </div>,
     ]
   })

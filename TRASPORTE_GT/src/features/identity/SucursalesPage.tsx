@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -55,21 +55,24 @@ export function SucursalesPage() {
     `${sucursal.latitud}, ${sucursal.longitud}`,
     <Badge tone={sucursal.activa ? 'success' : 'neutral'}>{sucursal.activa ? 'Activa' : 'Inactiva'}</Badge>,
     <div className="row-actions">
-      <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', id: sucursal.id })}>
-        Editar
-      </Button>
-      <Button variant="ghost" onClick={() => setModal({ tipo: 'administradores', sucursal })}>
-        Administradores
-      </Button>
-      <Button
-        variant="ghost"
+      <AccionFila
+        icono="edit"
+        titulo="Editar"
+        onClick={() => setModal({ tipo: 'editar', id: sucursal.id })}
+      />
+      <AccionFila
+        icono="users"
+        titulo="Administradores"
+        onClick={() => setModal({ tipo: 'administradores', sucursal })}
+      />
+      <AccionFila
+        icono="power"
+        titulo={sucursal.activa ? 'Desactivar' : 'Activar'}
         onClick={() => {
           cambiarEstado.reiniciar()
           setModal({ tipo: 'estado', sucursal })
         }}
-      >
-        {sucursal.activa ? 'Desactivar' : 'Activar'}
-      </Button>
+      />
     </div>,
   ])
 
