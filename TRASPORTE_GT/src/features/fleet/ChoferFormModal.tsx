@@ -59,13 +59,24 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
   const cargando = crear.cargando || editar.cargando || subirFoto.cargando
   const cambiar = (cambios: Partial<CamposChofer>) => setCampos((actual) => ({ ...actual, ...cambios }))
 
+  const opcionesUsuario = usuariosChofer.datos?.contenido ?? []
+  const usuarioEnlazado = opcionesUsuario.find((usuario) => usuario.id === campos.idUsuario)
+  const enlazadoFueraDeLista = campos.idUsuario && !usuarioEnlazado
+  // Con usuario enlazado, el nombre y el correo son los de Identidad y no se editan aquí
+  const conAcceso = Boolean(campos.idUsuario)
+  const nombreCompleto = usuarioEnlazado?.nombreCompleto ?? campos.nombreCompleto
+  const correo = usuarioEnlazado?.correo ?? campos.correo
+
+  /** Al quitar el acceso se conservan el nombre y el correo mostrados para poder editarlos. */
+  const cambiarUsuario = (idUsuario: string) => cambiar({ idUsuario, nombreCompleto, correo })
+
   const guardar = async () => {
     const invalido = validar(campos)
     setErrorLocal(invalido)
     if (invalido) return
     const datos = {
-      nombreCompleto: campos.nombreCompleto.trim(),
-      correo: campos.correo.trim(),
+      nombreCompleto: nombreCompleto.trim(),
+      correo: correo.trim(),
       telefono: campos.telefono.trim(),
       numeroLicencia: campos.numeroLicencia.trim(),
       tipoLicencia: campos.tipoLicencia,
@@ -91,9 +102,6 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
     )
   }
 
-  const opcionesUsuario = usuariosChofer.datos?.contenido ?? []
-  const enlazadoFueraDeLista = campos.idUsuario && !opcionesUsuario.some((usuario) => usuario.id === campos.idUsuario)
-
   return (
     <FormModal
       eyebrow={chofer ? 'Editar registro' : 'Nuevo registro'}
@@ -104,22 +112,45 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
       onClose={onClose}
     >
       <div className="form-grid two">
+        <div className="span-two">
+          <CampoFoto
+            label="Foto del chofer"
+            nombre={nombreCompleto}
+            fotoActual={chofer?.fotoUrl}
+            onChange={setArchivo}
+          />
+        </div>
+        <div className="span-two">
+          <Field label="Usuario de acceso (rol Chofer)">
+            <select value={campos.idUsuario} onChange={(event) => cambiarUsuario(event.target.value)}>
+              <option value="">Sin acceso al sistema</option>
+              {enlazadoFueraDeLista && <option value={campos.idUsuario}>Usuario enlazado actual</option>}
+              {opcionesUsuario.map((usuario) => (
+                <option key={usuario.id} value={usuario.id}>
+                  {usuario.nombreCompleto} · {usuario.correo}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
         <Field
           label="Nombre completo"
           placeholder="Nombre y apellido"
-          value={campos.nombreCompleto}
+          value={nombreCompleto}
           onChange={(event) => cambiar({ nombreCompleto: event.target.value })}
           maxLength={150}
           required
+          disabled={conAcceso}
         />
         <Field
           label="Correo"
           type="email"
           placeholder="chofer@transportes.gt"
-          value={campos.correo}
+          value={correo}
           onChange={(event) => cambiar({ correo: event.target.value })}
           maxLength={150}
           required
+          disabled={conAcceso}
         />
         <Field
           label="Teléfono"
@@ -166,25 +197,6 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
           onChange={(event) => cambiar({ salarioBaseViaje: event.target.value })}
           required
         />
-        <Field label="Usuario de acceso (rol Chofer)">
-          <select value={campos.idUsuario} onChange={(event) => cambiar({ idUsuario: event.target.value })}>
-            <option value="">Sin acceso al sistema</option>
-            {enlazadoFueraDeLista && <option value={campos.idUsuario}>Usuario enlazado actual</option>}
-            {opcionesUsuario.map((usuario) => (
-              <option key={usuario.id} value={usuario.id}>
-                {usuario.nombreCompleto} · {usuario.correo}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <div className="span-two">
-          <CampoFoto
-            label="Foto del chofer"
-            nombre={campos.nombreCompleto}
-            fotoActual={chofer?.fotoUrl}
-            onChange={setArchivo}
-          />
-        </div>
       </div>
       {campos.fechaVencimientoLicencia && campos.fechaVencimientoLicencia < hoyIso() && (
         <div className="persistent-note">
@@ -193,8 +205,9 @@ function FormularioChofer({ chofer, onClose, onGuardado }: FormularioChoferProps
         </div>
       )}
       <InfoNote>
-        Enlazar el usuario permite que el chofer registre la salida y llegada de sus viajes. Los choferes no se
-        eliminan; solo se desactivan.
+        Enlazar el usuario permite que el chofer registre la salida y llegada de sus viajes; su nombre y correo se
+        toman de ese usuario. Sin acceso al sistema se escriben a mano. Los choferes no se eliminan; solo se
+        desactivan.
       </InfoNote>
       <AvisoError error={usuariosChofer.error}>
         <small>No se pudieron cargar los usuarios con rol Chofer.</small>
