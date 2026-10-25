@@ -13,6 +13,7 @@ export type IconName =
   | 'calendar'
   | 'chart'
   | 'check'
+  | 'save'
   | 'chevron'
   | 'clock'
   | 'doc'

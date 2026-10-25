@@ -29,6 +29,12 @@ const ICONS: Record<IconName, React.ReactNode> = {
     </>
   ),
   chart: <path d="M4 19V9m6 10V5m6 14v-7m5 7H2" />,
+  save: (
+    <>
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z" />
+      <path d="M17 21v-8H7v8M7 3v5h8V3" />
+    </>
+  ),
   check: <path d="m5 12 4 4L19 6" />,
   chevron: <path d="m9 18 6-6-6-6" />,
   clock: (

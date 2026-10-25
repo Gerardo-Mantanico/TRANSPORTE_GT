@@ -3,7 +3,7 @@ import { esCancelacion } from '../../api/ApiError'
 import { alRecibirNoAutorizado } from '../../api/clienteHttp'
 import { borrarToken, escucharCambiosToken, guardarToken, leerToken, tokenVigente } from '../../api/sesion'
 import { olvidarFotos } from '../../services/fleet'
-import { login as iniciarSesion, obtenerYo } from '../../services/identity'
+import { login as iniciarSesion, obtenerYo, obtenerUsuario } from '../../services/identity'
 import type { Rol, Usuario } from '../../types/identityTypes'
 import { AuthContext, type AuthContextValue, type EstadoSesion } from './auth.context'
 
@@ -80,10 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [cerrarSesionLocal],
   )
 
-  const refrescarUsuario = useCallback(async () => {
-    const yo = await obtenerYo()
-    setUsuario(yo)
-  }, [])
+  const idUsuario = usuario?.id
+  const refrescarUsuario = useCallback(async (actualizado?: Usuario) => {
+    if (!idUsuario) return
+    const perfil = actualizado ?? await obtenerUsuario(idUsuario)
+    if (perfil.id === idUsuario) setUsuario(perfil)
+  }, [idUsuario])
 
   const tieneRol = useCallback(
     (...roles: Rol[]) => usuario !== null && roles.includes(usuario.rol),
