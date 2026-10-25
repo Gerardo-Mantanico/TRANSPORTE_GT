@@ -119,6 +119,15 @@ export function ProfilePage() {
   const [cambiandoContrasena, setCambiandoContrasena] = useState(false)
   const [nombre, setNombre] = useState('')
   const [saved, setSaved] = useState<string | null>(null)
+  const [errorPerfil, setErrorPerfil] = useState<ApiError | null>(null)
+
+  useEffect(() => {
+    let vigente = true
+    void refrescarUsuario().catch((error: unknown) => {
+      if (vigente) setErrorPerfil(ApiError.desde(error))
+    })
+    return () => { vigente = false }
+  }, [refrescarUsuario])
 
   useEffect(() => {
     if (!saved) return
@@ -137,15 +146,24 @@ export function ProfilePage() {
 
   const empezarEdicion = () => {
     setNombre(usuario.nombreCompleto)
+    setErrorPerfil(null)
+    setSaved(null)
     editarPerfil.reiniciar()
     setEditing(true)
   }
 
   const guardarPerfil = async (event: FormEvent) => {
     event.preventDefault()
-    const resultado = await editarPerfil.ejecutar({ nombreCompleto: nombre.trim() })
+    if (!editing || editarPerfil.cargando) return
+    const nombreCompleto = nombre.trim()
+    if (!nombreCompleto) {
+      setErrorPerfil(new ApiError(400, 'VALIDACION_FALLIDA', 'Ingrese su nombre completo.'))
+      return
+    }
+    setErrorPerfil(null)
+    const resultado = await editarPerfil.ejecutar({ nombreCompleto })
     if (!resultado.ok) return
-    await refrescarUsuario().catch(() => undefined)
+    await refrescarUsuario(resultado.datos)
     setEditing(false)
     setSaved('Los cambios se guardaron correctamente.')
   }
@@ -169,6 +187,7 @@ export function ProfilePage() {
       </div>
       <div className="profile-page-layout">
         <div className="profile-body">
+          {!editing && <AvisoError error={errorPerfil} />}
           {saved && (
             <div className="profile-saved" role="status">
               <span>
@@ -180,25 +199,7 @@ export function ProfilePage() {
               </div>
             </div>
           )}
-          {editing ? (
-            <form id="perfil-form" className="profile-edit-form" onSubmit={guardarPerfil}>
-              <SectionHeading
-                icon="user"
-                title="Datos editables"
-                subtitle="Solo puede cambiar su nombre. El correo lo modifica un administrador."
-              />
-              <div className="form-grid">
-                <Field
-                  label="Nombre completo"
-                  value={nombre}
-                  onChange={(event) => setNombre(event.target.value)}
-                  maxLength={150}
-                  required
-                />
-              </div>
-              <AvisoError error={editarPerfil.error} />
-            </form>
-          ) : cambiandoContrasena ? (
+          {cambiandoContrasena ? (
             <CambiarContrasenaForm
               onListo={() => {
                 setCambiandoContrasena(false)
@@ -207,19 +208,28 @@ export function ProfilePage() {
             />
           ) : (
             <>
-              <section>
+              <form id="perfil-form" className="profile-edit-form" onSubmit={guardarPerfil}>
                 <SectionHeading
                   icon="user"
                   title="Información personal"
-                  subtitle="Datos de identificación y contacto"
+                  subtitle={editing
+                    ? 'Puede cambiar su nombre. El correo lo modifica un administrador.'
+                    : 'Datos de identificación y contacto'}
                 />
-                <DataGrid
-                  items={[
-                    ['Nombre completo', usuario.nombreCompleto],
-                    ['Correo electrónico', usuario.correo],
-                  ]}
-                />
-              </section>
+                <div className="form-grid two">
+                  <Field
+                    label="Nombre completo"
+                    value={editing ? nombre : usuario.nombreCompleto}
+                    onChange={(event) => setNombre(event.target.value)}
+                    autoComplete="name"
+                    disabled={!editing || editarPerfil.cargando}
+                    maxLength={150}
+                    required
+                  />
+                  <Field label="Correo electrónico" type="email" value={usuario.correo} disabled />
+                </div>
+                {editing && <AvisoError error={errorPerfil ?? editarPerfil.error} />}
+              </form>
               {/* Todo usuario tiene perfil comercial, sea cual sea su rol. */}
               <PerfilComercial onGuardado={setSaved} />
               <section>
@@ -275,26 +285,34 @@ export function ProfilePage() {
         </aside>
       </div>
       <div className="profile-page-actions">
-        {editing ? (
-          <>
-            <Button variant="ghost" icon="close" onClick={() => setEditing(false)} disabled={editarPerfil.cargando}>
-              Cancelar
-            </Button>
-            <Button type="submit" form="perfil-form" icon="check" disabled={editarPerfil.cargando}>
-              {editarPerfil.cargando ? 'Guardando...' : 'Guardar cambios'}
-            </Button>
-          </>
-        ) : cambiandoContrasena ? (
+        {cambiandoContrasena ? (
           <Button variant="ghost" icon="close" onClick={() => setCambiandoContrasena(false)}>
             Cancelar
           </Button>
         ) : (
           <>
-            <Button variant="secondary" icon="settings" onClick={() => setCambiandoContrasena(true)}>
-              Cambiar contraseña
-            </Button>
-            <Button icon="user" onClick={empezarEdicion}>
-              Editar perfil
+            {editing ? (
+              <Button variant="ghost" icon="close" onClick={() => setEditing(false)} disabled={editarPerfil.cargando}>
+                Cancelar
+              </Button>
+            ) : (
+              <Button variant="secondary" icon="settings" onClick={() => setCambiandoContrasena(true)}>
+                Cambiar contraseña
+              </Button>
+            )}
+            <Button
+              type={editing ? 'submit' : 'button'}
+              form="perfil-form"
+              icon={editing ? 'save' : 'user'}
+              disabled={editarPerfil.cargando || (editing && !nombre.trim())}
+              onClick={(event) => {
+                if (!editing) {
+                  event.preventDefault()
+                  empezarEdicion()
+                }
+              }}
+            >
+              {editarPerfil.cargando ? 'Guardando...' : editing ? 'Guardar cambios' : 'Editar perfil'}
             </Button>
           </>
         )}
