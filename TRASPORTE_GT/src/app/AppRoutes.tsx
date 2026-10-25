@@ -19,7 +19,8 @@ import { ChoferesPage } from '../features/fleet/ChoferesPage'
 import { RutasPage } from '../features/trips/RutasPage'
 import { ViajesPage } from '../features/trips/ViajesPage'
 import { AlquileresPage } from '../features/rentals/AlquileresPage'
-import { ReportsPage } from '../features/reports/ReportsPage'
+import { ReportesAdminPage } from '../features/reports/reportsAdmin/ReportesAdminPage'
+import { ReportesSucursalPage } from '../features/reports/reportsSucursal/ReportesSucursalPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { SincronizacionPage } from '../features/sync/SincronizacionPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
@@ -84,12 +85,13 @@ export function AppRoutes() {
           <Route path="venta" element={<TicketSalesPage />} />
           <Route path="boletos-vendidos" element={<ComprasSucursalPage />} />
         </Route>
-        <Route element={<ProtectedRoute roles={SUCURSAL} />}>
-          <Route path="reportes" element={<ReportsPage />} />
-          <Route path="reportes-sucursal" element={<ReportsPage />} />
+        {/* Reportes de sucursal: SUC ve la suya; SIS elige la sucursal */}
+        <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
+          <Route path="reportes" element={<ReportesSucursalPage />} />
+          <Route path="reportes-sucursal" element={<ReportesSucursalPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={SISTEMA} />}>
-          <Route path="reportes-sistema" element={<ReportsPage system />} />
+          <Route path="reportes-sistema" element={<ReportesAdminPage />} />
           <Route path="configuracion" element={<SettingsPage />} />
           <Route path="sincronizacion" element={<SincronizacionPage />} />
           <Route path="sucursales" element={<SucursalesPage />} />

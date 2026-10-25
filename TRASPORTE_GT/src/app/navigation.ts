@@ -89,7 +89,10 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
     },
     {
       label: 'Inteligencia',
-      items: [{ id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
+      items: [
+        { id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' },
+        { id: 'reportes-sucursal', label: 'Reportes por sucursal', icon: 'chart' },
+      ],
     },
     MI_CUENTA,
   ],
