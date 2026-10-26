@@ -10,7 +10,7 @@ import {
   useReporteTallerBus, useReporteDepreciacionBuses,
 } from '../../hooks/reports'
 import type { ResultadoConsulta } from '../../hooks/useConsulta'
-import type { FiltroFechas, GrupoReporte, ReporteTabla } from '../../types/reportTypes'
+import type { FiltroFechas, GrupoReporte, ReporteTabla, ValorTotal } from '../../types/reportTypes'
 import { formatQ, hoyIso } from '../../utils/format'
 import './dashboard.css'
 
@@ -24,12 +24,12 @@ function sumar<F>(datos: F[], valor: (fila: F) => string | number): number {
 
 function Reporte<F>({ consulta, children }: {
   consulta: ResultadoConsulta<ReporteTabla<F>>
-  children: (datos: F[]) => ReactNode
+  children: (datos: F[], totales: Record<string, ValorTotal>) => ReactNode
 }) {
   if (consulta.cargando) return <Cargando texto="Consultando reporte..." />
   if (consulta.error) return <AvisoError error={consulta.error} onReintentar={consulta.recargar} />
   if (!consulta.datos) return null
-  return children(filas(consulta.datos.grupos))
+  return children(filas(consulta.datos.grupos), consulta.datos.totales)
 }
 
 function Panel({ titulo, detalle, children }: { titulo: string; detalle: string; children: ReactNode }) {
@@ -135,8 +135,8 @@ function ResumenSucursal({ filtro }: { filtro: FiltroFechas }) {
         }}</Reporte>
       </Panel>
       <Panel titulo="Depreciación de buses" detalle="Los cinco buses con mayor depreciación en el período">
-        <Reporte consulta={depreciacion}>{(datos) => <>
-          <p className="dashboard-total">Total: {formatQ(sumar(datos, (fila) => fila.depreciacionAcumulada))}</p>
+        <Reporte consulta={depreciacion}>{(datos, totales) => <>
+          <p className="dashboard-total">Total: {formatQ(Number(totales.depreciacionAcumulada ?? 0))}</p>
           <Grafica series={['Depreciación']} datos={[...datos].sort((a, b) => Number(b.depreciacionAcumulada) - Number(a.depreciacionAcumulada)).slice(0, 5).map((fila) => ({ etiqueta: fila.placa, valores: [Number(fila.depreciacionAcumulada)] }))} />
         </>}</Reporte>
       </Panel>
