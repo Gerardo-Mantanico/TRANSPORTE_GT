@@ -6,6 +6,7 @@ import { useAuth } from '../../app/providers/useAuth'
 import { Button } from '../../components/ui/Button'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Field } from '../../components/ui/Field'
+import { Icon } from '../../components/ui/Icon'
 import { useRegistro } from '../../hooks/identity'
 import { MENSAJE_POLITICA_CONTRASENA, POLITICA_CONTRASENA } from '../../types/identityTypes'
 import { AuthLayout } from './AuthLayout'
@@ -18,6 +19,7 @@ export function LoginPage() {
   const [nombreCompleto, setNombreCompleto] = useState('')
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
+  const [mostrarContrasena, setMostrarContrasena] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
   const registerMode = mode === 'register'
@@ -98,18 +100,30 @@ export function LoginPage() {
           maxLength={150}
           required
         />
-        <div className="field">
+        <div className="field password-field">
           <span>
             Contraseña <b> *</b>
           </span>
-          <input
-            type="password"
-            placeholder={registerMode ? 'Mínimo 8 caracteres' : 'Ingrese su contraseña'}
-            value={contrasena}
-            onChange={(event) => setContrasena(event.target.value)}
-            autoComplete={registerMode ? 'new-password' : 'current-password'}
-            required
-          />
+          <div className="password-input-wrap">
+            <input
+              type={mostrarContrasena ? 'text' : 'password'}
+              placeholder={registerMode ? 'Mínimo 8 caracteres' : 'Ingrese su contraseña'}
+              value={contrasena}
+              onChange={(event) => setContrasena(event.target.value)}
+              autoComplete={registerMode ? 'new-password' : 'current-password'}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setMostrarContrasena((visible) => !visible)}
+              aria-label={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              aria-pressed={mostrarContrasena}
+              title={mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            >
+              <Icon name={mostrarContrasena ? 'eye-off' : 'eye'} size={17} />
+            </button>
+          </div>
           {registerMode ? (
             <small className="cell-note">{MENSAJE_POLITICA_CONTRASENA}</small>
           ) : (

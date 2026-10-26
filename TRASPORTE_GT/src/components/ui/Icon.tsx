@@ -8,6 +8,14 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <path d="M9 20v-6h6v6" />
     </>
   ),
+  building: (
+    <>
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16" />
+      <path d="M15 10h4a1 1 0 0 1 1 1v10" />
+      <path d="M2 21h20" />
+      <path d="M8 8h3M8 12h3M8 16h3" />
+    </>
+  ),
   bus: (
     <>
       <rect x="4" y="3" width="16" height="16" rx="3" />
@@ -21,6 +29,12 @@ const ICONS: Record<IconName, React.ReactNode> = {
     </>
   ),
   chart: <path d="M4 19V9m6 10V5m6 14v-7m5 7H2" />,
+  save: (
+    <>
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z" />
+      <path d="M17 21v-8H7v8M7 3v5h8V3" />
+    </>
+  ),
   check: <path d="m5 12 4 4L19 6" />,
   chevron: <path d="m9 18 6-6-6-6" />,
   clock: (
@@ -30,7 +44,39 @@ const ICONS: Record<IconName, React.ReactNode> = {
     </>
   ),
   close: <path d="m6 6 12 12M18 6 6 18" />,
+  doc: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+      <path d="M14 3v5h5" />
+      <path d="M9 13h6M9 17h4" />
+    </>
+  ),
   download: <path d="M12 3v12m-5-5 5 5 5-5M5 21h14" />,
+  edit: (
+    <>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  'eye-off': (
+    <>
+      <path d="M3 3l18 18" />
+      <path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6.5 0 10 6 10 6a18 18 0 0 1-3 3.7" />
+      <path d="M6.2 6.3C3.5 8.1 2 12 2 12s3.5 6 10 6c1 0 1.9-.1 2.7-.4" />
+    </>
+  ),
   fuel: (
     <>
       <path d="M5 21V4h10v17M3 21h14M7 8h6v4H7z" />
@@ -45,6 +91,18 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <rect x="14" y="14" width="7" height="7" rx="1" />
     </>
   ),
+  lock: (
+    <>
+      <rect x="4" y="10" width="16" height="11" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7.5 9 6 9-6" />
+    </>
+  ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   moon: <path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z" />,
   more: (
@@ -54,7 +112,16 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <circle cx="19" cy="12" r="1" />
     </>
   ),
+  phone: (
+    <path d="M7 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L16 12l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 5 5a2 2 0 0 1 2-2Z" />
+  ),
   plus: <path d="M12 5v14M5 12h14" />,
+  power: (
+    <>
+      <path d="M12 3v9" />
+      <path d="M18.4 6.6a9 9 0 1 1-12.8 0" />
+    </>
+  ),
   route: (
     <>
       <circle cx="6" cy="18" r="3" />
@@ -86,6 +153,14 @@ const ICONS: Record<IconName, React.ReactNode> = {
       <path d="M12 8v2m0 4v2" />
     </>
   ),
+  trash: (
+    <>
+      <path d="M3 6h18" />
+      <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6" />
+      <path d="M18.5 6 17.6 20H6.4L5.5 6" />
+      <path d="M10 10.5v6M14 10.5v6" />
+    </>
+  ),
   user: (
     <>
       <circle cx="12" cy="8" r="4" />
@@ -108,6 +183,19 @@ const ICONS: Record<IconName, React.ReactNode> = {
     <path d="M14.7 6.3a4 4 0 0 0-5-5L12 3.6 8.6 7 6.3 4.7a4 4 0 0 0 5 5L4 17l3 3 7.7-7.7a4 4 0 0 0 5-5L17.4 9 15 6.6l1.7-2.3Z" />
   ),
   arrow: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  upload: (
+    <>
+      <path d="M12 16V4m-5 5 5-5 5 5" />
+      <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+    </>
+  ),
+  sync: (
+    <>
+      <path d="M20 11a8 8 0 0 0-14.3-4.9L4 8" />
+      <path d="M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16" />
+      <path d="M20 21v-5h-5" />
+    </>
+  ),
 }
 
 interface IconProps {

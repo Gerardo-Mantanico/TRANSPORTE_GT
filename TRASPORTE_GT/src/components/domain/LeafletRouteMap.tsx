@@ -3,10 +3,18 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { GEO_POINTS } from '../../data/mock'
 
+export interface PuntoMapa {
+  lat: number
+  lng: number
+}
+
 export interface MapRoute {
   origin: string
   destination: string
   label?: string
+  /** Coordenadas reales (reporte de mapa de rutas); sin ellas se buscan por nombre. */
+  from?: PuntoMapa
+  to?: PuntoMapa
 }
 
 interface LeafletRouteMapProps {
@@ -47,8 +55,8 @@ export function LeafletRouteMap({ routes, height = 420 }: LeafletRouteMapProps) 
     const bounds: L.LatLngTuple[] = []
 
     routes.forEach((route) => {
-      const from = GEO_POINTS[route.origin]
-      const to = GEO_POINTS[route.destination]
+      const from = route.from ?? GEO_POINTS[route.origin]
+      const to = route.to ?? GEO_POINTS[route.destination]
       if (!from || !to) return
 
       bounds.push([from.lat, from.lng], [to.lat, to.lng])

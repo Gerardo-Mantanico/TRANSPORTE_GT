@@ -8,12 +8,22 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { OlvideContrasenaPage } from '../features/auth/OlvideContrasenaPage'
 import { RestablecerContrasenaPage } from '../features/auth/RestablecerContrasenaPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
-import { ResourceListPage } from '../features/lists/ResourceListPage'
+import { CategoriasPage } from '../features/costs/CategoriasPage'
+import { TallerPage } from '../features/costs/TallerPage'
 import { SucursalesPage } from '../features/identity/SucursalesPage'
 import { UsuariosPage } from '../features/identity/UsuariosPage'
 import { TicketSalesPage } from '../features/sales/TicketSalesPage'
-import { ReportsPage } from '../features/reports/ReportsPage'
+import { ComprasSucursalPage } from '../features/tickets/ComprasSucursalPage'
+import { AbordajePage } from '../features/tickets/AbordajePage'
+import { BusesPage } from '../features/fleet/BusesPage'
+import { ChoferesPage } from '../features/fleet/ChoferesPage'
+import { RutasPage } from '../features/trips/RutasPage'
+import { ViajesPage } from '../features/trips/ViajesPage'
+import { AlquileresPage } from '../features/rentals/AlquileresPage'
+import { ReportesAdminPage } from '../features/reports/reportsAdmin/ReportesAdminPage'
+import { ReportesSucursalPage } from '../features/reports/reportsSucursal/ReportesSucursalPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { SincronizacionPage } from '../features/sync/SincronizacionPage'
 import { ProfilePage } from '../features/profile/ProfilePage'
 import { ExploreTripsPage } from '../features/client/ExploreTripsPage'
 import { RentalRequestPage } from '../features/client/RentalRequestPage'
@@ -25,15 +35,6 @@ const SISTEMA: Rol[] = ['ADMIN_SISTEMA']
 const SUCURSAL: Rol[] = ['ADMIN_SUCURSAL']
 const ADMINISTRADORES: Rol[] = ['ADMIN_SISTEMA', 'ADMIN_SUCURSAL']
 
-const LIST_PAGES: { page: string; roles: Rol[] }[] = [
-  { page: 'viajes', roles: ['ADMIN_SUCURSAL', 'CAJERO', 'CHOFER'] },
-  { page: 'buses', roles: SUCURSAL },
-  { page: 'choferes', roles: SUCURSAL },
-  { page: 'rutas', roles: SUCURSAL },
-  { page: 'alquileres', roles: SUCURSAL },
-  { page: 'taller', roles: SUCURSAL },
-  { page: 'categorias', roles: SUCURSAL },
-]
 
 function HomeRedirect() {
   const { estado, usuario } = useAuth()
@@ -61,17 +62,40 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
           <Route path="resumen" element={<DashboardPage />} />
           <Route path="usuarios" element={<UsuariosPage />} />
+          {/* ADMIN_SUCURSAL gestiona su flota; ADMIN_SISTEMA la consulta (solo lectura) */}
+          <Route path="buses" element={<BusesPage />} />
+          <Route path="choferes" element={<ChoferesPage />} />
+        </Route>
+        {/* SUC gestiona; CHO registra salida y llegada de los suyos; CAJ y SIS consultan */}
+        <Route element={<ProtectedRoute roles={['ADMIN_SISTEMA', 'ADMIN_SUCURSAL', 'CAJERO', 'CHOFER']} />}>
+          <Route path="viajes" element={<ViajesPage />} />
+        </Route>
+        <Route element={<ProtectedRoute roles={SUCURSAL} />}>
+          <Route path="rutas" element={<RutasPage />} />
+        </Route>
+        {/* Costos: SUC registra el taller; SIS y SUC gestionan las categorías y consultan los gastos */}
+        <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
+          <Route path="taller" element={<TallerPage />} />
+          <Route path="categorias" element={<CategoriasPage />} />
+        </Route>
+        {/* SUC cotiza y asigna; SUC y CAJ registran y cobran en mostrador; SIS consulta todas las sucursales */}
+        <Route element={<ProtectedRoute roles={['ADMIN_SISTEMA', 'ADMIN_SUCURSAL', 'CAJERO']} />}>
+          <Route path="alquileres" element={<AlquileresPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={['ADMIN_SUCURSAL', 'CAJERO']} />}>
           <Route path="venta" element={<TicketSalesPage />} />
+          <Route path="boletos-vendidos" element={<ComprasSucursalPage />} />
+          <Route path="abordaje" element={<AbordajePage />} />
         </Route>
-        <Route element={<ProtectedRoute roles={SUCURSAL} />}>
-          <Route path="reportes" element={<ReportsPage />} />
-          <Route path="reportes-sucursal" element={<ReportsPage />} />
+        {/* Reportes de sucursal: SUC ve la suya; SIS elige la sucursal */}
+        <Route element={<ProtectedRoute roles={ADMINISTRADORES} />}>
+          <Route path="reportes" element={<ReportesSucursalPage />} />
+          <Route path="reportes-sucursal" element={<ReportesSucursalPage />} />
         </Route>
         <Route element={<ProtectedRoute roles={SISTEMA} />}>
-          <Route path="reportes-sistema" element={<ReportsPage system />} />
+          <Route path="reportes-sistema" element={<ReportesAdminPage />} />
           <Route path="configuracion" element={<SettingsPage />} />
+          <Route path="sincronizacion" element={<SincronizacionPage />} />
           <Route path="sucursales" element={<SucursalesPage />} />
         </Route>
         {/* Todo usuario es cliente: cualquier rol compra, alquila y usa su cartera. */}
@@ -79,11 +103,6 @@ export function AppRoutes() {
         <Route path="solicitar" element={<RentalRequestPage />} />
         <Route path="historial" element={<HistoryPage />} />
         <Route path="cartera" element={<WalletPage />} />
-        {LIST_PAGES.map(({ page, roles }) => (
-          <Route key={page} element={<ProtectedRoute roles={roles} />}>
-            <Route path={page} element={<ResourceListPage type={page} />} />
-          </Route>
-        ))}
         <Route path="*" element={<HomeRedirect />} />
       </Route>
     </Routes>

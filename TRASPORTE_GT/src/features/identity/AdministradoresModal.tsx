@@ -1,5 +1,4 @@
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { Icon } from '../../components/ui/Icon'
 import { Avatar, InfoNote } from '../../components/ui/Misc'
@@ -48,9 +47,6 @@ export function AdministradoresModal({ sucursal, onClose }: { sucursal: Sucursal
           ))}
           <InfoNote>Cada sucursal debe mantener al menos un administrador activo.</InfoNote>
         </div>
-        <footer>
-          <Button onClick={onClose}>Cerrar</Button>
-        </footer>
       </section>
     </div>
   )

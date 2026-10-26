@@ -34,6 +34,8 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
         { id: 'resumen', label: 'Resumen', icon: 'home' },
         { id: 'viajes', label: 'Viajes', icon: 'route' },
         { id: 'venta', label: 'Venta de boletos', icon: 'ticket' },
+        { id: 'boletos-vendidos', label: 'Boletos vendidos', icon: 'ticket' },
+        { id: 'abordaje', label: 'Abordaje', icon: 'camera' },
         { id: 'alquileres', label: 'Alquileres', icon: 'calendar' },
       ],
     },
@@ -67,11 +69,31 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
         { id: 'sucursales', label: 'Sucursales', icon: 'grid' },
         { id: 'usuarios', label: 'Usuarios', icon: 'users' },
         { id: 'configuracion', label: 'Configuración', icon: 'settings' },
+        { id: 'sincronizacion', label: 'Sincronización', icon: 'sync' },
+      ],
+    },
+    {
+      label: 'Flota',
+      items: [
+        { id: 'buses', label: 'Buses', icon: 'bus' },
+        { id: 'choferes', label: 'Choferes', icon: 'users' },
+        { id: 'viajes', label: 'Viajes', icon: 'route' },
+        { id: 'alquileres', label: 'Alquileres', icon: 'calendar' },
+      ],
+    },
+    {
+      label: 'Costos',
+      items: [
+        { id: 'taller', label: 'Taller y repuestos', icon: 'wrench' },
+        { id: 'categorias', label: 'Categorías', icon: 'grid' },
       ],
     },
     {
       label: 'Inteligencia',
-      items: [{ id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' }],
+      items: [
+        { id: 'reportes-sistema', label: 'Reportes globales', icon: 'chart' },
+        { id: 'reportes-sucursal', label: 'Reportes por sucursal', icon: 'chart' },
+      ],
     },
     MI_CUENTA,
   ],
@@ -80,7 +102,10 @@ export const NAV_BY_ROLE: Record<Rol, NavGroup[]> = {
       label: 'Operación',
       items: [
         { id: 'venta', label: 'Venta de boletos', icon: 'ticket' },
+        { id: 'boletos-vendidos', label: 'Boletos vendidos', icon: 'ticket' },
+        { id: 'abordaje', label: 'Abordaje', icon: 'camera' },
         { id: 'viajes', label: 'Viajes', icon: 'route' },
+        { id: 'alquileres', label: 'Alquileres', icon: 'calendar' },
       ],
     },
     MI_CUENTA,

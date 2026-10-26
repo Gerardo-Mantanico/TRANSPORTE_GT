@@ -9,29 +9,43 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
 export type IconName =
   | 'home'
   | 'bus'
+  | 'building'
   | 'calendar'
   | 'chart'
+  | 'camera'
   | 'check'
+  | 'save'
   | 'chevron'
   | 'clock'
+  | 'doc'
   | 'close'
   | 'download'
+  | 'edit'
+  | 'eye'
+  | 'eye-off'
   | 'fuel'
   | 'grid'
+  | 'lock'
+  | 'mail'
   | 'menu'
   | 'moon'
   | 'more'
+  | 'phone'
   | 'plus'
+  | 'power'
   | 'route'
   | 'search'
   | 'settings'
   | 'sun'
+  | 'sync'
   | 'ticket'
+  | 'trash'
   | 'user'
   | 'users'
   | 'wallet'
   | 'wrench'
   | 'arrow'
+  | 'upload'
 
 export interface NavItem {
   id: string
@@ -47,23 +61,6 @@ export interface NavGroup {
 export type TableCell = ReactNode
 
 export type TableRow = TableCell[]
-
-export interface ResourceFilterDef {
-  key: string
-  label: string
-  options: string[]
-}
-
-export interface ResourceConfig {
-  eyebrow: string
-  title: string
-  description: string
-  action: string
-  filters: string[]
-  headers: string[]
-  rows: TableRow[]
-  filterDefs?: ResourceFilterDef[]
-}
 
 export interface FlowLink {
   id: string

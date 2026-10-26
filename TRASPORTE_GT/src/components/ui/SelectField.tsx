@@ -1,3 +1,4 @@
+import type { IconName } from '../../types'
 import { Field } from './Field'
 
 interface SelectFieldProps {
@@ -5,11 +6,12 @@ interface SelectFieldProps {
   options: string[]
   required?: boolean
   defaultValue?: string
+  icona?: IconName | null
 }
 
-export function SelectField({ label, options, required = false, defaultValue }: SelectFieldProps) {
+export function SelectField({ label, options, required = false, defaultValue, icona }: SelectFieldProps) {
   return (
-    <Field label={label} required={required}>
+    <Field label={label} required={required} icona={icona}>
       <select defaultValue={defaultValue ?? ''}>
         {!defaultValue && (
           <option value="" disabled>

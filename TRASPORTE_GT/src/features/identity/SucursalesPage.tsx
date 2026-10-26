@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { AccionFila } from '../../components/ui/AccionFila'
 import { DataTable } from '../../components/ui/DataTable'
 import { AvisoError, Cargando } from '../../components/ui/Estado'
 import { FilterToolbar } from '../../components/ui/FilterToolbar'
@@ -12,12 +12,14 @@ import type { FiltroSucursales, Sucursal } from '../../types/identityTypes'
 import { AdministradoresModal } from './AdministradoresModal'
 import { ConfirmarEstadoModal } from './ConfirmarEstadoModal'
 import { CrearSucursalModal, EditarSucursalModal } from './SucursalFormModal'
+import { SucursalDetalleModal } from './SucursalDetalleModal'
 
 const TAMANO_PAGINA = 10
 
 type ModalSucursales =
   | { tipo: 'crear' }
   | { tipo: 'editar'; id: string }
+  | { tipo: 'detalle'; sucursal: Sucursal }
   | { tipo: 'estado'; sucursal: Sucursal }
   | { tipo: 'administradores'; sucursal: Sucursal }
 
@@ -55,21 +57,29 @@ export function SucursalesPage() {
     `${sucursal.latitud}, ${sucursal.longitud}`,
     <Badge tone={sucursal.activa ? 'success' : 'neutral'}>{sucursal.activa ? 'Activa' : 'Inactiva'}</Badge>,
     <div className="row-actions">
-      <Button variant="ghost" onClick={() => setModal({ tipo: 'editar', id: sucursal.id })}>
-        Editar
-      </Button>
-      <Button variant="ghost" onClick={() => setModal({ tipo: 'administradores', sucursal })}>
-        Administradores
-      </Button>
-      <Button
-        variant="ghost"
+      <AccionFila
+        icono="eye"
+        titulo="Ver detalles"
+        onClick={() => setModal({ tipo: 'detalle', sucursal })}
+      />
+      <AccionFila
+        icono="edit"
+        titulo="Editar"
+        onClick={() => setModal({ tipo: 'editar', id: sucursal.id })}
+      />
+      <AccionFila
+        icono="users"
+        titulo="Administradores"
+        onClick={() => setModal({ tipo: 'administradores', sucursal })}
+      />
+      <AccionFila
+        icono="power"
+        titulo={sucursal.activa ? 'Desactivar' : 'Activar'}
         onClick={() => {
           cambiarEstado.reiniciar()
           setModal({ tipo: 'estado', sucursal })
         }}
-      >
-        {sucursal.activa ? 'Desactivar' : 'Activar'}
-      </Button>
+      />
     </div>,
   ])
 
@@ -148,6 +158,7 @@ export function SucursalesPage() {
           onGuardado={(editada) => terminar(`La sucursal ${editada.nombre} se actualizó.`)}
         />
       )}
+      {modal?.tipo === 'detalle' && <SucursalDetalleModal sucursal={modal.sucursal} onClose={() => setModal(null)} />}
       {modal?.tipo === 'estado' && (
         <ConfirmarEstadoModal
           recurso="sucursal"

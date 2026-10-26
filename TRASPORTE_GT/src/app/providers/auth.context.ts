@@ -9,7 +9,8 @@ export interface AuthContextValue {
   /** Guarda el token y carga el usuario con `/auth/yo`. Lanza `ApiError` si falla. */
   login: (credenciales: LoginRequest) => Promise<Usuario>
   logout: () => void
-  refrescarUsuario: () => Promise<void>
+  /** Sincroniza el perfil con Identidad o con la respuesta de una edición. */
+  refrescarUsuario: (actualizado?: Usuario) => Promise<void>
   tieneRol: (...roles: Rol[]) => boolean
 }
 

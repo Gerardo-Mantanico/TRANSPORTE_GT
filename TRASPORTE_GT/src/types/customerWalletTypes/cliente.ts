@@ -34,3 +34,8 @@ export interface ActualizarPerfilClienteRequest {
 /** Mismas validaciones que `ActualizarPerfilRequest` del backend. */
 export const PATRON_DPI = /^[0-9]{13}$/
 export const PATRON_TELEFONO = /^[0-9+\- ]{8,20}$/
+
+/** Cantidad de eventos guardados en el outbox por la republicación. */
+export interface RepublicacionClientesResponse {
+  clientes: number
+}
