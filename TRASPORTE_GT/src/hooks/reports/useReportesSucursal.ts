@@ -1,4 +1,4 @@
-import { useConsulta } from '../useConsulta'
+import { useReporte } from './useReporte'
 import {
   obtenerReporteBuses,
   obtenerReporteChoferes,
@@ -18,33 +18,28 @@ import type {
  * `habilitada = false` mientras el ADMIN_SISTEMA no elige sucursal (el backend respondería 400).
  */
 export function useReporteBuses(filtro: FiltroBuses, habilitada = true) {
-  return useConsulta((signal) => obtenerReporteBuses(filtro, signal), JSON.stringify(filtro), habilitada)
+  return useReporte('/reportes/buses', filtro, (signal) => obtenerReporteBuses(filtro, signal), habilitada)
 }
 
 export function useReporteChoferes(filtro: FiltroSucursal, habilitada = true) {
-  return useConsulta((signal) => obtenerReporteChoferes(filtro, signal), JSON.stringify(filtro), habilitada)
+  return useReporte('/reportes/choferes', filtro, (signal) => obtenerReporteChoferes(filtro, signal), habilitada)
 }
 
 export function useReporteIngresosBoletos(filtro: FiltroIngresosBoletos, habilitada = true) {
-  return useConsulta((signal) => obtenerReporteIngresosBoletos(filtro, signal), JSON.stringify(filtro), habilitada)
+  return useReporte('/reportes/ingresos-boletos', filtro, (signal) => obtenerReporteIngresosBoletos(filtro, signal), habilitada)
 }
 
 export function useReporteIngresosAlquileres(filtro: FiltroSucursal, habilitada = true) {
-  return useConsulta(
-    (signal) => obtenerReporteIngresosAlquileres(filtro, signal),
-    JSON.stringify(filtro),
-    habilitada,
-  )
+  return useReporte('/reportes/ingresos-alquileres', filtro,
+    (signal) => obtenerReporteIngresosAlquileres(filtro, signal), habilitada)
 }
 
 export function useReporteDepreciacionBuses(filtro: FiltroSucursal, habilitada = true) {
-  return useConsulta(
-    (signal) => obtenerReporteDepreciacionBuses(filtro, signal),
-    JSON.stringify(filtro),
-    habilitada,
-  )
+  return useReporte('/reportes/depreciacion-buses', filtro,
+    (signal) => obtenerReporteDepreciacionBuses(filtro, signal), habilitada)
 }
 
 export function useReporteTallerBus(filtro: FiltroTallerBus, habilitada = true) {
-  return useConsulta((signal) => obtenerReporteTallerBus(filtro, signal), JSON.stringify(filtro), habilitada)
+  return useReporte('/reportes/gastos-taller-por-bus', filtro,
+    (signal) => obtenerReporteTallerBus(filtro, signal), habilitada)
 }
