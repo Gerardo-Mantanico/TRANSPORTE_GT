@@ -69,6 +69,8 @@ function camposDesde(sucursal: Sucursal): CamposSucursal {
 
 /** Valida como `SucursalRequest` y convierte los campos del formulario. */
 function aDatosSucursal(campos: CamposSucursal): DatosSucursal | ApiError {
+  const problema = validarPaso(campos, 1) ?? validarPaso(campos, 2)
+  if (problema) return problema
   const latitud = Number(campos.latitud)
   const longitud = Number(campos.longitud)
   const invalido = (mensaje: string) => new ApiError(400, 'VALIDACION_FALLIDA', mensaje)
@@ -76,7 +78,6 @@ function aDatosSucursal(campos: CamposSucursal): DatosSucursal | ApiError {
     return invalido('La latitud debe estar entre -90 y 90.')
   if (campos.longitud.trim() === '' || Number.isNaN(longitud) || longitud < -180 || longitud > 180)
     return invalido('La longitud debe estar entre -180 y 180.')
-  if (!/^[0-9+\- ]*$/.test(campos.telefono)) return invalido('El teléfono solo puede contener dígitos, espacios, + y -.')
   return {
     nombre: campos.nombre.trim(),
     departamento: campos.departamento.trim(),
@@ -88,10 +89,14 @@ function aDatosSucursal(campos: CamposSucursal): DatosSucursal | ApiError {
 }
 
 function validarPaso(campos: CamposSucursal, paso: 1 | 2): ApiError | null {
-  if (paso === 1 && (!campos.nombre.trim() || !campos.departamento.trim()))
-    return new ApiError(400, 'VALIDACION_FALLIDA', 'Completa el nombre y departamento de la sucursal.')
+  if (paso === 1 && !campos.nombre.trim())
+    return new ApiError(400, 'VALIDACION_FALLIDA', 'Completa el nombre de la sucursal.')
+  if (paso === 1 && campos.telefono !== '' && !/^[0-9]{8}$/.test(campos.telefono))
+    return new ApiError(400, 'VALIDACION_FALLIDA', 'El teléfono debe contener exactamente 8 dígitos.')
   if (paso === 2 && (!campos.direccion.trim() || !campos.latitud.trim() || !campos.longitud.trim()))
     return new ApiError(400, 'VALIDACION_FALLIDA', 'Busca la ubicación o marca un punto en el mapa.')
+  if (paso === 2 && !departamentoCatalogado(campos.departamento))
+    return new ApiError(400, 'VALIDACION_FALLIDA', 'No se ha identificado el departamento. Selecciona una ubicación de Guatemala en el mapa o vuelve a buscar la dirección.')
   return null
 }
 
@@ -153,23 +158,13 @@ function CamposSucursalForm({
             required
           />
           <Field
-            label="Departamento"
-            value={campos.departamento}
-            onChange={(event) => onCambiar({ departamento: event.target.value })}
-            required
-          >
-            <select value={campos.departamento} onChange={(event) => onCambiar({ departamento: event.target.value })} required>
-              <option value="">Seleccione un departamento</option>
-              {DEPARTAMENTOS_GUATEMALA.map((departamento) => <option key={departamento} value={departamento}>{departamento}</option>)}
-            </select>
-          </Field>
-          <Field
             label="Teléfono"
             type="tel"
             placeholder="77651234"
             value={campos.telefono}
-            onChange={(event) => onCambiar({ telefono: event.target.value })}
-            maxLength={20}
+            onChange={(event) => onCambiar({ telefono: event.target.value.replace(/[^0-9]/g, '') })}
+            minLength={8}
+            maxLength={8}
           />
         </>
       ) : (
@@ -186,13 +181,14 @@ function CamposSucursalForm({
                   : null
               }
               direccion={campos.direccion}
-              onCambiar={(punto) => onCambiar({ latitud: String(punto[0]), longitud: String(punto[1]) })}
+              onCambiar={(punto) => onCambiar({ latitud: String(punto[0]), longitud: String(punto[1]), departamento: '', direccion: '' })}
               onDireccion={(direccion) => onCambiar({ direccion })}
               onDepartamento={(departamento) => {
                 const catalogado = departamentoCatalogado(departamento)
-                if (catalogado) onCambiar({ departamento: catalogado })
+                onCambiar({ departamento: catalogado })
               }}
             />
+            <p role="status">Departamento: <strong>{campos.departamento || 'Pendiente de identificar en el mapa'}</strong></p>
           </div>
         </>
       )}

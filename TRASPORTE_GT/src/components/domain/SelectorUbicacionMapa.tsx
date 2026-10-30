@@ -37,6 +37,7 @@ export function SelectorUbicacionMapa({
   const capaRef = useRef<L.LayerGroup | null>(null)
   const puntoInicialRef = useRef(punto)
   const consultaElegidaRef = useRef('')
+  const seleccionRef = useRef(0)
   const [consulta, setConsulta] = useState(direccion)
   const [sugerencias, setSugerencias] = useState<ResultadoLugar[]>([])
   const [buscando, setBuscando] = useState(false)
@@ -72,6 +73,8 @@ export function SelectorUbicacionMapa({
   }, [consulta])
 
   const seleccionarPunto = useEffectEvent(async (nuevoPunto: Punto) => {
+    const seleccion = ++seleccionRef.current
+    setSugerencias([])
     onCambiar(nuevoPunto)
     try {
       const respuesta = await fetch(
@@ -79,6 +82,7 @@ export function SelectorUbicacionMapa({
       )
       if (!respuesta.ok) return
       const datos = (await respuesta.json()) as ResultadoLugar
+      if (seleccion !== seleccionRef.current) return
       if (datos.display_name) {
         consultaElegidaRef.current = datos.display_name
         setConsulta(datos.display_name)
@@ -91,6 +95,7 @@ export function SelectorUbicacionMapa({
   })
 
   const elegirResultado = (resultado: ResultadoLugar) => {
+    seleccionRef.current += 1
     const nuevoPunto: Punto = [Number(resultado.lat), Number(resultado.lon)]
     consultaElegidaRef.current = resultado.display_name
     setConsulta(resultado.display_name)
@@ -115,6 +120,7 @@ export function SelectorUbicacionMapa({
     if (!soloLectura) mapa.on('click', (evento: L.LeafletMouseEvent) => void seleccionarPunto([evento.latlng.lat, evento.latlng.lng]))
     mapaRef.current = mapa
     return () => {
+      seleccionRef.current += 1
       mapa.remove()
       mapaRef.current = null
       capaRef.current = null
