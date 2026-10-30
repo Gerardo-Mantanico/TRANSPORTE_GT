@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Button } from '../../../components/ui/Button'
 import { Icon } from '../../../components/ui/Icon'
 import type { ResultadoConsulta } from '../../../hooks/useConsulta'
+import type { Mutacion } from '../../../hooks/useMutacion'
 import type { ReporteTabla } from '../../../types/reportTypes'
 import { formatDateEs, formatFechaHora } from '../../../utils/format'
 import { ETIQUETA_FILTRO } from './etiquetas'
@@ -15,7 +16,7 @@ export interface Indicador {
 interface MarcoReporteProps<F> {
   titulo: string
   subtitulo: string
-  consulta: ResultadoConsulta<ReporteTabla<F>>
+  consulta: ResultadoConsulta<ReporteTabla<F>> & { exportacionJasper: Mutacion<void, void> }
   filtros: ReactNode
   /** Tres indicadores para la franja de resumen. */
   indicadores: (reporte: ReporteTabla<F>) => Indicador[]
@@ -34,10 +35,7 @@ function periodo(reporte: ReporteTabla<unknown>): string {
   return `${desde ? formatDateEs(desde) : 'inicio'} — ${hasta ? formatDateEs(hasta) : 'hoy'}`
 }
 
-/**
- * Estructura común de los 12 reportes: encabezado, filtros, resumen, contenido y total.
- * El PDF se genera por ahora con la impresión del navegador; luego lo hará el backend (JasperReports).
- */
+/** Estructura común de los 12 reportes: encabezado, filtros, resumen, contenido y exportaciones. */
 export function MarcoReporte<F>({
   titulo,
   subtitulo,
@@ -88,8 +86,22 @@ export function MarcoReporte<F>({
            <Button icon="download" onClick={() => void exportarPdf()} disabled={!reporte || !columnas}>
              PDF
            </Button>
+           <Button
+             variant="secondary"
+             className="report-jasper-button"
+             icon="download"
+             title="Generar y descargar el reporte mediante JasperReports"
+             aria-label="Descargar PDF generado con JasperReports"
+             onClick={() => void consulta.exportacionJasper.ejecutar()}
+             disabled={!reporte || consulta.exportacionJasper.cargando}
+           >
+             {consulta.exportacionJasper.cargando ? 'Generando PDF…' : 'Descargar PDF Jasper'}
+           </Button>
          </div>
       </div>
+      {consulta.exportacionJasper.error && (
+        <div className="report-export-error" role="alert">{consulta.exportacionJasper.error.message}</div>
+      )}
       {filtros}
       {pendiente ? (
         <Aviso icono="search" titulo={pendiente} detalle="Elija una opción en los filtros para generar el reporte." />

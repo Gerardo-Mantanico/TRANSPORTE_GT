@@ -2575,8 +2575,29 @@ tbody tr:hover {
 }
 .report-export-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
+}
+.button.report-jasper-button {
+  flex: 0 0 auto;
+  border-color: #ff8a65;
+  color: #7d2f1d;
+  background: #fff0eb;
+  box-shadow: 0 5px 12px #ff8a6538;
+}
+.button.report-jasper-button:hover {
+  border-color: #e0794f;
+  color: #fff;
+  background: #e0794f;
+}
+.report-export-error {
+  color: var(--danger);
+  background: #fce8e8;
+  border-top: 1px solid #eec4c4;
+  padding: 9px 22px;
+  font-size: 0.75rem;
 }
 .rental-history-header {
   border-bottom: 1px solid var(--line);
@@ -6181,6 +6202,9 @@ tbody tr:hover {
   .report-header {
     flex-direction: column;
     align-items: stretch;
+  }
+  .report-export-actions {
+    justify-content: flex-start;
   }
   .report-header .button {
     margin-top: 15px;
